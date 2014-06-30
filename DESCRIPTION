@@ -1,0 +1,19 @@
+Package: edge
+Title: Extraction and Analysis of Differential Gene Expression
+Version: 0.99.0
+Author: John D. Storey <jstorey@princeton.edu> with contributions from Jeffrey 
+        Leek (>= 0.0), Sangsoon Woo (>= 2.0), Alan Dabney (< 2.0), and Eva 
+        Monsen (< 2.0).
+Description: The edge package is an integrated differential expression analysis 
+             package. The differential expression analysis can be 
+             adjusted by surrogate variables to account for potential 
+             confounding effects. Both static and timecourse differential 
+             expression analysis using the optimal discovery procedure are 
+             supported. 
+Maintainer: John D. Storey <jstorey@princeton.edu>
+LazyData: true
+Depends: R(>= 2.10.0), Biobase
+Imports: methods, splines, sva, snm, qvalue, MASS
+Suggests: testthat
+License: GPL
+Packaged: 2013-08-21 17:05:52 UTC; andy

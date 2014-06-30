@@ -1,0 +1,330 @@
+\documentclass{article}
+
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{qvalue Package}
+
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{bibentry}
+\usepackage[parfill]{parskip}
+\setlength{\parskip}{10pt}
+%\usepackage{indentfirst}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\nobibliography*
+
+
+\Sexpr{library(knitr); opts_chunk$set(tidy=TRUE, cache=TRUE, warning=FALSE, message=FALSE,fig.align='center')}
+
+\begin{document}
+
+<<foo,cache=FALSE,include=FALSE,echo=FALSE>>=
+library(edge)
+options(keep.source = TRUE, width = 48)
+foo <- packageDescription("edge")
+@
+
+\title{Bioconductor's {\tt edge} package \\ Version \Sexpr{foo$Version}}
+\author{John D. Storey and Andrew J. Bass \\ Princeton University \\ \url{http://genomine.org/contact.html}}
+\maketitle
+\tableofcontents
+\newpage
+\section{Introduction}
+
+{\tt edge} is a package for significance analysis of DNA microarray experiments, and is able  to identify genes that are differentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). There are a number of existing software packages that perform significance analysis but {\tt edge} uses the odp-statistic from the Optimal Discovery Procedure (ODP). Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP uses information across all genes to test for differential expression. 
+
+The improvements in power are substantial; Figure 1 shows a comparison between edge and five leading software packages, based on a well-known breast cancer expression study (Hedenfalk et al. 2001). In addition to identifying differentially expressed genes, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue}. 
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=.50]{edgecomp.pdf}
+\end{center}
+\caption{Comparison of EDGE to various other leading methods for identifying differential expressed genes in the Hedenfalk et al., 2001 study. Figure retrieved from Leek et al. (2005).}
+\label{fig:test}
+\end{figure}
+
+%There are three experimental designs where {\tt edge} can identify differentially expressed genes: static, time course and continuous response experiments. In a ``static sampling'' experiment, the arrays have been collected from distinct biological groups without respect to time. The goal is to identify genes that have a statistically significant difference in average expression across these distinct biological groups. The second type of experiment is a time course experiment, where the arrays have been sampled with respect to time from one or more distinct biological groups. If only one biological group has been sampled, then the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. If two or more biological groups have been sampled, then the goal is to identify genes that show ``between-class temporal differential expression'', i.e., genes that show statistically significant differences in expression over time between the various groups. The third type of experiment is a ``continuous response'' design, which means that the arrays have been collected from a continuously defined biological state without respect to time. The goal here is to identify genes whose expression shows a statistically significant change with respect to this continuous response.
+%\texttt{edge} uses methods that have been specifically designed for time course experiments because many things can go wrong when using traditional static analysis for time course experiments. Even though some significance analysis packages allow for users to enter information about time points, we have a rigorously developed set of methodology that was published in Storey et al. (2005b) that simplifies the process for time course experiments. All procedures implemented in the software are based on proven statistical procedures that have appeared in peer-reviewed articles. 
+
+\section{Citing this package}
+
+\bibentry{storey:2007}.
+
+\bibentry{storey:etal:2007}.
+
+\bibentry{woo:leek:storey:2011}.
+
+\section{Getting help}
+Hopefully most questions relating to the package will be answered in the vignette but to get a more detailed account of how to use the functions simply type, within R:
+<<help_qvalue>>=
+help(package="edge")
+@
+\noindent Please contact the authors directly with any issues regarding bugs. Otherwise, any questions or problems implementing {\tt edge} will most efficiently be addressed on the Bioconductor mailing list, \url{http://stat.ethz.ch/mailman/listinfo/bioconductor}.
+
+\section{Quick start guide}
+There are two ways to use {\tt edge}: (i) using {\tt edgeModel} or (ii) using an {\tt ExpressionSet} object. Using {\tt edgeModel} has less flexibility and is designed to help users create alternative and null models from their experiment.
+
+An example of using {\tt edgeModel} for significance analysis:
+<<quick_start_eModel, dependson="make_eSet", eval=FALSE>>=
+# Import data
+data(kidney)
+sex <- kidney$sex[kidney$tissue == "c"]
+age <- kidney$age[kidney$tissue == "c"]
+kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+ 
+# Create edgeSet object from edgeModel
+edgeObj <- edgeModel(data=kidexpr, adj.var=model.matrix(~sex), tme=age, sampling="timecourse", basis.df=4)
+
+# Optimal Discovery Procedure
+edgeODP <- odp(edgeObj)
+
+# Likelihood Ratio Test
+edgeLRT <- lrt(edgeObj)
+@
+
+Given an {\tt ExpressionSet} object and both the alternative and null hypothesis, the {\tt odp} or {\tt lrt} function can be used as follows:
+
+<<make_eSet, echo=FALSE>>=
+# Create ExpressionSet object from kidney dataset
+library(splines)
+data(kidney)
+sex <- kidney$sex[kidney$tissue == "c"]
+age <- kidney$age[kidney$tissue == "c"]
+kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
+@
+<<quick_start_eSet, dependson="quick_start_eModel", eval=FALSE>>=
+# Create ExpressionSet
+expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
+
+# Create Models
+nModel <- ~sex
+fModel <- ~sex + ns(age, df=3, intercept=FALSE)
+
+# Create edgeSet object from ExpressionSet object
+edgeObj <- edgeSet(expSet, full.model = fModel, null.model = nModel)
+
+# Optimal Discovery Procedure
+edgeODP <- odp(edgeObj)
+
+# Likelihood Ratio Test
+edgeLRT <- lrt(edgeObj)
+@
+
+In the above models, {\tt fModel} is the alternative hypothesis and {\tt nModel} is the null hypothesis. It is recommended to create an {\tt ExpressionSet} object because of the flexibility in creating the null and alternative hypothesis. The following sections of the manual go through a case study to show additional features of the {\tt edge} package.
+
+\section{Examples}
+Three different examples will be used to show the functionality of {\tt edge}. 
+In each example, there will be a different type of experiment: static, longitudinal and independent. It will become evident that in each case, the process is very similar and the only step that differs is the model setup.
+
+The three main steps when using {\tt edge}:
+\begin{itemize}
+\item Write the alternative and null models of the experiment. In this manual they will be called {\tt altMod} and {\tt nullMod}. 
+\item Use an {\tt ExpressionSet} object to create an {\tt edgeSet} object by using function {\tt edgeSet}. 
+\item Either use {\tt edgeFit} to extract the fitted values, residuals and/or coefficients from both models or run functions {\tt odp}/{\tt lrt} directly to obtain the q-value object. See {\tt ?qvalue}.
+\end{itemize}
+
+\subsection{Creating the models}
+The example datasets in this section each represent different experimental designs: the kidney dataset is an independent time course design, the endotoxin dataset is a longitudinal time course study and the gibson dataset is a static experiment. We will go through each case to show how hypothesis tests are setup in {\tt edge}. 
+
+\paragraph{Kidney dataset} Gene expression measurements from kidney samples were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample, the age and tissue type of each subject was recorded. There are two covariates in this dataset: sex and age. We are interested in finding the effect of age on gene expression. In this case, we handle the time variable, age, by fitting a natural spline curve as presented by Storey (2005).  
+
+<<kidModel>>=
+nullMod <- ~-1 + as.factor(sex)
+altMod <- ~-1 + as.factor(sex) + ns(age, df=4)
+@
+
+\paragraph{Endotoxin dataset} The endotoxin dataset provide gene expression measurements in an endotoxin study where four subjects were given endotoxin and four subjects were given a placebo. Blood samples were collected and leukocytes were isolated from the samples before infusion and measurement were recorded at times 2, 4, 6, 9, 24 hours. We are interested in identifying genes that vary over time between the endotoxin and control groups. In this example, the models are slightly more complicated. The two covariates are time and class. For the null model we fit a spline curve for the time variable and the full model will contain the class variable and an interaction term between class and time. 
+
+<<endotoxinMod>>=
+mNull <- ~-1 + ns(time, df=4, intercept=FALSE)
+mFull <- ~-1 + ns(time, df=4, intercept=FALSE) + ns(time, df=4, intercept=FALSE):class + class
+@
+
+\paragraph{Gibson dataset} The gibson dataset provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). Suppose we are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. There are three covariates in this dataset: Gender, Batch and Location. Since we are interested in finding the genes that differentiate the three groups the most, the variable Location will be included in the alternative model.
+
+<<gibsonMod>>=
+nullMod <- ~Gender + Batch
+altMod <- ~Gender + Batch + Location
+@
+ 
+ 
+\subsection{\texttt{edgeSet} object}
+The {\tt edgeSet} object is the main class for {\tt edge}. The {\tt edgeSet} object contains q-value information among other experimental data inherited from the {\tt ExpressionSet}. The {\tt edgeSet} function requires an {\tt ExpressionSet} object. To create an {\tt ExpressionSet} using the {\tt kidney} dataset as an example:
+<<create_expSet, tidy=FALSE, eval=FALSE >>==
+library(edge)
+data(kidney)
+
+# Interested in cortex samples 
+sex <- kidney$sex[kidney$tissue=="c"]
+age <- kidney$age[kidney$tissue=="c"]
+kidexpr <- kidney$kidexpr[, kidney$tissue=="c"]
+expSet <- ExpressionSet(assayData = kidexpr,
+                        phenoData = as(data.frame(age=age, sex=sex), "AnnotatedDataFrame"))
+@
+To access the expression values, one can use the function {\tt exprs(expSet)} or to access the covariates, {\tt pData(expSet)}. The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. 
+
+
+Using the {\tt ExpressionSet} object to create an {\tt edgeSet} is very simple once the alternative and null models are known: 
+<<create_edgeSet, eval=FALSE>>==
+#null and full models
+nullMod <- ~-1 + as.factor(sex)
+altMod <- ~-1 + as.factor(sex) + ns(age, df=4)
+edgeObj <- edgeSet(expSet, full.model=altMod, null.model=nullMod)
+@
+
+The object contains the following slots:
+\begin{itemize}
+\item {\tt full.model}: the full model of the experiment
+\item {\tt null.model}: the null model of the experiment
+\item {\tt full.matrix}: the full model in matrix form
+\item {\tt null.matrix}: the null model in matrix form
+\item {\tt individual}: containing information on individuals in the experiment
+\item {\tt qvalue.obj}: {\tt qvalue} list
+\item {\tt ExpressionSet}- inherits the slots from {\tt ExpressionSet} object
+\end{itemize}
+The qvalue information can be accessed from the object by using {\tt qvalue.obj(object)}. See {\tt ?edgeSet} for more details on how to extract and set each slot in the object.
+
+\subsection{edgeFit}
+
+The {\tt edgeFit} contains information on the model fitting phase of the procedure. The slots for the object are
+\begin{itemize}
+\item fit.full- fitted values for full model
+\item fit.null- fitted values for null model
+\item res.full- residuals for the full model
+\item res.null- residuals for the null models
+\item dH.full- diaganol elements in the projection matrix for the full model
+\item beta.coef- the coefficients for the full model
+\item stat.type- statistic type used, either "odp" or "lrt"
+\end{itemize}
+To access the coefficients in the {\tt edgeFit} object, the user only has to type {\tt beta.coef(object)}. Similarly, to access the full residuals, {\tt fit.full(object)}.
+
+\section{Static study: {\tt gibson} dataset}
+Lets begin the analysis by importing the data and creating an \texttt{ExpressionSet},
+
+<<ch21, tidy=FALSE >>==
+library(edge)
+data(gibson)
+covar <- data.frame(t(gibson$covar))
+expSet <- ExpressionSet(assayData=gibson$exprdat, 
+                        phenoData=as(covar, "AnnotatedDataFrame"))
+@
+
+The next step is to determine the model equations for the experiment. Note that the alternative model must include the null model in its formulation. In this example, there are the covariates {\tt Gender}, {\tt Batch} and {\tt Location}. The {\tt Gender} and {\tt Batch} covariates are the adjustment variables and the {\tt Location} is the biological variable. The models will look like
+
+<<tidy=FALSE >>=
+nullMod <- ~Gender + Batch
+altMod <- ~Gender + Batch + Location
+edgeObj <- edgeSet(expSet, full.model = altMod, null.model = nullMod)
+@
+
+The function {\tt edgeFit} can be used to retrieve the fitted values of the model. See {\tt ?edgeFit} for more details. To run {\tt odp} or {\tt lrt} on the dataset to identify differentially expression genes,
+
+<<tidy=FALSE, cache=TRUE >>=
+edge.odp <- odp(edgeObj, bs.its=100, verbose=FALSE)
+edge.lrt <- lrt(edgeObj, nullDistn="normal")
+@
+
+Comparing the findings between both methods:
+<<>>=
+plot(qvalue.obj(edge.odp))
+summary(qvalue.obj(edge.odp))
+summary(qvalue.obj(edge.lrt))
+@
+
+\subsection{Independent time course study: {\tt kidney} dataset}
+Lets begin the analysis by importing the data and in this example use the function {\tt edgeModel} to create the models of the experiment. See {\tt ?edgeModel} for more details.
+
+<< tidy=FALSE>>==
+data(kidney)
+
+# Interested in cortex samples 
+sex <- kidney$sex[kidney$tissue=="c"]
+age <- kidney$age[kidney$tissue=="c"]
+kidexpr <- kidney$kidexpr[, kidney$tissue=="c"]
+
+# Create model
+edgeObj <- edgeModel(dat=kidexpr,
+                     adj.var=model.matrix(~sex), 
+                     tme=age,
+                     sampling="timecourse",
+                     basis.df=4)
+@
+
+Following similar steps in the previous example, a user can retrieve the fitted values from either statistical method in the experiment and run {\tt odp} or {\tt lrt}. 
+
+<<tidy=FALSE, cache=TRUE>>=
+# fitted values
+efObject <- edgeFit(edgeObj, stat.type="odp")
+efObject <- edgeFit(edgeObj, stat.type="lrt")
+
+edge.odp <- odp(edgeObj, bs.its=100, verbose=FALSE)
+edge.lrt <- lrt(edgeObj, nullDistn="bootstrap", bs.its=100, verbose=FALSE)
+@
+
+Comparing the findings between both methods:
+
+<<>>=
+summary(qvalue.obj(edge.odp))
+summary(qvalue.obj(edge.lrt))
+@
+
+
+\subsection{Longitudinal time course study: {\tt endotoxin} dataset}
+The first step is to create an {\tt ExpressionSet}:
+
+<< tidy=FALSE>>==
+data(endotoxin)
+# Create ExpressionSet object
+expr <- endotoxin$expr
+ind <- endotoxin$individual
+tme <- endotoxin$time
+cls <- endotoxin$class
+colnames(expr) <- NULL
+expSet <- ExpressionSet(assayData=expr, 
+          phenoData=as(data.frame(individual=ind, time=tme, class=cls), 
+                      "AnnotatedDataFrame"))
+@
+
+Next step is to create an edgeSet object
+<< tidy=FALSE>>==
+mNull <- ~-1 + ns(time, df=4, intercept=FALSE)
+mFull <- ~-1 + ns(time, df=4, intercept=FALSE) + ns(time, df=4, intercept=FALSE):class + class
+
+# Create edgeSet object
+edgeObj <- edgeSet(expSet,
+                   full.model=mFull, 
+                   null.model=mNull, 
+                   individual=endotoxin$individual)
+@
+
+Determine significant genes in experiment by running {\tt odp} or {\tt lrt}.
+
+<<tidy=FALSE, cache=TRUE>>=
+edge.odp <- odp(edgeObj, bs.its=100, verbose=FALSE)
+edge.lrt <- lrt(edgeObj, nullDistn="bootstrap", bs.its=10, verbose=FALSE)
+@
+
+Comparing the findings between both method:
+
+<<>>=
+summary(qvalue.obj(edge.odp))
+summary(qvalue.obj(edge.lrt))
+@
+
+
+In all three cases we notice that the optimal discovery method finds more significant genes. As shown in previous research by Storey (source), the ODP finds more significant genes for a fixed FDR when compared to the likelihood ratio test and other popular statistical methods.
+
+
+\section{Features}
+The \texttt{edgeSet} object inherits all methods from the \texttt{ExpressionSet} object. This makes the use of other packages written for ExprssionSet objects compatible with the edgeSet object. 
+
+Finally, there is a method in \texttt{edge} to implement supervised normalization of microarrays on the expression matrix and the function is called \texttt{edgeSNM} which is a wrapper for the {\tt snm} packages. Also, {\tt edge} has a method {\tt edgeSVA} to create surrogate variables to reduce dependence in significance analysis.
+
+\section*{Acknowledgements}
+This software development has been supported in part by funding from the National Institutes of Health and the Office of Naval Research.
+
+\bibliographystyle{acm}
+\bibliography{edgerefs}
+\end{document}
