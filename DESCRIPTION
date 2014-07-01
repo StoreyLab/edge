@@ -1,19 +1,22 @@
 Package: edge
+Type: Package
 Title: Extraction and Analysis of Differential Gene Expression
+Date: 2014-06-01
 Version: 0.99.0
-Author: John D. Storey <jstorey@princeton.edu> with contributions from Jeffrey 
-        Leek (>= 0.0), Sangsoon Woo (>= 2.0), Alan Dabney (< 2.0), and Eva 
-        Monsen (< 2.0).
+Author: John D. Storey <jstorey@princeton.edu>
+Maintainer: John D. Storey <jstorey@princeton.edu>
+biocViews: MultipleComparisons, DifferentialExpression, TimeCourse, Regression
 Description: The edge package is an integrated differential expression analysis 
              package. The differential expression analysis can be 
              adjusted by surrogate variables to account for potential 
-             confounding effects. Both static and timecourse differential 
+             confounding effects. Both static and time-course differential 
              expression analysis using the optimal discovery procedure are 
              supported. 
-Maintainer: John D. Storey <jstorey@princeton.edu>
-LazyData: true
-Depends: R(>= 2.10.0), Biobase
+VignetteBuilder: knitr
 Imports: methods, splines, sva, snm, qvalue, MASS
 Suggests: testthat
-License: GPL
+Depends: R(>= 2.10.0), Biobase
+URL: https://github.com/StoreyLab/edge
+LazyData: true
+License: LGPL
 Packaged: 2013-08-21 17:05:52 UTC; andy
