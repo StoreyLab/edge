@@ -166,7 +166,7 @@ setMethod("klClust",
 
 setMethod("summary",
           signature = signature(object="edgeSet"),
-          function(object) {
+          function(object, ...) {
             cat('\n')
             cat('ExpressionSet Summary', '\n', '\n')
             tmp <- as(object, "ExpressionSet")
@@ -175,9 +175,13 @@ setMethod("summary",
             cat('edge Analysis Summary', '\n', '\n')
             cat('Total number of arrays:', ncol(exprs(object)), '\n')
             cat('Total number of probes:', nrow(exprs(object)), '\n', '\n')
-          #  cat('Full model degrees of freedom:', df.model(object)$df.full, '\n')
-          #  cat('Null model degrees of freedom:',df.model(object)$df.null, '\n', '\n')
-            cat('Biological variables:', '\n'); models(object)
+            #  cat('Full model degrees of freedom:', df.model(object)$df.full, '\n')
+            #  cat('Null model degrees of freedom:',df.model(object)$df.null, '\n', '\n')
+            cat('Biological variables:', '\n')
+            cat('\tNull Model:')
+            print(nullModel(object))
+            cat('\n\tFull Model:')
+            print(fullModel(object))
             cat('\n') 
             if (length(object@individual) != 0) {
               cat('Individuals:', '\n')
@@ -203,7 +207,6 @@ setMethod("summary",
               cat("\n")
             }
           })
-
 setMethod("show",
           signature = signature(object="edgeSet"),
           function(object) {
@@ -217,8 +220,11 @@ setMethod("show",
             cat('Total number of probes:', nrow(exprs(object)), '\n', '\n')
            # cat('Full model degrees of freedom:', dfModel(object)$df.full, '\n')
            # cat('Null model degrees of freedom:',dfModel(object)$df.null, '\n', '\n')
-            cat('Biological variables:', '\n')
-            models(object)
+           cat('Biological variables:', '\n')
+           cat('\tNull Model: ')
+           print(nullModel(object))
+           cat('\tFull Model: ')
+           print(fullModel(object))
             cat('\n') 
             if (length(object@individual) != 0) {
               cat('Individuals:', '\n')
