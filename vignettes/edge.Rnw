@@ -159,15 +159,20 @@ To import the data:
 data(kidney)
 names(kidney)
 @
-There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. The two main covariates of interest for this example are the {\tt sex} and {\tt age} covariates. The {\tt sex} variable is whether the subject was male or female and the {\tt age} variable is the age of the patients. Lets view a histogram of the {\tt age} to get a better idea of data:
+There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. We will focus on the expression values of the cortex {\tt tissue} samples:
+<<crtx>>=
+sex <- kidney$sex[kidney$tissue == "c"]
+age <- kidney$age[kidney$tissue == "c"]
+kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+@
+The two main covariates of interest for this example are the {\tt sex} and {\tt age} covariates. The {\tt sex} variable is whether the subject was male or female and the {\tt age} variable is the age of the patients. Lets view a histogram of the {\tt age} to get a better idea of data:
 <<hist,echo=FALSE, fig.width=6, fig.height=4>>=
+library(ggplot2)
 qplot(age)
 @
 From the histogram, it is important to keep in mind that a majority of the patients appear to be older than 50. 
 
-In the {\tt kidney} experiment they were interested in finding the effect of age on gene expression. In this case, we handle the time variable, {\tt age}, by fitting a natural spline curve \cite{storey:etal:2005}.
-
-{\bfseries Step 1:} Create the alternative and null models:
+{\bfseries Step 1:} In the {\tt kidney} experiment they were interested in finding the effect of age on gene expression. In this case, we handle the time variable, {\tt age}, by fitting a natural spline curve \cite{storey:etal:2005}. The relevant models for the experiment can be written as
 <<kidneyModel>>=
 library(splines)
 nullMod <- ~-1 + sex
@@ -176,7 +181,7 @@ altMod <- ~-1 + sex + ns(age, intercept=FALSE, df=4)
 Where {\tt nullMod} is the null model and {\tt altMod} is the alternative model. The {\tt sex} covariate is an adjustment variable while {\tt age} is the biological variable of interest. It is important to note that it is necessary to include the adjustment variables in the formulation of the alternative models as done above.
 
 {\bfseries Step 2:} Once the alternative and null models have been decided, create an {\tt ExpressionSet} object:
-<<kidney_expSet, tidy=FALSE, eval=TRUE, dependson="import_data">>==
+<<kidney_expSet, tidy=FALSE, eval=TRUE, dependson=c("crtx","import_data")>>==
 library(edge)
 anonDf <- as(data.frame(age=age, sex=sex), "AnnotatedDataFrame")
 expSet <- ExpressionSet(assayData = kidexpr,
