@@ -26,7 +26,7 @@ is 100.}
 }
 \value{
 \code{odp} returns an \code{\linkS4class{edgeSet}} object with slot qvalue.obj as
-        \code{\link{qvalue}} object.
+\code{\link{qvalue}} object.
 }
 \description{
 \code{odp} performs the Optimal Discovery Procedure, which is a new approach for optimally performing

@@ -14,15 +14,15 @@ klClust(object, obj.edgeFit = NULL, n.mods = 50, ...)
 }
 \value{
 \code{klClust} returns a list:
- \itemize{
-   \item {mu.full: mean of clusters from full model}
-   \item {mu.null: mean of clusters from null model}
-   \item {sig.full: sd of clusters from full model}
-   \item {sig.null: sd of clusters from null model}
-   \item {n.per.mod: total members in each cluster}
-   \item {clustMembers: members for each gene}
+\itemize{
+\item {mu.full: mean of clusters from full model}
+\item {mu.null: mean of clusters from null model}
+\item {sig.full: sd of clusters from full model}
+\item {sig.null: sd of clusters from null model}
+\item {n.per.mod: total members in each cluster}
+\item {clustMembers: members for each gene}
 
-   }
+}
 }
 \description{
 \code{klClust} is an implementation of mODP that assigns genes to modules based

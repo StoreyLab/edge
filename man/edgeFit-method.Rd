@@ -64,7 +64,7 @@ Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance analy
 }
 \seealso{
 \code{\linkS4class{edgeFit}}, \code{\link{odp}} and
-         \code{\link{lrt}}
+\code{\link{lrt}}
 }
 \keyword{edgeFit}
 
