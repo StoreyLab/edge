@@ -64,32 +64,27 @@ help(package="edge")
 \noindent Please contact the authors directly with any issues regarding bugs. Otherwise, any questions or problems implementing {\tt edge} will most efficiently be addressed on the Bioconductor mailing list, \url{http://stat.ethz.ch/mailman/listinfo/bioconductor}.
 
 \section{Quick start guide}
-In order to get started using {\tt edge}, it is important to first put all of the experimental data in an {\tt ExpressionSet} object:
 
+Load all relevant data and use {\tt edgeModel} to create and {\tt edgeSet} object:
 <<make_eSet, echo=TRUE>>=
 library(edge)
 data(kidney)
 sex <- kidney$sex[kidney$tissue == "c"]
 age <- kidney$age[kidney$tissue == "c"]
 kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
-expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
+edgeObj <- edgeModel(data=kidexpr, adj.var=model.matrix(~sex), tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 
-Once the {\tt ExpressionSet} is created, the alternative and null hypothesis must be formulated based on the experiment. Given an {\tt ExpressionSet} object and the alternative and the null hypothesis, the {\tt odp} or {\tt lrt} function can be used as follows:
+The alternative and null hypothesis are formulated by {\tt edgeModel}. The {\tt odp} or {\tt lrt} function can be used as follows:
 
 <<quick_start_eSet, dependson="quick_start_eModel", eval=FALSE>>=
-# Create Models
-nullMod <- ~sex
-altMod <- ~sex + ns(age, df=3, intercept=FALSE)
-# Create edgeSet object from ExpressionSet object
-edgeObj <- edgeSet(expSet, full.model = fModel, null.model = nModel)
 # Optimal Discovery Procedure
 edgeODP <- odp(edgeObj)
 # Likelihood Ratio Test
 edgeLRT <- lrt(edgeObj)
 @
 
-In the above models, {\tt altMod} is the alternative hypothesis and {\tt nullMod} is the null hypothesis. The object {\tt edgeODP} and {\tt edgeLRT} contain a {\tt qvalue} object which is the main slot of interest that can accessed by the {\tt qvalue.obj} function. The following sections of the manual go through various case studies to show additional features of the {\tt edge} package.
+The object {\tt edgeODP} and {\tt edgeLRT} contain a {\tt qvalue} object which is the main slot of interest that can accessed by the {\tt qvalue.obj} function. The following sections of the manual go through various case studies to show additional features of the {\tt edge} package.
 
 \section{Objects in edge}
 \subsection{edgeSet}
@@ -122,10 +117,10 @@ The package offers great flexibility in model choice and experimentation. See {\
 
 The function {\tt edgeFit} fits a linear model to each gene and returns that information in an {\tt edgeFit} object that contains the following slots:
 \begin{itemize}
-\item {\tt fit.full}: fitted values for alternative model
-\item {\tt fit.null}: fitted values for null model
-\item {\tt res.full}: residuals for the alternative model
-\item {\tt res.null}: residuals for the null models
+\item {\tt fit.full}: fitted values from the alternative model
+\item {\tt fit.null}: fitted values from null model
+\item {\tt res.full}: residuals from the alternative model
+\item {\tt res.null}: residuals from the null model
 \item {\tt dH.full}: diagonal elements in the projection matrix for the full model
 \item {\tt beta.coef}: the coefficients for the full model
 \item {\tt stat.type}: statistic type used, either ``odp'' or ``lrt''
@@ -141,19 +136,21 @@ resNull(object)
 @
 
 See {\tt ?edgeFit} for more details on how to extract and set each slot of the object.
+
 \section{Examples}
+
 Three examples will be used to show the functionality of {\tt edge}. 
 In each example there will be a static, longitudinal and independent case study. It will become evident that in each case, the analysis procedure is similar and the only step that differs is the model setup.
 
 There are three main steps when using {\tt edge}:
 \begin{itemize}
-\item Write the alternative and null models of the experiment. In this manual they will be called {\tt altMod} and {\tt nullMod}. 
-\item Create an {\tt ExpressionSet} object and input the object along with the models in the {\tt edgeSet} function. 
+\item Load experimental data. Optionally, create an {\tt ExpressionSet} object. 
+\item Use {\tt edgeModel} to create an {\tt edgeSet} object. If an {\tt ExpressionSet} object is created use the {\tt edgeSet} function.
 \item Use functions {\tt odp} or {\tt lrt} to obtain the q-value object which is the slot of interest. The {\tt edgeFit} function can be used to extract information regarding the model fits.  
 \end{itemize}
 
 \subsection{Independent time course study}
-Gene expression measurements from kidney samples were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. 
+{\bfseries Step 1:} Gene expression measurements from kidney samples were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. 
 To import the data:
 <<import_data>>=
 data(kidney)
@@ -172,35 +169,36 @@ qplot(age)
 @
 From the histogram, it is important to keep in mind that a majority of the patients appear to be older than 50. 
 
-{\bfseries Step 1:} In the {\tt kidney} experiment they were interested in finding the effect of age on gene expression. In this case, we handle the time variable, {\tt age}, by fitting a natural spline curve \cite{storey:etal:2005}. The relevant models for the experiment can be written as
-<<kidneyModel>>=
-library(splines)
-nullMod <- ~-1 + sex
-altMod <- ~-1 + sex + ns(age, intercept=FALSE, df=4)
+{\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
+<<edgeModel, dependson="crtx">>=
+edgeObj <- edgeModel(data=kidexpr, adj.var=model.matrix(~sex), tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
 @
-Where {\tt nullMod} is the null model and {\tt altMod} is the alternative model. The {\tt sex} covariate is an adjustment variable while {\tt age} is the biological variable of interest. It is important to note that it is necessary to include the adjustment variables in the formulation of the alternative models as done above.
+Since the {\tt kidney} study is a time-course study the sampling method will be ``timecourse''. The adjustment variable in the study is {\tt sex} while the time variable is {\tt age}. A brief overview of the arguments of {\tt edgeModel}
+\begin{itemize}
+\item {\tt data} Matrix of expression values
+\item {\tt adj.var} Adjustment variables (matrix)
+\item {\tt tme} A vector containing the time variable in a time course study
+\item {\tt sampling} Can either be ``timecourse'' or ``static'' depending on the experiment
+\item {\tt basis.df} The degree of freedom for the spline basis
+\item {\tt basis.type} A spline curve is fitted to the {\tt tme} variable in a ``timecourse'' study. The type can be ``ncs`` (B-spline for a natural cubic spline) or ``poly'' (B-spline for a polynomial spline)
+\end{itemize}
 
-{\bfseries Step 2:} Once the alternative and null models have been decided, create an {\tt ExpressionSet} object:
-<<kidney_expSet, tidy=FALSE, eval=TRUE, dependson=c("crtx","import_data")>>==
-library(edge)
-anonDf <- as(data.frame(age=age, sex=sex), "AnnotatedDataFrame")
-expSet <- ExpressionSet(assayData = kidexpr,
-                        phenoData = anonDf)
-@
-{\tt expSet} contains the expression measurements and the covariates of the experiment. To access the expression values, one can use the function {\tt exprs(expSet)} or to access the covariates, {\tt pData(expSet)}. The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. 
-
-The function {\tt edgeSet} can be used to create an {\tt edgeSet} object from an {\tt ExpressionSet} object: 
-<<cr_edgeSet, eval=TRUE, dependson=c("kidneyModel","kidney_expSet")>>==
-edgeObj <- edgeSet(expSet, full.model=altMod, null.model=nullMod)
+Additional arguments can be viewed by typing {\tt ?edgeModel}. {\tt edgeSet} is the main object in the package and the slots can be viewed by:
+<<edgeObjSlots>>=
 slotNames(edgeObj)
 @
-The key slot in the object is the {\tt qvalue.obj} which should be the only empty slot. The other slots are directly related to the {\tt ExpressionSet} object, {\tt full.model} and {\tt null.model}. See the section on {\tt edgeSet} object for more details on these slots.
+The alternative and null models are automatically generated by {\tt edgemodel}. The alternative and null models can be accessed using 
+<<altnullmod>>=
+fullModel(edgeObj)
+nullModel(edgeObj)
+@
+The {\tt adj.var} corresponds to the adjustment variables and {\tt time.basis} corresponds to the time variable inputed in {\tt edgeModel}. The key slot in {\tt edgeObj} is the {\tt qvalue.obj} which should be the only empty slot. The other slots are directly related to the input data and hypothesis models. See the section on the {\tt edgeSet} object for more details on these slots.
 
 The {\tt summary} function summarizes the slots in the {\tt edgeSet} object:
 <<sum, eval=TRUE>>=
 summary(edgeObj)
 @
-\paragraph{Step 3:} Before running any significance analysis, lets view our model fits on the data. The {\tt edgeFit} function can be used to extract residuals and fitted values from the alternative and null models:
+\paragraph{Step 3:} Before running any significance analysis, lets view our model fits of the data. The {\tt edgeFit} function can be used to extract residuals and fitted values from the alternative and null models:
 <<tmp2>>=
 efObj <- edgeFit(edgeObj, stat.type="lrt")
 @
@@ -229,7 +227,7 @@ The slot of interest for significance analysis is the {\tt qvalue.obj} slot. To 
 <<qvalob>>=
 qval <- qvalue.obj(edgeLRT)
 @
-To visualize the results, {\tt plot} or {\tt hist} functions can be used on the {\tt qval}:
+To visualize the results, {\tt plot} or {\tt hist} functions can be used on {\tt qval}:
 <<fig.width=6, fig.height=4>>=
 plot(qval)
 hist(qval)
@@ -241,7 +239,7 @@ To use {\tt odp} on an {\tt edgeSet object}:
 <<kd_2,eval=TRUE, cache=FALSE,dependson="cr_edgeSet">>=
 edgeODP <- odp(edgeObj, bs.its=10, verbose=FALSE, n.mods=20)
 @
-The argument {\tt bs.its} controls the number of bootstrap iterations, {\tt verbose} prints the iteration step and {\tt n.mods} is the number of clusters formed. 
+The argument {\tt bs.its} controls the number of bootstrap iterations, {\tt verbose} prints the iteration step and {\tt n.mods} is the number of clusters formed. If {\tt n.mods} is equal to the number of genes than the full Optimal Discovery Procedures is used.
 
 To summarize the object using the {\tt odp} method:
 <<tt, dependson=c("kd_2", "kd_3")>>=
@@ -249,11 +247,47 @@ summary(edgeODP)
 @
 Using {\tt plot} and {\tt hist} functions on the {\tt qvalue} object:
 <<fig.width=6, fig.height=4>>=
-qval <- qvalue.obj(edgeLRT)
+qval <- qvalue.obj(edgeODP)
 plot(qval)
 hist(qval)
 @
 We notice that the optimal discovery method finds more significant genes. As shown in previous research by Storey \cite{storey:2007}, the ODP finds more significant genes for a fixed FDR when compared to the likelihood ratio test and other popular statistical methods.
+\subsection{Advanced topic: Using the ExpressionSet object}
+The {\tt ExpressionSet} object is another alternative to using {\tt edge} but requires a deeper understanding of R and statistics. Let's create an {\tt ExpressionSet} object from the {\tt kidney} dataset:  
+<<kidney_expSet, tidy=FALSE, eval=TRUE, dependson=c("crtx","import_data")>>==
+library(edge)
+anonDf <- as(data.frame(age=age, sex=sex), "AnnotatedDataFrame")
+expSet <- ExpressionSet(assayData = kidexpr,
+                        phenoData = anonDf)
+@
+{\tt expSet} contains the expression measurements and the covariates of the experiment. To access the expression values, one can use the function {\tt exprs(expSet)} or to access the covariates, {\tt pData(expSet)}. The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. 
+
+In the {\tt kidney} experiment they were interested in finding the effect of age on gene expression. In this case, we handle the time variable, {\tt age}, by fitting a natural spline curve \cite{storey:etal:2005}. The relevant models for the experiment can be written as
+<<kidneyModel>>=
+library(splines)
+nullMod <- ~-1 + sex
+altMod <- ~-1 + sex + ns(age, intercept=FALSE, df=4)
+@
+Where {\tt nullMod} is the null model and {\tt altMod} is the alternative model. The {\tt sex} covariate is an adjustment variable while {\tt age} is the biological variable of interest. It is important to note that it is necessary to include the adjustment variables in the formulation of the alternative models as done above.
+
+Having both {\tt expSet} and the hypothesis models, {\tt edgeSet} can then be used to create an {\tt edgeSet} object:
+<<cr_edgeSet, eval=TRUE, dependson=c("kidneyModel","kidney_expSet")>>==
+edgeObj <- edgeSet(expSet, full.model=altMod, null.model=nullMod)
+@
+
+We can now simply run {\tt odp}, {\tt lrt} or {\tt edgeFit} as in the previous example.
+
+\subsection{Using the sva package}
+{\tt edge} uses the sva package in the function {\tt edgeSVA}. An example of how to use this on the {\tt kidney} dataset:
+<<sva>>=
+newEdgeObj <- edgeSVA(edgeObj, n.sv=5, B=10)
+@
+A new {\tt edgeObj} is created that includes the surrogate variables in the null and full matrices from sva. To access the new matrices:
+<<sva_matrices>>=
+fullMod <- fullMatrix(newEdgeObj)
+nullMod <- nullMatrix(newEdgeObj)
+@
+See {\tt ?sva} for additional input parameters in {\tt edgeSVA}.
 
 \section*{Acknowledgements}
 This software development has been supported in part by funding from the National Institutes of Health and the Office of Naval Research.
