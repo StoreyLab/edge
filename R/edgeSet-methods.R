@@ -109,8 +109,8 @@ setMethod("lrt",
             # Initilizations
             nFull <- ncol(object@full.matrix)
             nNull <- ncol(object@null.matrix)
-            n <- ncol(edgeObj)
-            m <- nrow(edgeObj)
+            n <- ncol(object)
+            m <- nrow(object)
             if (!is.null(seed)) {
               set.seed(seed)
             }
