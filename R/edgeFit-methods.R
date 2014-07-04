@@ -16,8 +16,8 @@ setMethod("show",
           signature=signature(object="edgeFit"),
           function(object) {
             cat('\n'); cat('edgeFit Summary', '\n', '\n')
-            cat('Models:', '\n')
-            print(object@fitted.models)     
+          #  cat('Models:', '\n')
+          #  print(object@fitted.models)     
             cat('fit.full:', '\n')
             print(signif(object@fit.full[(1:min(2, nrow(object@fit.full))), ]), digits=3) 
             cat('\nfit.null:', '\n')

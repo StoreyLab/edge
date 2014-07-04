@@ -257,7 +257,7 @@ setClass("edgeSet", slots=c(null.model = "formula",
 #' John Storey, Jeffrey T. Leek, Andrew Bass
 #' 
 #' @seealso 
-#' \code{\link{edgeFit-methods}}
+#' \code{\link{edgeFit}}
 #' 
 #' @keywords 
 #' edgeFit-class
@@ -273,6 +273,5 @@ setClass("edgeFit", slots=c(fit.full = "matrix",
                             res.null = "matrix",
                             dH.full = "vector",
                             beta.coef = "matrix",
-                            fitted.models = "list",
                             stat.type = "character"),
          validity = edgeFitCheck)

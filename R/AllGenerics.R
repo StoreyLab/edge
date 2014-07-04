@@ -68,7 +68,8 @@
 #' @keywords lrt
 #'
 #' @rdname lrt-method
-#'
+#' @import Biobase
+#' @import methods
 #' @exportMethod lrt
 setGeneric("lrt", function(object, obj.edgeFit,
                            nullDistn=c("normal","bootstrap"), bs.its=100,
@@ -157,7 +158,6 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' @keywords odp
 #'
 #' @rdname odp-method
-#'
 #' @useDynLib edge odpScoreCluster kldistance
 #' @import qvalue MASS splines
 #' @exportMethod odp
@@ -174,6 +174,7 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #' @param object \code{\linkS4class{edgeSet}}
 #' @param obj.edgeFit edgeFit object.
 #' @param n.mods numeric- number of clusters.
+#' @param \dots additional parameters
 #'
 #'
 #' @details mODP utilizes a k-means clustering algorithm where genes are assigned
@@ -235,9 +236,7 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #' @seealso \code{\link{odp}}, \code{\link{edgeSet}} and \code{\link{edgeFit}}
 #'
 #' @rdname klClust-method
-#'
 #' @keywords klClust
-#'
 #' @exportMethod klClust
 setGeneric("klClust", function(object, obj.edgeFit=NULL, n.mods=50, ...)
   standardGeneric("klClust"))
@@ -292,16 +291,12 @@ setGeneric("klClust", function(object, obj.edgeFit=NULL, n.mods=50, ...)
 #'
 #' Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance analysis of time course microarray experiments. Proceedings of the National Academy of Sciences, 102: 12837-12842.
 #'
-#' @rdname edgeFit-method
-#'
 #' @seealso \code{\linkS4class{edgeFit}}, \code{\link{odp}} and
 #' \code{\link{lrt}}
 #'
-#'
 #' @author John Storey, Andrew Bass
-#'
+#' @rdname edgeFit-method
 #' @keywords edgeFit
-#'
 #' @exportMethod edgeFit
 setGeneric("edgeFit",
            function(object, stat.type=c("lrt", "odp")) {
@@ -341,12 +336,11 @@ setGeneric("edgeFit",
 #' # Optionally add individuals to experiment for kidney data not applicable
 #' edgeObj <- edgeSet(expSet, full.model=fModel, null.model=nModel, ind=factor(1:72))
 #'
-#' @rdname edgeSet-method
 #'
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
-#'
+#' @rdname edgeSet-method
 #' @keywords edgeSet
 #'
 #' @exportMethod edgeSet
@@ -392,12 +386,12 @@ setGeneric("edgeSet", function(object, full.model, null.model, individual=NULL) 
 #' @author John Storey, Andrew Bass
 #'
 #' @keywords edgeQvalue
-#'
+#' @rdname edgeQvalue-method
 #' @exportMethod edgeQvalue
 setGeneric("edgeQvalue", function(object, ...)
   standardGeneric("edgeQvalue"))
 
-#' Estimate surrogate variables from data based on models in edgeSet object
+#' Estimate surrogate variables 
 #'
 #' Runs \code{sva} on edgeSet object based on the null and full models in \code{\linkS4class{edgeSet}}
 #'
@@ -405,7 +399,7 @@ setGeneric("edgeQvalue", function(object, ...)
 #' @param ... Additional arguments for \code{\link{sva}}
 #'
 #' @return \code{edgeSVA} returns an \code{\linkS4class{edgeSet}} object.
-#'
+#' 
 #' @examples
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
@@ -423,17 +417,15 @@ setGeneric("edgeQvalue", function(object, ...)
 #' edgeObj <- edgeSet(expSet, full.model=fModel, null.model=nModel)
 #' edgeObj.sva <- edgeSVA(edgeObj)
 #'
-#' @rdname edgeSVA-method
-#'
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and \code{\link{lrt}}
 #'
 #' @references
 #' Leek JT, Storey JD (2007) Capturing Heterogeneity in Gene Expression Studies by Surrogate Variable Analysis. PLoS Genet 3(9): e161. doi:10.1371/journal.pgen.0030161
 #'
 #' @author John Storey, Andrew Bass
-#'
+#' @import sva
 #' @keywords edgeSVA
-#'
+#' @rdname edgeSVA-method
 #' @exportMethod edgeSVA
 setGeneric("edgeSVA", function(object, ...)
   standardGeneric("edgeSVA"))
@@ -460,16 +452,14 @@ setGeneric("edgeSVA", function(object, ...)
 #'
 #'
 #' # Run SNM using intensity-dependent adjustment variable
-#' nEdgeObj <- edgeSNM(edgeObj, int.var=singleChannel$int.var)
-#'
-#' @rdname edgeSNM-method
+#' nEdgeObj <- edgeSNM(edgeObj, int.var=singleChannel$int.var, verbose=FALSE, num.iter=1)
 #'
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
-#'
+#' @rdname edgeSNM-method
 #' @keywords edgeSNM
-#'
+#' @import snm
 #' @exportMethod edgeSNM
 setGeneric("edgeSNM", function(object, int.var, ...) standardGeneric("edgeSNM"))
 #' Full model equation from edgeSet object
@@ -521,7 +511,6 @@ setGeneric("fullModel<-", function(object, value) {
 #' @keywords nullModel, nullModel<-
 #' 
 #' @rdname nullModel-method
-#' 
 #' @exportMethod nullModel
 setGeneric("nullModel", function(object) standardGeneric("nullModel"))
 
@@ -599,11 +588,10 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' These generic functions access and set the \code{qvalue} object in the
 #' \code{\linkS4class{edgeSet}} object.
 #'
-#' @usage qvalue.obj(object, ...)
+#' @usage qvalue.obj(object)
 #' 
 #' @param object \code{\linkS4class{edgeSet}}
 #' @param value S3 \code{object}: \code{\link{qvalue}} object
-#' @param \dots Additional arguments used in \code{\link{qvalue}}.
 #' 
 #' @return  \code{qvalue.obj} returns a \code{\link{qvalue}} object.
 #'     
@@ -666,7 +654,7 @@ setGeneric("individual<-", function(object, value) {
 #'
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso \code{\link{edgeFit}}, \code{\link{edgeSet-class}}
+#' @seealso \code{\link{edgeFit}}, \code{\linkS4class{edgeSet}}
 #' 
 #' @keywords modelFits
 #' 
@@ -724,7 +712,7 @@ setGeneric("sType", function(object) standardGeneric("sType"))
 #'
 #' @param object \code{\linkS4class{edgeFit}}
 #'  
-#' @usage fitFull(object, ...)
+#' @usage fitFull(object)
 #' 
 #' @return \code{fitFull} returns a matrix of fitted values from full model.
 #'
@@ -737,7 +725,7 @@ setGeneric("sType", function(object) standardGeneric("sType"))
 #' @rdname fitFull-method
 #' 
 #' @exportMethod fitFull
-setGeneric("fitFull", function(object, ...) standardGeneric("fitFull"))
+setGeneric("fitFull", function(object) standardGeneric("fitFull"))
 
 #' Fitted data from the null model
 #'
@@ -745,7 +733,7 @@ setGeneric("fitFull", function(object, ...) standardGeneric("fitFull"))
 #'
 #' @param object \code{\linkS4class{edgeFit}}
 #' 
-#' @usage fitNull(object, ...)
+#' @usage fitNull(object)
 #' 
 #' @return \code{fitFull} returns a matrix of fitted values from null model.
 #'
@@ -758,7 +746,7 @@ setGeneric("fitFull", function(object, ...) standardGeneric("fitFull"))
 #' @rdname fitNull-method
 #' 
 #' @exportMethod fitNull  
-setGeneric("fitNull", function(object, ...) standardGeneric("fitNull"))
+setGeneric("fitNull", function(object) standardGeneric("fitNull"))
 
 #' Residuals of full model fit
 #'

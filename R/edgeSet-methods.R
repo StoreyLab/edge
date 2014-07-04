@@ -1,4 +1,3 @@
-
 setMethod("edgeFit",        
           "edgeSet",
           function(object, stat.type = c("lrt", "odp")) {
@@ -42,12 +41,11 @@ setMethod("edgeFit",
             efObj <- new("edgeFit", fit.full = fitFull, fit.null = fitNull, 
                          dH.full = dHFull, res.full = resFull, res.null = resNull, 
                          beta.coef = B.coef, 
-                         fitted.models = list(full.model = object@full.model,
-                                              null.model = object@null.model),
+                         #fitted.models = list(full.model = object@full.model,
+                        #                      null.model = object@null.model),
                          stat.type = stat.var)
             return(efObj) 
           })
-
 setMethod("odp", 
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
           function(object, obj.edgeFit, odp.parms = NULL, bs.its = 100, 
@@ -62,7 +60,6 @@ setMethod("odp",
                            verbose = verbose, ...)
             return(results)
           })
-
 setMethod("odp",
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
           function(object, obj.edgeFit, odp.parms = NULL, bs.its = 100, 
@@ -91,7 +88,6 @@ setMethod("odp",
             qvalue.obj(object) <- qvalue(p = pval, ...)
             return(object)
           })
-
 setMethod("lrt", 
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
           function(object, obj.edgeFit, nullDistn = c("normal", "bootstrap"), 
@@ -106,7 +102,6 @@ setMethod("lrt",
                            verbose = verbose, ...)
             return(results)
           })
-
 setMethod("lrt",
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
           function(object, obj.edgeFit, nullDistn = c("normal", "bootstrap"), 
@@ -145,7 +140,6 @@ setMethod("lrt",
               return(object)
             }    
           })
-
 setMethod("klClust",
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
           function(object, obj.edgeFit,  n.mods = 50, ...)  {
@@ -154,7 +148,6 @@ setMethod("klClust",
                                n.mods = n.mods, ...)
             return(results)
           })
-
 setMethod("klClust", 
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
           function(object, obj.edgeFit, n.mods = 50, ...) {
@@ -163,7 +156,6 @@ setMethod("klClust",
             return(mod.parms(obj.edgeFit, 
                              clMembers = mod.member))
           })
-
 setMethod("summary",
           signature = signature(object="edgeSet"),
           function(object, ...) {
@@ -252,7 +244,6 @@ setMethod("show",
               cat("\n")
             }
           })
-
 setMethod("edgeQvalue",
           signature = signature(object="edgeSet"),
           function(object, ...) {
@@ -269,13 +260,13 @@ setMethod("edgeSVA",
           function(object, ...) {
             full.matrix <- object@full.matrix
             null.matrix <- object@null.matrix
-            full.matrix <- full.matrix - projMatrix(null.matrix) %*% full.matrix 
-            full.matrix <- as.matrix(rm.zero.cols(full.matrix))
+          #  full.matrix <- full.matrix - projMatrix(null.matrix) %*% full.matrix 
+          #  full.matrix <- as.matrix(rm.zero.cols(full.matrix))
             sv.sva <- sva(exprs(object),
                           mod0 = null.matrix,
                           mod = full.matrix, ...)$sv
-            null.matrix(object) <- cbind(sv.sva, object@null.matrix)
-            full.matrix(object) <- cbind(sv.sva, object@full.matrix)
+            nullMatrix(object) <- cbind(sv.sva, object@null.matrix)
+            fullMatrix(object) <- cbind(sv.sva, object@full.matrix)
             validObject(object)
             object
           })
@@ -287,7 +278,7 @@ setMethod("edgeSNM",
             null.matrix <- object@null.matrix
             full.matrix <- full.matrix - projMatrix(null.matrix) %*% full.matrix
             full.matrix <- as.matrix(rm.zero.cols(full.matrix))
-            null.matrix(object) <- snm(exprs(object),
+            nullMatrix(object) <- snm(exprs(object),
                                        bio.var = full.matrix,
                                        adj.var = null.matrix, 
                                        int.var = int.var, ...)$norm.dat
