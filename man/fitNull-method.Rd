@@ -3,7 +3,7 @@
 \alias{fitNull}
 \title{Fitted data from the null model}
 \usage{
-fitNull(object, ...)
+fitNull(object)
 }
 \arguments{
 \item{object}{\code{\linkS4class{edgeFit}}}

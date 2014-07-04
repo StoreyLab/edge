@@ -27,7 +27,7 @@ edgeObj <- edgeModel(data=singleChannel$raw.data, sampling="static", bio.var=sin
 
 
 # Run SNM using intensity-dependent adjustment variable
-nEdgeObj <- edgeSNM(edgeObj, int.var=singleChannel$int.var)
+nEdgeObj <- edgeSNM(edgeObj, int.var=singleChannel$int.var, verbose=FALSE, num.iter=1)
 }
 \author{
 John Storey, Andrew Bass

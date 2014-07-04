@@ -4,7 +4,7 @@
 \alias{qvalue.obj<-}
 \title{qvalue object in experiment}
 \usage{
-qvalue.obj(object, ...)
+qvalue.obj(object)
 
 qvalue.obj(object) <- value
 }
@@ -12,8 +12,6 @@ qvalue.obj(object) <- value
 \item{object}{\code{\linkS4class{edgeSet}}}
 
 \item{value}{S3 \code{object}: \code{\link{qvalue}} object}
-
-\item{\dots}{Additional arguments used in \code{\link{qvalue}}.}
 }
 \value{
 \code{qvalue.obj} returns a \code{\link{qvalue}} object.

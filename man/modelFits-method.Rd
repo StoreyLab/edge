@@ -18,7 +18,7 @@ Fitted models for an \code{\linkS4class{edgeFit}} object.
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\link{edgeFit}}, \code{\link{edgeSet-class}}
+\code{\link{edgeFit}}, \code{\linkS4class{edgeSet}}
 }
 \keyword{modelFits}
 

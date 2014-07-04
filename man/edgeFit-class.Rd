@@ -56,7 +56,7 @@ specified.
 John Storey, Jeffrey T. Leek, Andrew Bass
 }
 \seealso{
-\code{\link{edgeFit-methods}}
+\code{\link{edgeFit}}
 }
 \keyword{edgeFit-class}
 

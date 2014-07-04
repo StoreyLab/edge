@@ -3,7 +3,7 @@
 \alias{fitFull}
 \title{Fitted data from the full model}
 \usage{
-fitFull(object, ...)
+fitFull(object)
 }
 \arguments{
 \item{object}{\code{\linkS4class{edgeFit}}}

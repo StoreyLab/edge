@@ -11,6 +11,8 @@ klClust(object, obj.edgeFit = NULL, n.mods = 50, ...)
 \item{obj.edgeFit}{edgeFit object.}
 
 \item{n.mods}{numeric- number of clusters.}
+
+\item{\dots}{additional parameters}
 }
 \value{
 \code{klClust} returns a list:
