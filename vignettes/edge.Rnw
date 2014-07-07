@@ -65,7 +65,7 @@ help(package="edge")
 
 \section{Quick start guide}
 
-Load all relevant data and use {\tt edgeModel} to create and {\tt edgeSet} object:
+Load all relevant data and use {\tt edgeModel} to create an {\tt edgeSet} object:
 <<make_eSet, echo=TRUE>>=
 library(edge)
 data(kidney)
@@ -98,7 +98,7 @@ The main object in {\tt edge} is the {\tt edgeSet} object and it contains the fo
 \item {\tt qvalue.obj}: {\tt qvalue} list
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
-As an example of how to access and set the slots of an {\tt edgeObj} lets say we are interested in changing the alternative model to include the variable {\tt cov}. The current models can be accessed by:
+As an example of how to access and set the slots of an {\tt edgeObj} lets say we are interested in changing the alternative model to just include the variable {\tt cov}. The current models can be accessed by:
 <<null_mod2, eval=FALSE>>=
 nullModel(object)
 fullModel(object)
@@ -252,6 +252,19 @@ plot(qval)
 hist(qval)
 @
 We notice that the optimal discovery method finds more significant genes. As shown in previous research by Storey \cite{storey:2007}, the ODP finds more significant genes for a fixed FDR when compared to the likelihood ratio test and other popular statistical methods.
+
+\subsection{Using the sva package}
+{\tt edge} uses the sva package in the function {\tt edgeSVA}. An example of how to use this on the {\tt kidney} dataset:
+<<sva>>=
+newEdgeObj <- edgeSVA(edgeObj, n.sv=5, B=10)
+@
+A new {\tt edgeObj} is created that includes the surrogate variables in the null and full matrices from sva. To access the new matrices:
+<<sva_matrices>>=
+fullMod <- fullMatrix(newEdgeObj)
+nullMod <- nullMatrix(newEdgeObj)
+@
+See {\tt ?sva} for additional input parameters in {\tt edgeSVA}.
+
 \subsection{Advanced topic: Using the ExpressionSet object}
 The {\tt ExpressionSet} object is another alternative to using {\tt edge} but requires a deeper understanding of R and statistics. Let's create an {\tt ExpressionSet} object from the {\tt kidney} dataset:  
 <<kidney_expSet, tidy=FALSE, eval=TRUE, dependson=c("crtx","import_data")>>==
@@ -276,19 +289,6 @@ edgeObj <- edgeSet(expSet, full.model=altMod, null.model=nullMod)
 @
 
 We can now simply run {\tt odp}, {\tt lrt} or {\tt edgeFit} as in the previous example.
-
-\subsection{Using the sva package}
-{\tt edge} uses the sva package in the function {\tt edgeSVA}. An example of how to use this on the {\tt kidney} dataset:
-<<sva>>=
-newEdgeObj <- edgeSVA(edgeObj, n.sv=5, B=10)
-@
-A new {\tt edgeObj} is created that includes the surrogate variables in the null and full matrices from sva. To access the new matrices:
-<<sva_matrices>>=
-fullMod <- fullMatrix(newEdgeObj)
-nullMod <- nullMatrix(newEdgeObj)
-@
-See {\tt ?sva} for additional input parameters in {\tt edgeSVA}.
-
 \section*{Acknowledgements}
 This software development has been supported in part by funding from the National Institutes of Health and the Office of Naval Research.
 
