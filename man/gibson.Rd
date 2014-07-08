@@ -16,8 +16,10 @@ data(gibson)
 
 \value{
 A list called \code{gibson} containing:
-  \item{covar}{A 4 rows by 46 columns data frame describing the study design.}
-  \item{exprdat}{A 2000 rows by 46 columns matrix of gene expression values.}
+  \item{batch}{Batches in experiment.}
+  \item{location}{Location of Moroccan Amazigh groups.}
+  \item{gender}{Gender of individuals.}
+  \item{gibexpr}{A 2000 rows by 46 columns matrix of gene expression values.}
 }
 
 \references{
@@ -30,8 +32,8 @@ A list called \code{gibson} containing:
 data(gibson)
 require(splines)
 # Create an ExpressionSet
-covar = data.frame(t(gibson$covar))
-expSet <- ExpressionSet(assayData = gibson$exprdat, phenoData = as(covar, "AnnotatedDataFrame"))
+covar <- data.frame(Batch=gibson$batch, Gender=gibson$gender, Location=gibson$location)
+expSet <- ExpressionSet(assayData = gibexpr, phenoData = as(covar, "AnnotatedDataFrame"))
 
 # Create edgeSet for experiment- static experiment
 mNull <- ~Gender + Batch

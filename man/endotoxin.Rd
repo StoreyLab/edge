@@ -14,10 +14,10 @@
 
 \value{
 A list called \code{endotoxin} containing:
-\item{expr}{A 5000 rows by 46 columns data frame containing expression values.}
+\item{endoexpr}{A 5000 rows by 46 columns data frame containing expression values.}
 \item{class}{A vector of length 46 containing information about which individuals
 were given endotoxin}
-\item{individual}{A vector of length 46 providing indexing measurements for each
+\item{ind}{A vector of length 46 providing indexing measurements for each
 individual in the experiment.}
 \item{time}{A vector of length 46 indicating time measurements.}
 }
@@ -33,16 +33,14 @@ individual in the experiment.}
 require(splines)
 data(endotoxin)
 # Create ExpressionSet object
-expr <- endotoxin$expr
-colnames(expr) <- NULL
-expSet <- ExpressionSet(assayData = expr, phenoData = as(data.frame(individual=endotoxin$individual, time=endotoxin$time, class=endotoxin$class), "AnnotatedDataFrame"))
+expSet <- ExpressionSet(assayData = endotoxin$endoexpr, phenoData = as(data.frame(individual=endotoxin$ind, time=endotoxin$time, class=endotoxin$class), "AnnotatedDataFrame"))
 
 # Formulate null and full models in experiement ... Note interaction term is a way of taking into account group effects
 mNull <- ~-1 + ns(time, df=4, intercept = FALSE)
 mFull <- ~-1 + ns(time, df=4, intercept = FALSE) + ns(time, df=4, intercept = FALSE):class + class
 
 # Create edgeSet object
-edgeObj <- edgeSet(expSet, full.model = mFull, null.model = mNull, individual=endotoxin$individual)
+edgeObj <- edgeSet(expSet, full.model = mFull, null.model = mNull, individual=endotoxin$ind)
 
 # Perform ODP/lrt statistic to determine significant genes in study
 edge.odp <- odp(edgeObj, bs.its=10)
