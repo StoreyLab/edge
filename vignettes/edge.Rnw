@@ -268,8 +268,8 @@ names(endotoxin)
 There are a few covariates in this data set: {\tt expr}, {\tt class}, {\tt individual}, and {\tt time}. There are 8 individuals in the experiment ({\tt ind}) that were sampled at multiple time points ({\tt time}) that were either ``endotoxin'' or ``control'' ({\tt class}). The {\tt expr} variable contains the expression values of the experiment.
  
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
-<<edgeModel_endo, dependson="crtx_endo">>=
-edgeObj <- edgeModel(data=expr, ind=ind, tme=time, grp=class, sampling="timecourse", basis.type="ncs", basis.df=4)
+<<edgeModel_endo>>=
+edgeObj <- edgeModel(data=endotoxin$endoexpr, ind=endotoxin$ind, tme=endotoxin$time, grp=endotoxin$class, sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 The {\tt endotoxin} experiment is a time-course study so the {\tt sampling} argument will be ``timecourse''. The {\tt tme} argument is for the time variable in the experiment and the {\tt ind} argument is to identify which observations corresponds what individuals. Since the {\tt sampling} method is ``timecourse'', we fit a spline curve described by variables {\tt basis.type} and {\tt basis.df}. A brief overview of the arguments of {\tt edgeModel}
 \begin{itemize}
@@ -309,8 +309,7 @@ fitVals <- fitFull(efObj)
 The fitted values of the first gene are shown below:
 <<fig.height=4, fig.width=6, echo=FALSE>>=
 library(ggplot2)
-class <- as.factor(cls) 
-qplot(tme, fitVals[1,], color=class, ylab="expression", xlab="time")
+qplot(endotoxin$time, fitVals[1,], color=endotoxin$class, ylab="expression", xlab="time")
 @
 
 The user can either use the function {\tt odp} or {\tt lrt} to get the {\tt qvalue} object. The {\tt lrt} function performs a likelihood ratio test to determine p-values. If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the data set follows an F-distribution. 
@@ -360,12 +359,13 @@ hist(qval)
 To import the data:
 <<import_data_gib>>=
 data(gibson)
+names(gibson)
 @
 There are a few variables in this data set: {\tt batch}, {\tt expr}, {\tt gender}, and {\tt location}. There are three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. There are three locations where individuals were sampled ({\tt location}): ``VILLAGE'', ``DESERT'' and ``AGADIR''. At each location there were either ``males'' or ``females'' ({\tt gender}) and there were different {\tt batches}. The {\tt expr} variable contains the expression matrix of the experiment.
  
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
 <<edgeModel_gib, dependson="crtx_gib">>=
-edgeObj <- edgeModel(data=expr, adj.var=model.matrix(~batch + gender), grp=location, sampling="static")
+edgeObj <- edgeModel(data=gibson$gibexpr, adj.var=model.matrix(~gibson$batch + gibson$gender), grp=gibson$location, sampling="static")
 @
 
 The {\tt gibson} study is a static experiment so the {\tt sampling} argument will be ``static''. The {\tt grp} argument is for the location variable in the experiment and the {\tt adj.var} argument is the adjustment variables are assigned. The {\tt adj.var} must be in {\tt model.matrix} form. A brief overview of the arguments of {\tt edgeModel}:
@@ -402,8 +402,8 @@ fitVals <- fitFull(efObj)
 The fitted values of the first gene are shown below:
 <<fig.height=4, fig.width=6, echo=FALSE>>=
 library(ggplot2)
-gender <- as.factor(gender) 
-location = as.matrix(location)
+gender <- as.factor(gibson$gender) 
+location = as.matrix(gibson$location)
 qplot(as.factor(as.matrix(location)), fitVals[304,], geom="boxplot", colour=gender, xlab= "location", ylab="expression")
 @
 We can see that with our alternative model chosen, the expression goes up and down as the kidney ages for this particular gene. 
