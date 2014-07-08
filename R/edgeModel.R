@@ -59,8 +59,8 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
       adj.var = matrix(adj.var, ncol=1)
     }
     # Create models
-    fmod <- ~-1 + adj.var + bio.var
-    nmod <- ~-1 + adj.var
+    fmod <- ~adj.var + bio.var
+    nmod <- ~adj.var
     pdat <- cbind(adj.var, bio.var)
   } else {
     sampling <- match.arg(sampling, choices=c("static", "timecourse"))
@@ -74,15 +74,15 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
     }
     g <- length(unique(grp))
     
-    if (!is.null(adj.var)) {
-      if (is.vector(adj.var)) {
-        adj.var <- matrix(adj.var, ncol=1)
-      }
-      intercept <- as.logical(max(apply(adj.var, 2, function(x) length(unique(x))) == 1))
-      if (!intercept) {
-        adj.var <- cbind(rep(1, n), adj.var)
-      }
-    }
+  #  if (!is.null(adj.var)) {
+  #    if (is.vector(adj.var)) {
+  #      adj.var <- matrix(adj.var, ncol=1)
+  #    }
+  #    intercept <- as.logical(max(apply(adj.var, 2, function(x) length(unique(x))) == 1))
+  #    if (!intercept) {
+  #      adj.var <- cbind(rep(1, n), adj.var)
+  #    }
+  #  }
    # if (is.null(adj.var)) {
     #  adj.var <- matrix(rep(1, n), ncol=1)
    # }   
@@ -102,8 +102,13 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
       stop("grp must have more than one unique value for static sampling.")
     }
     # Create models for static
-    fmod <- ~-1 + adj.var + grp
-    nmod <- ~-1 + adj.var  
+    if (is.null(adj.var)) {
+      nmod <- ~1 
+      fmod <- ~grp
+    } else {   
+      fmod <- ~adj.var + grp
+      nmod <- ~adj.var  
+    }
     pdat <- cbind(adj.var, grp)
   }
   #need to get basis.df if it is NULL
@@ -118,17 +123,22 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
     }
     if (g == 1) {
       # time course with no groups
-      fmod <- ~-1 + adj.var + time.basis
-      nmod <- ~-1 + adj.var
-      pdat <- cbind(adj.var,  time.basis)   
+      if (is.null(adj.var)) {
+        nmod <- ~1 
+        fmod <- ~time.basis
+      } else {
+        fmod <- ~adj.var + time.basis
+        nmod <- ~adj.var
+      }  
+      pdat <- cbind(adj.var,  time.basis) 
     } else {
       # time course with groups
       if (is.null(adj.var)) {
-        nmod <- ~-1 + grp + time.basis 
-        fmod <- ~-1 + grp + time.basis + time.basis:grp
+        nmod <- ~grp + time.basis 
+        fmod <- ~grp + time.basis + time.basis:grp
       } else {
-        nmod <- ~-1 + adj.var + grp + time.basis 
-        fmod <- ~-1 + adj.var + grp + time.basis + time.basis:grp
+        nmod <- ~adj.var + grp + time.basis 
+        fmod <- ~adj.var + grp + time.basis + time.basis:grp
       }
       pdat <- cbind(adj.var, as.matrix(grp), time.basis)   
     }
