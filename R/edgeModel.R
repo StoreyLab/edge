@@ -83,19 +83,19 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
         adj.var <- cbind(rep(1, n), adj.var)
       }
     }
-    if (is.null(adj.var)) {
-      adj.var <- matrix(rep(1, n), ncol=1)
-    }   
-    if (!is.null(ind)) {
-      if (is.vector(ind)) {
-        ind <- matrix(ind, ncol=1)
-      }
-      ind2 <- NULL
-      for (i in 1:ncol(ind)) {
-        ind2 <- cbind(ind2, model.matrix(~ -1 + as.factor(ind[, i])))
-      }
-      ind <- ind2
-    } 
+   # if (is.null(adj.var)) {
+    #  adj.var <- matrix(rep(1, n), ncol=1)
+   # }   
+    #if (!is.null(ind)) {
+    #  if (is.vector(ind)) {
+    #    ind <- matrix(ind, ncol=1)
+    #  }
+    #  ind2 <- NULL
+    #  for (i in 1:ncol(ind)) {
+    #    ind2 <- cbind(ind2, model.matrix(~ -1 + as.factor(ind[, i])))
+    #  }
+     # ind <- ind2
+    #} 
   }
   if (sampling == "static") {
     if (g==1) {
@@ -123,14 +123,19 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
       pdat <- cbind(adj.var,  time.basis)   
     } else {
       # time course with groups
-      nmod <- ~-1 + adj.var + grp + time.basis 
-      fmod <- ~-1 + adj.var + grp + time.basis + time.basis:grp
+      if (is.null(adj.var)) {
+        nmod <- ~-1 + grp + time.basis 
+        fmod <- ~-1 + grp + time.basis + time.basis:grp
+      } else {
+        nmod <- ~-1 + adj.var + grp + time.basis 
+        fmod <- ~-1 + adj.var + grp + time.basis + time.basis:grp
+      }
       pdat <- cbind(adj.var, as.matrix(grp), time.basis)   
     }
   }
   expSet <- new("ExpressionSet")
   pData(expSet) <- data.frame(pdat)
   exprs(expSet) <- as.matrix(data)
-  edgeObj <- edgeSet(expSet, full.model=fmod, null.model=nmod, individual=ind)
+  edgeObj <- edgeSet(expSet, full.model=fmod, null.model=nmod, individual=(ind))
   return(edgeObj)  
 }

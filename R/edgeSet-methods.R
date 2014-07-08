@@ -178,8 +178,7 @@ setMethod("summary",
             if (length(object@individual) != 0) {
               cat('Individuals:', '\n')
               ind <- as.numeric(object@individual)
-              print(matrix(apply(((1:length(ind)) * t((ind))), 2, sum), 
-                           nrow = 1))
+              print(individual(object))
               cat('\n')
             }
             cat('.......', '\n', '\n')
