@@ -15,7 +15,7 @@
 \nobibliography*
 
 
-\Sexpr{library(knitr); opts_chunk$set(tidy=TRUE, cache=TRUE, warning=FALSE, message=FALSE,fig.align='center')}
+\Sexpr{library(knitr); opts_chunk$set(tidy=TRUE, cache=FALSE, warning=FALSE, message=FALSE,fig.align='center')}
 
 \begin{document}
 
