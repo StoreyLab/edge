@@ -68,10 +68,10 @@ Load all relevant data and use {\tt edgeModel} to create an {\tt edgeSet} object
 <<make_eSet, echo=TRUE>>=
 library(edge)
 data(kidney)
-sex <- kidney$sex[kidney$tissue == "c"]
-age <- kidney$age[kidney$tissue == "c"]
-kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
-edgeObj <- edgeModel(data=kidexpr, adj.var=model.matrix(~sex), tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
+kidexpr <- kidney$kidexpr
+age <- kidney$age
+sex <- kidney$sex
+edgeObj <- edgeModel(data=kidney$kidexpr, adj.var=kidney$sex, tme=kidney$age, sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 
 The alternative and null hypothesis are formulated by {\tt edgeModel}. The {\tt odp} or {\tt lrt} function can be used as follows:
