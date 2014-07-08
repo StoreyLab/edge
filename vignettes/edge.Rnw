@@ -21,7 +21,6 @@
 
 <<foo,cache=FALSE,include=FALSE,echo=FALSE>>=
 library(edge)
-library(splines)
 options(keep.source = TRUE, width = 48)
 foo <- packageDescription("edge")
 @
@@ -33,7 +32,7 @@ foo <- packageDescription("edge")
 \newpage
 \section{Introduction}
 
-{\tt edge} is a package for significance analysis of DNA micro-array experiments and is able to identify genes that are deferentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). There are a number of existing software packages that perform significance analysis but {\tt edge} can use the odp-statistic from the Optimal Discovery Procedure (ODP) for significance testing. Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP uses information across all genes to test for differential expression. 
+{\tt edge} is a package for significance analysis of DNA micro-array experiments and is able to identify genes that are differentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). There are already a number of existing software packages that perform significance analysis but {\tt edge} can use the odp-statistic from the Optimal Discovery Procedure (ODP) for significance testing. Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP uses information across all genes to test for differential expression. 
 
 The improvements in power are substantial; Figure 1 shows a comparison between edge and five leading software packages, based on a well-known breast cancer expression study (Hedenfalk et al. 2001). In addition to identifying deferentially expressed genes, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue}. 
 
@@ -134,7 +133,10 @@ Similarly, to access the full and null residuals:
 resFull(object)
 resNull(object)
 @
-
+A summary of the object can be displayed by:
+<<fresSum, eval=FALSE>>=
+summary(object)
+@
 See {\tt ?edgeFit} for more details on how to extract and set each slot of the object.
 
 \section{Examples}
@@ -253,7 +255,201 @@ hist(qval)
 @
 We notice that the optimal discovery method finds more significant genes. As shown in previous research by Storey \cite{storey:2007}, the ODP finds more significant genes for a fixed FDR when compared to the likelihood ratio test and other popular statistical methods.
 
-\subsection{Using the sva package}
+
+\subsection{Longitudinal time course study}
+
+{\bfseries Step 1:} The endotoxin dataset provide gene expression measurements in an endotoxin study where four subjects were given endotoxin and four subjects were given a placebo. Blood samples were collected and leukocytes were isolated from the samples before infusion and measurement were recorded at times 2, 4, 6, 9, 24 hours. We are interested in identifying genes that vary over time between the endotoxin and control groups. 
+
+To import the data:
+<<import_data_endo>>=
+data(endotoxin)
+names(endotoxin)
+@
+There are a few covariates in this data set: {\tt expr}, {\tt class}, {\tt individual}, and {\tt time}. There are 8 individuals in the experiment ({\tt ind}) that were sampled at multiple time points ({\tt time}) that were either ``endotoxin'' or ``control'' ({\tt class}). The {\tt expr} variable contains the expression values of the experiment.
+ 
+{\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
+<<edgeModel_endo, dependson="crtx_endo">>=
+edgeObj <- edgeModel(data=expr, ind=ind, tme=time, grp=class, sampling="timecourse", basis.type="ncs", basis.df=4)
+@
+The {\tt endotoxin} experiment is a time-course study so the {\tt sampling} argument will be ``timecourse''. The {\tt tme} argument is for the time variable in the experiment and the {\tt ind} argument is to identify which observations corresponds what individuals. Since the {\tt sampling} method is ``timecourse'', we fit a spline curve described by variables {\tt basis.type} and {\tt basis.df}. A brief overview of the arguments of {\tt edgeModel}
+\begin{itemize}
+\item {\tt data} Matrix of expression values
+\item {\tt adj.var} Adjustment variables (matrix)
+\item {\tt ind} Vector describing what observations belong to which individuals in the experiment
+\item {\tt grp} Numerical vector describing which group each observation belong (i.e ``control'' or ``endotoxin'')
+\item {\tt tme} A vector containing the time variable in a time course study
+\item {\tt sampling} Can either be ``timecourse'' or ``static'' depending on the experiment
+\item {\tt basis.df} The degree of freedom for the spline basis
+\item {\tt basis.type} A spline curve is fitted to the {\tt tme} variable in a ``timecourse'' study. The type can be ``ncs`` (B-spline for a natural cubic spline) or ``poly'' (B-spline for a polynomial spline)
+\end{itemize}
+
+Additional arguments can be viewed by typing {\tt ?edgeModel}. {\tt edgeSet} is the main object in the package and the slots can be viewed by:
+<<edgeObjSlots_endo>>=
+slotNames(edgeObj)
+@
+The alternative and null models are automatically generated by {\tt edgeModel}. The alternative and null models can be accessed using 
+<<altnullmod_endo>>=
+fullModel(edgeObj)
+nullModel(edgeObj)
+@
+The {\tt adj.var} corresponds to the adjustment variables, the {\tt time.basis} corresponds to the time variable and the {\tt grp} corresponds to the treatment variable inputed in {\tt edgeModel}. The key slot in {\tt edgeObj} is the {\tt qvalue.obj} which should be the only empty slot. The other slots are directly related to the input data and hypothesis models. See the section on the {\tt edgeSet} object for more details on these slots.
+
+The {\tt summary} function summarizes the slots in the {\tt edgeSet} object:
+<<sum_endo, eval=TRUE>>=
+summary(edgeObj)
+@
+\paragraph{Step 3:} Before running any significance analysis, lets view our model fits of the data. The {\tt edgeFit} function can be used to extract residuals and fitted values from the alternative and null models:
+<<tmp2_endo>>=
+efObj <- edgeFit(edgeObj, stat.type="lrt")
+@
+The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lrt} fitted values. To access the alternative model fitted values:
+<<altfit_endo>>=
+fitVals <- fitFull(efObj)
+@
+The fitted values of the first gene are shown below:
+<<fig.height=4, fig.width=6, echo=FALSE>>=
+library(ggplot2)
+class <- as.factor(cls) 
+qplot(tme, fitVals[1,], color=class, ylab="expression", xlab="time")
+@
+
+The user can either use the function {\tt odp} or {\tt lrt} to get the {\tt qvalue} object. The {\tt lrt} function performs a likelihood ratio test to determine p-values. If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the data set follows an F-distribution. 
+
+To use {\tt lrt} on the {\tt edgeSet} object:
+<<kd_3_endo, eval=TRUE, cache=FALSE,dependson="cr_edgeSet">>=
+edgeLRT <- lrt(edgeObj, nullDistn="normal")
+@
+
+To view a summary of the object:
+<<summ_endo>>=
+summary(edgeLRT)
+@
+
+The slot of interest for significance analysis is the {\tt qvalue.obj} slot. To access the slot:
+<<qvalob_endo>>=
+qval <- qvalue.obj(edgeLRT)
+@
+To visualize the results, {\tt plot} or {\tt hist} functions can be used on {\tt qval}:
+<<fig.width=6, fig.height=4>>=
+plot(qval)
+hist(qval)
+@
+
+The {\tt odp} function uses information across all tests when formulating the test statistic. In order to improve the speed of the algorithm, we utilize a k-means clustering algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. Each gene is assigned a module-average parameter to calculate the odp-statistic. The number of clusters can be adjusted by {\tt n.mods}. Type {\tt ?odp} for more details on the algorithm.
+
+To use {\tt odp} on an {\tt edgeSet object}:
+<<kd_2_endo,eval=TRUE, cache=FALSE,dependson="cr_edgeSet">>=
+edgeODP <- odp(edgeObj, bs.its=10, verbose=FALSE, n.mods=20)
+@
+The argument {\tt bs.its} controls the number of bootstrap iterations, {\tt verbose} prints the iteration step and {\tt n.mods} is the number of clusters formed. If {\tt n.mods} is equal to the number of genes than the full Optimal Discovery Procedures is used.
+
+To summarize the object using the {\tt odp} method:
+<<tt_endo, dependson=c("kd_2", "kd_3")>>=
+summary(edgeODP)
+@
+Using {\tt plot} and {\tt hist} functions on the {\tt qvalue} object:
+<<fig.width=6, fig.height=4>>=
+qval <- qvalue.obj(edgeODP)
+plot(qval)
+hist(qval)
+@
+
+\subsection{Static study}
+{\bfseries Step 1:} The gibson dataset provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). Suppose we are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. 
+
+To import the data:
+<<import_data_gib>>=
+data(gibson)
+@
+There are a few variables in this data set: {\tt batch}, {\tt expr}, {\tt gender}, and {\tt location}. There are three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. There are three locations where individuals were sampled ({\tt location}): ``VILLAGE'', ``DESERT'' and ``AGADIR''. At each location there were either ``males'' or ``females'' ({\tt gender}) and there were different {\tt batches}. The {\tt expr} variable contains the expression matrix of the experiment.
+ 
+{\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
+<<edgeModel_gib, dependson="crtx_gib">>=
+edgeObj <- edgeModel(data=expr, adj.var=model.matrix(~batch + gender), grp=location, sampling="static")
+@
+
+The {\tt gibson} study is a static experiment so the {\tt sampling} argument will be ``static''. The {\tt grp} argument is for the location variable in the experiment and the {\tt adj.var} argument is the adjustment variables are assigned. The {\tt adj.var} must be in {\tt model.matrix} form. A brief overview of the arguments of {\tt edgeModel}:
+\begin{itemize}
+\item {\tt data} Matrix of expression values
+\item {\tt adj.var} Adjustment variables (matrix)
+\item {\tt grp} Numerical vector describing which group each observation belong (i.e ``DESERT'', ``VILLAGE'' or ``AGADIR'')
+\item {\tt sampling} Can either be ``timecourse'' or ``static'' depending on the experiment
+\end{itemize}
+
+Additional arguments can be viewed by typing {\tt ?edgeModel}. {\tt edgeSet} is the main object in the package and the slots can be viewed by:
+<<edgeObjSlots_gib>>=
+slotNames(edgeObj)
+@
+The alternative and null models are automatically generated by {\tt edgeModel}. The alternative and null models can be accessed using 
+<<altnullmod_gib>>=
+fullModel(edgeObj)
+nullModel(edgeObj)
+@
+The {\tt adj.var} corresponds to the adjustment variables, the {\tt grp} corresponds to the various location groups in the experiment. The key slot in {\tt edgeObj} is the {\tt qvalue.obj} which should be the only empty slot. The other slots are directly related to the input data and hypothesis models. See the section on the {\tt edgeSet} object for more details on these slots.
+
+The {\tt summary} function summarizes the slots in the {\tt edgeSet} object:
+<<sum_gib, eval=TRUE>>=
+summary(edgeObj)
+@
+\paragraph{Step 3:} Before running any significance analysis, lets view our model fits of the data. The {\tt edgeFit} function can be used to extract residuals and fitted values from the alternative and null models:
+<<tmp2_gib>>=
+efObj <- edgeFit(edgeObj, stat.type="lrt")
+@
+The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lrt} fitted values. To access the alternative model fitted values:
+<<altfit_gib>>=
+fitVals <- fitFull(efObj)
+@
+The fitted values of the first gene are shown below:
+<<fig.height=4, fig.width=6, echo=FALSE>>=
+library(ggplot2)
+gender <- as.factor(gender) 
+location = as.matrix(location)
+qplot(as.factor(as.matrix(gibson$covar[3,])), fitVals[520,], geom="boxplot", colour=gender)
+@
+We can see that with our alternative model chosen, the expression goes up and down as the kidney ages for this particular gene. 
+
+The user can either use the function {\tt odp} or {\tt lrt} to get the {\tt qvalue} object. The {\tt lrt} function performs a likelihood ratio test to determine p-values. If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the data set follows an F-distribution. 
+
+To use {\tt lrt} on the {\tt edgeSet} object:
+<<kd_3_gib, eval=TRUE, cache=FALSE,dependson="cr_edgeSet">>=
+edgeLRT <- lrt(edgeObj, nullDistn="normal")
+@
+
+To view a summary of the object:
+<<summ_gib>>=
+summary(edgeLRT)
+@
+
+The slot of interest for significance analysis is the {\tt qvalue.obj} slot. To access the slot:
+<<qvalob_gib>>=
+qval <- qvalue.obj(edgeLRT)
+@
+To visualize the results, {\tt plot} or {\tt hist} functions can be used on {\tt qval}:
+<<fig.width=6, fig.height=4>>=
+plot(qval)
+hist(qval)
+@
+
+The {\tt odp} function uses information across all tests when formulating the test statistic. In order to improve the speed of the algorithm, we utilize a k-means clustering algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. Each gene is assigned a module-average parameter to calculate the odp-statistic. The number of clusters can be adjusted by {\tt n.mods}. Type {\tt ?odp} for more details on the algorithm.
+
+To use {\tt odp} on an {\tt edgeSet object}:
+<<kd_2_gib,eval=TRUE, cache=FALSE,dependson="cr_edgeSet">>=
+edgeODP <- odp(edgeObj, bs.its=10, verbose=FALSE, n.mods=20)
+@
+The argument {\tt bs.its} controls the number of bootstrap iterations, {\tt verbose} prints the iteration step and {\tt n.mods} is the number of clusters formed. If {\tt n.mods} is equal to the number of genes than the full Optimal Discovery Procedures is used.
+
+To summarize the object using the {\tt odp} method:
+<<tt_gib, dependson=c("kd_2", "kd_3")>>=
+summary(edgeODP)
+@
+Using {\tt plot} and {\tt hist} functions on the {\tt qvalue} object:
+<<fig.width=6, fig.height=4>>=
+qval <- qvalue.obj(edgeODP)
+plot(qval)
+hist(qval)
+@
+
+\section{Using the sva package}
 {\tt edge} uses the sva package in the function {\tt edgeSVA}. An example of how to use this on the {\tt kidney} dataset:
 <<sva>>=
 newEdgeObj <- edgeSVA(edgeObj, n.sv=5, B=10)
@@ -265,7 +461,7 @@ nullMod <- nullMatrix(newEdgeObj)
 @
 See {\tt ?sva} for additional input parameters in {\tt edgeSVA}.
 
-\subsection{Advanced topic: Using the ExpressionSet object}
+\section{Advanced topic: Using the ExpressionSet object}
 The {\tt ExpressionSet} object is another alternative to using {\tt edge} but requires a deeper understanding of R and statistics. Let's create an {\tt ExpressionSet} object from the {\tt kidney} dataset:  
 <<kidney_expSet, tidy=FALSE, eval=TRUE, dependson=c("crtx","import_data")>>==
 library(edge)
