@@ -404,7 +404,7 @@ The fitted values of the first gene are shown below:
 library(ggplot2)
 gender <- as.factor(gender) 
 location = as.matrix(location)
-qplot(as.factor(as.matrix(gibson$covar[3,])), fitVals[520,], geom="boxplot", colour=gender)
+qplot(as.factor(as.matrix(location)), fitVals[304,], geom="boxplot", colour=gender, xlab= "location", ylab="expression")
 @
 We can see that with our alternative model chosen, the expression goes up and down as the kidney ages for this particular gene. 
 
