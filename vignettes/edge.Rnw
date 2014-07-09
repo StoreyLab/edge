@@ -170,7 +170,8 @@ The fitted values of the first gene are shown below:
 library(ggplot2)
 gender <- as.factor(gibson$gender) 
 location = as.matrix(gibson$location)
-qplot(location, fitVals[1,], geom="boxplot", colour=gender, xlab= "location", ylab="expression")
+
+qplot(location, fitVals[30,], geom="boxplot", colour=gender, xlab= "location", ylab="expression")
 @
 
 The user can either use the function {\tt odp} or {\tt lrt} to get the {\tt qvalue} object. The {\tt lrt} function performs a likelihood ratio test to determine p-values. If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the data set follows an F-distribution. 
