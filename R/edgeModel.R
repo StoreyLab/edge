@@ -55,12 +55,14 @@ edgeModel = function(data, sampling=c("static", "timecourse"), tme=NULL, ind=NUL
     if (g==1) {
       stop("grp must have more than one unique value for static sampling.")
     }
-    # Create models for static
-    pdat <- data.frame(adj.var, grp)
+    
+   # pdat <- data.frame(adj.var, grp)
     if (is.null(adj.var)) {
+      pdat <- data.frame(grp)
       nmod <- ~1 
-      fmod <- paste("~", paste(names(grp), collapse=" + "))
-    } else {   
+      fmod <- paste("~", paste(names(pdat), collapse=" + "))
+    } else {  
+      pdat <- data.frame(adj.var, grp)
       fmod <- paste("~", paste(names(pdat), collapse=" + "))
       nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
     }
