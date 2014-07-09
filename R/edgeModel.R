@@ -65,14 +65,15 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
   } else {
     sampling <- match.arg(sampling, choices=c("static", "timecourse"))
     if (!is.null(grp)) {
-      grp <- as.factor(grp)
+      #grp <- as.factor(grp)
+      grp <- as.matrix(grp)
     } else {
       if(sampling == "static") {
         stop("grp variable cannot be missing for static sampling.")
       }
-      grp <- rep(1, n)
+      grp <- as.matrix(rep(1, n), nrow=1)
     }
-    g <- length(unique(grp))
+    g <- nrow(unique(grp))
     
   #  if (!is.null(adj.var)) {
   #    if (is.vector(adj.var)) {
@@ -104,50 +105,54 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
       stop("grp must have more than one unique value for static sampling.")
     }
     # Create models for static
+    pdat <- data.frame(adj.var, grp)
     if (is.null(adj.var)) {
       nmod <- ~1 
-      fmod <- ~grp
+      fmod <- paste("~", paste(names(grp), collapse=" + "))
     } else {   
-      fmod <- ~adj.var + grp
-      nmod <- ~adj.var  
+      fmod <- paste("~", paste(names(pdat), collapse=" + "))
+      nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
     }
-    pdat <- cbind(adj.var, grp)
   }
   #need to get basis.df if it is NULL
   if (sampling == "timecourse") {
     basis.type <- match.arg(basis.type)
     if (basis.type == "ncs") {
-      knts = quantile(tme, probs=seq(0, 1, length=(basis.df + 1)))[-c(1, (basis.df + 1))]
-      time.basis <- ns(tme, knots=knts, intercept=FALSE)
+      time.basis <- ns(tme, df=, intercept=FALSE)
+      time.basis <- paste("ns(tme, df=", basis.df,", intercept=FALSE)", sep="")
     } else if (basis.type == "poly") {
-      knts <- quantile(tme, probs=seq(0, 1, length=(basis.df + 1)))[-c(1, (basis.df + 1))]
-      time.basis <- bs(tme, knots=knts, intercept=FALSE)
+      time.basis <- paste("bs(tme, df=", basis.df,", intercept=FALSE)", sep="")
     }
+ #   tName <- NULL
+  #  for (i in 1:basis.df){
+  #    tName <- c(tName, paste("time.basis.", i, sep=""))
+  #  }
+  #  colnames(time.basis) <- tName
+    
     if (g == 1) {
       # time course with no groups
+      pdat <- data.frame(adj.var,  tme) 
       if (is.null(adj.var)) {
-        nmod <- ~1 
-        fmod <- ~time.basis
+        nmod <- "~1" 
+        fmod <- paste("~", time.basis) 
       } else {
-        fmod <- ~adj.var + time.basis
-        nmod <- ~adj.var
+        fmod <- paste("~", paste(names(adj.var), collapse=" + "), "+", time.basis) 
+        nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
       }  
-      pdat <- cbind(adj.var,  time.basis) 
     } else {
-      # time course with groups
       if (is.null(adj.var)) {
-        nmod <- ~grp + time.basis 
-        fmod <- ~grp + time.basis + time.basis:grp
+        pdat <- data.frame(grp)
       } else {
-        nmod <- ~adj.var + grp + time.basis 
-        fmod <- ~adj.var + grp + time.basis + time.basis:grp
+        pdat <- data.frame(adj.var, grp) 
       }
-      pdat <- cbind(adj.var, as.matrix(grp), time.basis)   
-    }
+      # time course with groups
+      nmod <- paste(paste("~", paste(names(pdat), collapse=" + ")), "+", time.basis)
+      fmod <- paste(paste("~", paste(names(pdat), collapse=" + ")),"+",time.basis,"+", paste( "(", paste(names(grp), collapse=" + "), ")", ":", time.basis))  }
+      pdat$tme <- tme
   }
   expSet <- new("ExpressionSet")
   pData(expSet) <- data.frame(pdat)
   exprs(expSet) <- as.matrix(data)
-  edgeObj <- edgeSet(expSet, full.model=fmod, null.model=nmod, individual=(ind))
+  edgeObj <- edgeSet(expSet, full.model=as.formula(fmod), null.model=as.formula(nmod), individual=(ind))
   return(edgeObj)  
 }
