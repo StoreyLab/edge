@@ -126,7 +126,7 @@ There are a few variables in this data set: {\tt batch}, {\tt gibexpr}, {\tt gen
  
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
 <<edgeModel_gib, dependson="crtx_gib">>=
-edgeObj <- edgeModel(data=gibson$gibexpr, adj.var=data.frame(gibson$gender, gibson$batch), grp=gibson$location, sampling="static")
+edgeObj <- edgeModel(data=gibson$gibexpr, adj.var=data.frame(gibson$gender, gibson$batch), grp=data.frame(gibson$location), sampling="static")
 @
 
 The {\tt gibson} study is a static experiment so the {\tt sampling} argument will be ``static''. The {\tt grp} argument is for the {\tt location} variable and the {\tt adj.var} argument is the adjustment variables. The {\tt adj.var} must be in {\tt model.matrix} form. A brief overview of the arguments of {\tt edgeModel}:
