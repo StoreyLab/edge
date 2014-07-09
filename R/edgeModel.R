@@ -147,7 +147,7 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
       }
       # time course with groups
       nmod <- paste(paste("~", paste(names(pdat), collapse=" + ")), "+", time.basis)
-      fmod <- paste(paste("~", paste(names(pdat), collapse=" + ")),"+",time.basis,"+", paste( "(", paste(names(grp), collapse=" + "), ")", ":", time.basis))  }
+      fmod <- paste(paste("~", paste(names(pdat), collapse=" + ")),"+",time.basis,"+", paste( "(", paste(names(data.frame(grp)), collapse=" + "), ")", ":", time.basis))  }
       pdat$tme <- tme
   }
   expSet <- new("ExpressionSet")
