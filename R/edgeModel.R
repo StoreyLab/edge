@@ -97,6 +97,8 @@ edgeModel = function(data, sampling=c("static", "timecourse"), grp = NULL, tme=N
      # ind <- ind2
     #} 
   }
+#  intercept <- apply(as.matrix(adj.var), 2, function(x) length(unique(x)) == 1)
+#  adj.var <- adj.var[, !intercept]
   if (sampling == "static") {
     if (g==1) {
       stop("grp must have more than one unique value for static sampling.")

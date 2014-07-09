@@ -24,10 +24,10 @@ setMethod("individual",
           function(object) {
             slot(object, "individual")
           })     
-setMethod("qvalue.obj", 
+setMethod("qvalueObj", 
           signature = signature(object = "edgeSet"), 
           function(object) { 
-            slot(object, "qvalue.obj")
+            slot(object, "qvalueObj")
           })   
 setReplaceMethod("individual", 
                  signature = signature(object = "edgeSet"), 
@@ -36,10 +36,10 @@ setReplaceMethod("individual",
                    validObject(object)
                    object            
                  })
-setReplaceMethod("qvalue.obj",
+setReplaceMethod("qvalueObj",
                  signature = signature(object = "edgeSet"), 
                  function(object, value) {
-                   object@qvalue.obj <- value
+                   object@qvalueObj <- value
                    validObject(object)
                    object            
                  })

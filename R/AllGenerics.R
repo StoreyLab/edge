@@ -32,7 +32,7 @@
 #'
 #' @author John Storey, Andrew Bass
 #'
-#' @return \code{lrt} returns a \code{\linkS4class{edgeSet}} object with slot qvalue.obj as \code{\link{qvalue}} object.
+#' @return \code{lrt} returns a \code{\linkS4class{edgeSet}} object with slot qvalueObj as \code{\link{qvalue}} object.
 #'
 #' @examples
 #' # Create ExpressionSet object from kidney dataset
@@ -114,7 +114,7 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' To retrieve linear regression results, see \code{\link{edgeFit}}. The p-values
 #' are determined by function \code{\link{empPvals}}.
 #'
-#' @return \code{odp} returns an \code{\linkS4class{edgeSet}} object with slot qvalue.obj as
+#' @return \code{odp} returns an \code{\linkS4class{edgeSet}} object with slot qvalueObj as
 #' \code{\link{qvalue}} object.
 #'
 #' @examples
@@ -588,30 +588,30 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' These generic functions access and set the \code{qvalue} object in the
 #' \code{\linkS4class{edgeSet}} object.
 #'
-#' @usage qvalue.obj(object)
+#' @usage qvalueObj(object)
 #' 
 #' @param object \code{\linkS4class{edgeSet}}
 #' @param value S3 \code{object}: \code{\link{qvalue}} object
 #' 
-#' @return  \code{qvalue.obj} returns a \code{\link{qvalue}} object.
+#' @return  \code{qvalueObj} returns a \code{\link{qvalue}} object.
 #'     
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso \code{\link{lrt}}, \code{\link{odp}} and 
 #' \code{\linkS4class{edgeSet}}
 #' 
-#' @keywords qvalue.obj, qvalue.obj<-
+#' @keywords qvalueObj, qvalueObj<-
 #' 
-#' @rdname qvalue.obj-method  
+#' @rdname qvalueObj-method  
 #' 
-#' @exportMethod qvalue.obj                
-setGeneric("qvalue.obj", function(object) standardGeneric("qvalue.obj"))
+#' @exportMethod qvalueObj                
+setGeneric("qvalueObj", function(object) standardGeneric("qvalueObj"))
 
-#' @rdname qvalue.obj-method
+#' @rdname qvalueObj-method
 #' 
-#' @exportMethod qvalue.obj<-
-setGeneric("qvalue.obj<-", function(object, value) {
-  standardGeneric("qvalue.obj<-") 
+#' @exportMethod qvalueObj<-
+setGeneric("qvalueObj<-", function(object, value) {
+  standardGeneric("qvalueObj<-") 
 })                      
 
 #' Individuals utilized in experiment
