@@ -136,7 +136,6 @@ The {\tt gibson} study is a static experiment so the {\tt sampling} argument wil
 \item {\tt ind} A factor that assigns each observations to an individual in the experiment
 \item {\tt basis.df} Degree of freedom of spline fit in a time-course study
 \item {\tt basis.type} A spline curve is fitted to the {\tt tme} variable in a ``timecourse'' study. The type can be ``ncs`` (B-spline for a natural cubic spline) or ``ps'' (polynomial spline)
-\item {\tt bio.var} Biological variables
 \item {\tt adj.var} Adjustment variables (matrix)
 \item {\tt grp} Numerical vector describing which group each observation belong (i.e ``DESERT'', ``VILLAGE'' or ``AGADIR'')
 \item {\tt sampling} Can either be ``timecourse'' or ``static'' depending on the experiment
@@ -220,7 +219,7 @@ For this particular gene, it seems that there is a slight decrease in expression
 
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
 <<edgeModel, dependson="crtx">>=
-edgeObj <- edgeModel(data=kidexpr, adj.var=data.frame(sex), tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
+edgeObj <- edgeModel(data=kidexpr, adj.var=data.frame(sex), tme=data.frame(age), sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 Since the {\tt kidney} study is a time-course study the sampling method will be ``timecourse''. The adjustment variable in the study is {\tt sex} while the time variable is {\tt age}. A brief overview of the arguments can be found in section~\ref{sec:gibson}.
 
@@ -288,7 +287,7 @@ There are a few covariates in this data set: {\tt expr}, {\tt class}, {\tt indiv
  
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
 <<edgeModel_endo>>=
-edgeObj <- edgeModel(data=endotoxin$endoexpr, ind=endotoxin$ind, tme=endotoxin$time, grp=data.frame(endotoxin$class), sampling="timecourse", basis.type="ncs", basis.df=4)
+edgeObj <- edgeModel(data=endotoxin$endoexpr, ind=endotoxin$ind, tme=data.frame(time=endotoxin$time), grp=data.frame(endotoxin$class), sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 The {\tt endotoxin} experiment is a time-course study so the {\tt sampling} argument will be ``timecourse''. The {\tt tme} argument is for the time variable in the experiment and the {\tt ind} argument is to identify which observations corresponds what individuals. Since the {\tt sampling} method is ``timecourse'', we fit a spline curve described by variables {\tt basis.type} and {\tt basis.df}.  Additional arguments can be viewed by typing {\tt ?edgeModel}. 
 
