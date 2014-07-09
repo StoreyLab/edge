@@ -34,9 +34,9 @@ A list called \code{kidney} containing:
 data(kidney)
 
 # Interested in cortex samples 
-sex <- kidney$sex[kidney$tissue=="c"]
-age <- kidney$age[kidney$tissue=="c"]
-kidexpr <- kidney$kidexpr[, kidney$tissue=="c"]
+sex <- kidney$sex
+age <- kidney$age
+kidexpr <- kidney$kidexpr
 
 # Create model
 edge.obj <- edgeModel(dat=kidexpr, adj.var=model.matrix(~sex), tme=age, sampling="timecourse", basis.df=4)

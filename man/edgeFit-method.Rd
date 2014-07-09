@@ -36,9 +36,9 @@ by the user if a different statistical implementation is required.
 # Create ExpressionSet object from kidney dataset
 library(splines)
 data(kidney)
-sex <- kidney$sex[kidney$tissue == "c"]
-age <- kidney$age[kidney$tissue == "c"]
-kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+sex <- kidney$sex
+age <- kidney$age
+kidexpr <- kidney$kidexpr
 expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 
 # Create Models
