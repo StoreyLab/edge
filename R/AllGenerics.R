@@ -38,9 +38,9 @@
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 #'
 #' # Create Models
@@ -121,9 +121,9 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 #'
 #' # Create Models
@@ -202,9 +202,9 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 #'
 #' # Create Models
@@ -268,9 +268,9 @@ setGeneric("klClust", function(object, obj.edgeFit=NULL, n.mods=50, ...)
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 #'
 #' # Create Models
@@ -321,9 +321,9 @@ setGeneric("edgeFit",
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 #'
 #' # Create Models
@@ -360,9 +360,9 @@ setGeneric("edgeSet", function(object, full.model, null.model, individual=NULL) 
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 #'
 #' # Create Models
@@ -404,9 +404,9 @@ setGeneric("edgeQvalue", function(object, ...)
 #' # Create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
 #'
 #' # Create Models

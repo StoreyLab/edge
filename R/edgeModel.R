@@ -26,9 +26,9 @@
 #' # Create ExpressionSet object from kidney dataset 
 #' library(splines) 
 #' data(kidney)
-#' sex <- kidney$sex[kidney$tissue == "c"]
-#' age <- kidney$age[kidney$tissue == "c"]
-#' kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
 #' 
 #' #Create edgeSet object from data
 #' edgeObj <- edgeModel(data=kidexpr, adj.var=model.matrix(~sex), tme=age, sampling="timecourse", basis.df=4)
