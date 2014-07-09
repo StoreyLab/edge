@@ -3,16 +3,16 @@
 \alias{edgeModel}
 \title{Creates an edgeSet object and formulates appropriate models for users}
 \usage{
-edgeModel(data, sampling = c("static", "timecourse"), grp = NULL,
-  tme = NULL, ind = NULL, basis.df = 2, basis.type = c("ncs", "poly"),
-  bio.var = NULL, adj.var = NULL)
+edgeModel(data, sampling = c("static", "timecourse"), tme = NULL,
+  ind = NULL, basis.df = 2, basis.type = c("ncs", "poly"), grp = NULL,
+  adj.var = NULL)
 }
 \arguments{
 \item{data}{matrix- Gene expression data.}
 
 \item{sampling}{string- Type of experiment. Either "static" or "timecourse". Default is "static".}
 
-\item{grp}{vector- Grouping variable in experiment. Optional.}
+\item{grp}{vector- Groups or biological variable in experiment. Optional.}
 
 \item{tme}{vector- Covariate of interest in time course study. Optional.}
 
@@ -21,8 +21,6 @@ edgeModel(data, sampling = c("static", "timecourse"), grp = NULL,
 \item{basis.df}{numeric- Degree of freedom of the spline fit for time course study. Default is 2.}
 
 \item{basis.type}{string- Either "ncs" or "ps" basis for time course study. Default is "ncs".}
-
-\item{bio.var}{matrix- Biological variables. Optional.}
 
 \item{adj.var}{matrix- Adjustment Variables. Optional.}
 }
