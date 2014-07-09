@@ -26,7 +26,7 @@ for "bootstrap" method. Default is 100.}
 \item{...}{Additional arguments for \code{qvalue} and \code{empPvals} function.}
 }
 \value{
-\code{lrt} returns a \code{\linkS4class{edgeSet}} object with slot qvalue.obj as \code{\link{qvalue}} object.
+\code{lrt} returns a \code{\linkS4class{edgeSet}} object with slot qvalueObj as \code{\link{qvalue}} object.
 }
 \description{
 Performs F-test (Generalized Likelihood Ratio)

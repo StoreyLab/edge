@@ -15,7 +15,7 @@ The format for the model inputs are
  \item null.model: adjustment variables
 }
 The \code{full.matrix} and \code{null.matrix} are created by the function
-\code{\link{edgeSet}}, and the qvalue.obj is the slot of interest determined
+\code{\link{edgeSet}}, and the qvalueObj is the slot of interest determined
 by either \code{odp} or \code{lrt} function.
 }
 \note{
@@ -23,7 +23,7 @@ To create an edgeSet object, it is recommended to use the
 \code{\link{edgeSet}} function where the input is an ExpressionSet object, full
 and null models and optionally an individual variable. The edgeSet function generates
 the full and null matrices. Once the edgeSet object is created, the user can
-either use the \code{lrt} or \code{odp} method to determine the qvalue.obj
+either use the \code{lrt} or \code{odp} method to determine the qvalueObj
 slot in the edgeSet object.
 }
 \section{Slots}{
@@ -39,7 +39,7 @@ slot in the edgeSet object.
                               containing full model data.}
    \item{\code{individual}:}{\code{factor}:
                              containing information on individuals in experiment.}
-   \item{\code{qvalue.obj}:}{S3 class \code{qvalue}:
+   \item{\code{qvalueObj}:}{S3 class \code{qvalue}:
                              containing qvalue object. See
                              \code{\link{qvalue}}.}
    \item{\code{ExpressionSet}:}{Additional slots inherited from
@@ -75,7 +75,7 @@ slot in the edgeSet object.
  \item{\code{individual(edgeSet)}}{Set individual slot from edgeSet object}
  \item{\code{dfModel(edgeSet)}}{Access the degree of freedom for null and full models from
              edgeSet object}
- \item{\code{qvalue.obj(edgeSet)}}{Access qvalue object from
+ \item{\code{qvalueObj(edgeSet)}}{Access qvalue object from
              edgeSet object. See \code{\link{qvalue}}.}
  \item{\code{validObject(edgeSet)}}{Check validity of edgeSet object.}
  }

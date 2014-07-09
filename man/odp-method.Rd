@@ -25,7 +25,7 @@ is 100.}
 \item{...}{Additional arguments for \code{klClust}, \code{qvalue} and \code{empPvals}.}
 }
 \value{
-\code{odp} returns an \code{\linkS4class{edgeSet}} object with slot qvalue.obj as
+\code{odp} returns an \code{\linkS4class{edgeSet}} object with slot qvalueObj as
 \code{\link{qvalue}} object.
 }
 \description{
