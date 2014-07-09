@@ -75,7 +75,7 @@ The {\tt kidney} study was interested in finding out what happens as the kidney 
 
 Once the data has been loaded, the user can proceed to use the function {\tt edgeModel} to create the alternative and null hypothesis of the experiment:
 <<make_eSet, echo=TRUE>>=
-edgeObj <- edgeModel(data=kidexpr, adj.var=sex, tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
+edgeObj <- edgeModel(data=kidexpr, adj.var=data.frame(sex), tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 Since the study examines the kidney tissue over time, the {\tt sampling} method is ``timecourse'' where the {\tt tme} argument is {\tt age}. The {\tt sex} variable is an adjustment variable and {\tt basis.type} and {\tt basis.df} describe the spline fit on the {\tt tme} argument. 
 
@@ -126,7 +126,7 @@ There are a few variables in this data set: {\tt batch}, {\tt gibexpr}, {\tt gen
  
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
 <<edgeModel_gib, dependson="crtx_gib">>=
-edgeObj <- edgeModel(data=gibson$gibexpr, adj.var=NULL, grp=gibson$location, sampling="static")
+edgeObj <- edgeModel(data=gibson$gibexpr, adj.var=data.frame(gibson$gender, gibson$batch), grp=gibson$location, sampling="static")
 @
 
 The {\tt gibson} study is a static experiment so the {\tt sampling} argument will be ``static''. The {\tt grp} argument is for the {\tt location} variable and the {\tt adj.var} argument is the adjustment variables. The {\tt adj.var} must be in {\tt model.matrix} form. A brief overview of the arguments of {\tt edgeModel}:
@@ -151,7 +151,7 @@ The {\tt edgeObj} is an {\tt edgeSet} object that extends an {\tt ExpressionSet}
 fullModel(edgeObj)
 nullModel(edgeObj)
 @
-The {\tt adj.var} corresponds to the adjustment variables, the {\tt grp} corresponds to the various location groups in the experiment. The key slot in {\tt edgeObj} is the {\tt qvalueObj} which should be the only empty slot. The other slots are directly related to the input data and hypothesis models. See the section~\ref{sec:edgeSet} for more details on the {\tt edgeSet} object.
+The key slot in {\tt edgeObj} is the {\tt qvalueObj} which should be the only empty slot. The other slots are directly related to the input data and hypothesis models. See the section~\ref{sec:edgeSet} for more details on the {\tt edgeSet} object.
 
 The {\tt summary} function summarizes the slots in the {\tt edgeSet} object:
 <<sum_gib, eval=TRUE>>=
@@ -219,7 +219,7 @@ For this particular gene, it seems that there is a slight decrease in expression
 
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
 <<edgeModel, dependson="crtx">>=
-edgeObj <- edgeModel(data=kidexpr, adj.var=sex, tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
+edgeObj <- edgeModel(data=kidexpr, adj.var=data.frame(sex), tme=age, sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 Since the {\tt kidney} study is a time-course study the sampling method will be ``timecourse''. The adjustment variable in the study is {\tt sex} while the time variable is {\tt age}. A brief overview of the arguments can be found in section~\ref{sec:gibson}.
 
@@ -287,7 +287,7 @@ There are a few covariates in this data set: {\tt expr}, {\tt class}, {\tt indiv
  
 {\bfseries Step 2:} Use the function {\tt edgeModel} to create an {\tt edgeSet} object:
 <<edgeModel_endo>>=
-edgeObj <- edgeModel(data=endotoxin$endoexpr, ind=endotoxin$ind, tme=endotoxin$time, grp=endotoxin$class, sampling="timecourse", basis.type="ncs", basis.df=4)
+edgeObj <- edgeModel(data=endotoxin$endoexpr, ind=endotoxin$ind, tme=endotoxin$time, grp=data.frame(endotoxin$class), sampling="timecourse", basis.type="ncs", basis.df=4)
 @
 The {\tt endotoxin} experiment is a time-course study so the {\tt sampling} argument will be ``timecourse''. The {\tt tme} argument is for the time variable in the experiment and the {\tt ind} argument is to identify which observations corresponds what individuals. Since the {\tt sampling} method is ``timecourse'', we fit a spline curve described by variables {\tt basis.type} and {\tt basis.df}.  Additional arguments can be viewed by typing {\tt ?edgeModel}. 
 
