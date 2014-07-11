@@ -33,7 +33,7 @@ data(gibson)
 require(splines)
 # Create an ExpressionSet
 covar <- data.frame(Batch=gibson$batch, Gender=gibson$gender, Location=gibson$location)
-expSet <- ExpressionSet(assayData = gibexpr, phenoData = as(covar, "AnnotatedDataFrame"))
+expSet <- ExpressionSet(assayData = gibson$gibexpr, phenoData = as(covar, "AnnotatedDataFrame"))
 
 # Create edgeSet for experiment- static experiment
 mNull <- ~Gender + Batch

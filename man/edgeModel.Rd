@@ -47,7 +47,7 @@ age <- kidney$age
 kidexpr <- kidney$kidexpr
 
 #Create edgeSet object from data
-edgeObj <- edgeModel(data=kidexpr, adj.var=model.matrix(~sex), tme=age, sampling="timecourse", basis.df=4)
+edgeObj <- edgeModel(data=kidexpr, adj.var=data.frame(sex), tme=age, sampling="timecourse", basis.df=4)
 }
 \author{
 John Storey, Andy Bass
