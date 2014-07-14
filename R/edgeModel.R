@@ -55,10 +55,10 @@ edgeModel = function(data, sampling=c("static", "timecourse"), tme=NULL, ind=NUL
   }
   
   if (!is.null(adj.var)) {
-    if (is.matrix(adj.var) | is.data.frame(adj.var) | is.vector(adj.var)) {
+    if (is.matrix(adj.var) | is.vector(adj.var)) {
       adj.var <- data.frame(adj.var)
     } else {
-      stop("adj.var must be a matrix/vector/factor/data.frame")
+      stop("adj.var must be a matrix/vector")
     }
     intercept <- !apply(adj.var, 2, var)
     adj.var <- subset(adj.var, select=!intercept)
@@ -68,7 +68,7 @@ edgeModel = function(data, sampling=c("static", "timecourse"), tme=NULL, ind=NUL
     if (is.matrix(bio.var) | is.vector(bio.var)) {
       bio.var <- data.frame(bio.var)
     } else {
-      stop("bio.var must be a matrix/vector/factor")
+      stop("bio.var must be a matrix/vector")
     }
     intercept <- !apply(bio.var, 2, var)
     bio.var <- subset(bio.var, select=!intercept)
