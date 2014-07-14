@@ -22,11 +22,11 @@ Runs \code{snm} on edgeSet object based on the null and full models in \code{\li
 # Simulate data
 require(snm)
 singleChannel <- sim.singleChannel(12345)
+# Create edgeSet object using edgeModel (can use ExpressionSet see manual)
 grp = singleChannel$bio.var[,2]
 adj.var = data.frame(singleChannel$adj.var[,-1])
-# Create edgeSet object using edgeModel (can use ExpressionSet -- see manual)
+Create edgeSet object using edgeModel (can use ExpressionSet -- see manual)
 edgeObj <- edgeModel(data=singleChannel$raw.data, sampling="static", grp=grp, adj.var=adj.var)
-
 
 # Run SNM using intensity-dependent adjustment variable
 nEdgeObj <- edgeSNM(edgeObj, int.var=singleChannel$int.var, verbose=FALSE, num.iter=1)
