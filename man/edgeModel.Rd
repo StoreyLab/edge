@@ -5,7 +5,7 @@
 \usage{
 edgeModel(data, sampling = c("static", "timecourse"), tme = NULL,
   ind = NULL, basis.df = 2, basis.type = c("ncs", "poly"), grp = NULL,
-  adj.var = NULL)
+  adj.var = NULL, bio.var = NULL)
 }
 \arguments{
 \item{data}{matrix- Gene expression data.}
@@ -17,6 +17,8 @@ edgeModel(data, sampling = c("static", "timecourse"), tme = NULL,
 \item{tme}{vector- Covariate of interest in time course study. Optional.}
 
 \item{ind}{factor- Individual factor. Optional.}
+
+\item{bio.var}{matrix- Biological variables. Optional.}
 
 \item{basis.df}{numeric- Degree of freedom of the spline fit for time course study. Default is 2.}
 
