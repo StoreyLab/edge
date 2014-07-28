@@ -1,6 +1,6 @@
 #' Creates an edgeSet object and formulates appropriate models for users
 #'
-#' \code{edgeModel} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based on experiment type: Either "static" or "timecourse". For more detail refer to the user manual.  
+#' \code{edgeStudy} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based on experiment type: Either "static" or "timecourse". For more detail refer to the user manual.  
 #' 
 #' @param data matrix- Gene expression data.
 #' @param sampling string- Type of experiment. Either "static" or "timecourse". Default is "static".
@@ -12,7 +12,7 @@
 #' @param basis.type string- Either "ncs" or "ps" basis for time course study. Default is "ncs".
 #' @param adj.var matrix- Adjustment Variables. Optional.
 #'  
-#' @return \code{edgeModel} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
+#' @return \code{edgeStudy} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
 #'   \describe{
 #'     \item{\code{full.model:}}{alternative model equation}
 #'    \item{\code{null.model:}}{null model equation}
@@ -26,49 +26,48 @@
 #' # Create ExpressionSet object from kidney dataset 
 #' library(splines) 
 #' data(kidney)
-#' sex <- kidney$sex
-#' age <- kidney$age
+#' sex <- as.matrix(kidney$sex)
+#' age <- as.matrix(kidney$age)
 #' kidexpr <- kidney$kidexpr
 #' 
 #' #Create edgeSet object from data
-#' edgeObj <- edgeModel(data=kidexpr, adj.var=data.frame(sex), tme=age, sampling="timecourse", basis.df=4)
-#' @name edgeModel
-#' @rdname edgeModel
+#' edgeObj <- edgeStudy(data=kidexpr, adj.var=adjustVar, tme=age, sampling="timecourse", basis.df=4)
+#' @name edgeStudy
+#' @rdname edgeStudy
 #' @seealso \code{\link{edgeSet}}
 #' @author John Storey, Andy Bass 
-#' @aliases edgeModel
+#' @aliases edgeStudy
 #' @export
-edgeModel = function(data, sampling=c("static", "timecourse"), tme=NULL, ind=NULL, basis.df=2, basis.type = c("ncs", "poly"), grp=NULL, adj.var=NULL, bio.var=NULL) {
+edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=NULL, sampling=c("static", "timecourse"), basis.df=2, basis.type = c("ncs", "poly")) {
   n <- ncol(data)
   m <- nrow(data)
   if (!is.matrix(data)) {
     stop("data must be a matrix")
   }
   if (!is.null(tme)) {
-    if (is.matrix(tme) | is.vector(tme)) {
+    if (is.matrix(tme)) {
       tme <- data.frame(tme)
     } else {
-      stop("tme must be a matrix/vector")
+      stop("tme must be a matrix")
     }
     intercept <- !apply(tme, 2, var)
     tme <- subset(tme, select=!intercept)
   }
-  
   if (!is.null(adj.var)) {
-    if (is.matrix(adj.var) | is.vector(adj.var)) {
+    if (is.matrix(adj.var)) {
       adj.var <- data.frame(adj.var)
     } else {
-      stop("adj.var must be a matrix/vector")
+      stop("adj.var must be a matrix")
     }
     intercept <- !apply(adj.var, 2, var)
     adj.var <- subset(adj.var, select=!intercept)
   }
   if (!is.null(bio.var)) {
-    sampling <- "notApplicable"
-    if (is.matrix(bio.var) | is.vector(bio.var)) {
+#    sampling <- "notApplicable"
+    if (is.matrix(bio.var)) {
       bio.var <- data.frame(bio.var)
     } else {
-      stop("bio.var must be a matrix/vector")
+      stop("bio.var must be a matrix")
     }
     intercept <- !apply(bio.var, 2, var)
     bio.var <- subset(bio.var, select=!intercept)
@@ -98,7 +97,7 @@ edgeModel = function(data, sampling=c("static", "timecourse"), tme=NULL, ind=NUL
       }
       grp <- data.frame(grp=rep(1,n))
     }
-    g <- length(unique(grp))
+    g <- nrow(unique(grp))
     if (sampling == "static") {
       if (g==1) {
         stop("grp must have more than one unique value for static sampling.")
@@ -148,6 +147,92 @@ edgeModel = function(data, sampling=c("static", "timecourse"), tme=NULL, ind=NUL
   expSet <- new("ExpressionSet")
   pData(expSet) <- data.frame(pdat)
   exprs(expSet) <- as.matrix(data)
+  edgeObj <- edgeSet(expSet, full.model=as.formula(fmod), null.model=as.formula(nmod), individual=ind)
+  return(edgeObj)  
+}
+
+#' Generate alternative and null hypothesis in edgeSet object
+#'
+#' \code{edgeModel} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based adj.var and bio.var variables. Intercept is included in both alternative and null models by default.  
+#' 
+#' @param data matrix- Gene expression data.
+#' @param bio.var matrix- Biological variables.
+#' @param adj.var matrix- Adjustment Variables. Optional.
+#' @param weights matrix- Matrix of weights for each observation. Optional 
+#' @return \code{edgeModel} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
+#'   \describe{
+#'     \item{\code{full.model:}}{alternative model equation}
+#'    \item{\code{null.model:}}{null model equation}
+#'    \item{\code{full.matrix:}}{alternative model in matrix form}
+#'    \item{\code{null.matirx:}}{null model in matrix form}
+#'    \item{\code{individual:}}{individuals in experiment (factor)}
+#'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, phenoData) created in function}
+#'  }
+#'  
+#' @examples 
+#' # Create ExpressionSet object from kidney dataset 
+#' library(splines) 
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' kidexpr <- kidney$kidexpr
+#' nullMat <- model.matrix(~sex)
+#' altMat <- model.matrix(~ns(age, df=4))
+#' 
+#' #Create edgeSet object from data
+#' edgeObj <- edgeModel(data=kidexpr, adj.var=nullMat, bio.var=altMat)
+#' @name edgeModel
+#' @rdname edgeModel
+#' @seealso \code{\link{edgeSet}}
+#' @author John Storey, Andy Bass 
+#' @aliases edgeModel
+#' @export
+edgeModel <- function(data, bio.var=NULL, adj.var=NULL, ind=NULL, weights=NULL) {
+  n <- ncol(data)
+  m <- nrow(data)
+  if (!is.matrix(data)) {
+    stop("data must be a matrix")
+  }
+  if (!is.null(adj.var)) {
+    if (is.matrix(adj.var) | is.vector(adj.var)) {
+      xx <- try(solve(t(adj.var) %*% adj.var), silent=TRUE)
+      if (is.character(xx)) {
+        stop("adj.var is not a valid model matrix. Enter '?model.matrix' for more information on building a model matrix.")
+      }
+      adj.var <- data.frame(adj.var)
+    } else {
+      stop("adj.var must be a matrix")
+    }
+      intercept <- !apply(adj.var, 2, var)
+      adj.var <- subset(adj.var, select=!intercept)
+  }
+  if (!is.null(bio.var)) {
+    if (is.matrix(bio.var) | is.vector(bio.var)) {
+      yy <- try(solve(t(cbind(bio.var, as.matrix(adj.var))) %*% cbind(bio.var, as.matrix(adj.var))), silent=TRUE)
+      if (is.character(yy)) {
+        stop("cbind(bio.var, adj.var) is not a valid model matrix. Enter '?model.matrix' for more information on building a model matrix.")
+      }
+      bio.var <- data.frame(bio.var)
+    } else {
+      stop("bio.var must be a matrix/vector")
+    }
+    intercept <- !apply(bio.var, 2, var)
+    bio.var <- subset(bio.var, select=!intercept)    # Create models
+    if (is.null(adj.var)) {
+      pdat <- data.frame(bio.var)
+      fmod <- paste("~", paste(names(pdat), collapse=" + "))
+      nmod <- "~1"
+    } else {
+      pdat <- data.frame(adj.var, bio.var)
+      fmod <- paste("~", paste(names(pdat), collapse=" + "))
+      nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
+    }
+  } else {
+    stop("Argument bio.var is missing.")
+  }
+  expSet <- new("ExpressionSet")
+  pData(expSet) <- data.frame(pdat)
+  exprs(expSet) <- data
   edgeObj <- edgeSet(expSet, full.model=as.formula(fmod), null.model=as.formula(nmod), individual=ind)
   return(edgeObj)  
 }
