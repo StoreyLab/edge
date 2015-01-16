@@ -45,32 +45,32 @@ edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=N
     stop("data must be a matrix")
   }
   if (!is.null(tme)) {
-    if (is.matrix(tme)) {
+    if (is.matrix(tme) | is.vector(tme)) {
       tme <- data.frame(tme)
     } else {
       stop("tme must be a matrix")
     }
-    intercept <- !apply(tme, 2, var)
-    tme <- subset(tme, select=!intercept)
+   # intercept <- !apply(tme, 2, var)
+   # tme <- subset(tme, select=!intercept)
   }
   if (!is.null(adj.var)) {
-    if (is.matrix(adj.var)) {
+    if (is.matrix(adj.var) | is.vector(adj.var) | is.factor(adj.var)) {
       adj.var <- data.frame(adj.var)
     } else {
       stop("adj.var must be a matrix")
     }
-    intercept <- !apply(adj.var, 2, var)
-    adj.var <- subset(adj.var, select=!intercept)
+    #intercept <- !apply(adj.var, 2, var)
+   # adj.var <- subset(adj.var, select=!intercept)
   }
   if (!is.null(bio.var)) {
 #    sampling <- "notApplicable"
-    if (is.matrix(bio.var)) {
+    if (is.matrix(bio.var)| is.vector(bio.var) | is.factor(bio.var)) {
       bio.var <- data.frame(bio.var)
     } else {
       stop("bio.var must be a matrix")
     }
-    intercept <- !apply(bio.var, 2, var)
-    bio.var <- subset(bio.var, select=!intercept)
+    #intercept <- !apply(bio.var, 2, var)
+   # bio.var <- subset(bio.var, select=!intercept)
     # Create models
     if (is.null(adj.var)) {
       pdat <- data.frame(bio.var)
@@ -187,52 +187,27 @@ edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=N
 #' @author John Storey, Andy Bass 
 #' @aliases edgeModel
 #' @export
-edgeModel <- function(data, bio.var=NULL, adj.var=NULL, ind=NULL, weights=NULL) {
+edgeModel <- function(data, cov, altMod=NULL, nullMod=NULL, ind=NULL, weights=NULL) {
   n <- ncol(data)
   m <- nrow(data)
   if (!is.matrix(data)) {
     stop("data must be a matrix")
+  } else if (!is.data.frame(cov)) {
+    stop("cov must be a data frame")
+  } else if (is.null(altMod)) {
+    stop("need an alternative model")
   }
-  if (!is.null(adj.var)) {
-    if (is.matrix(adj.var) | is.vector(adj.var)) {
-      xx <- try(solve(t(adj.var) %*% adj.var), silent=TRUE)
-      if (is.character(xx)) {
-        stop("adj.var is not a valid model matrix. Enter '?model.matrix' for more information on building a model matrix.")
-      }
-      adj.var <- data.frame(adj.var)
-    } else {
-      stop("adj.var must be a matrix")
-    }
-      intercept <- !apply(adj.var, 2, var)
-      adj.var <- subset(adj.var, select=!intercept)
+  if (is.null(nullMod)) {
+    nullMod <- ~1
   }
-  if (!is.null(bio.var)) {
-    if (is.matrix(bio.var) | is.vector(bio.var)) {
-      yy <- try(solve(t(cbind(bio.var, as.matrix(adj.var))) %*% cbind(bio.var, as.matrix(adj.var))), silent=TRUE)
-      if (is.character(yy)) {
-        stop("cbind(bio.var, adj.var) is not a valid model matrix. Enter '?model.matrix' for more information on building a model matrix.")
-      }
-      bio.var <- data.frame(bio.var)
-    } else {
-      stop("bio.var must be a matrix/vector")
-    }
-    intercept <- !apply(bio.var, 2, var)
-    bio.var <- subset(bio.var, select=!intercept)    # Create models
-    if (is.null(adj.var)) {
-      pdat <- data.frame(bio.var)
-      fmod <- paste("~", paste(names(pdat), collapse=" + "))
-      nmod <- "~1"
-    } else {
-      pdat <- data.frame(adj.var, bio.var)
-      fmod <- paste("~", paste(names(pdat), collapse=" + "))
-      nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
-    }
-  } else {
-    stop("Argument bio.var is missing.")
+  if (!is(altMod, "formula") | is(nullMod, "formula")) {
+    stop("alternative and null models must be formatted as a formula")
   }
+
   expSet <- new("ExpressionSet")
-  pData(expSet) <- data.frame(pdat)
   exprs(expSet) <- data
-  edgeObj <- edgeSet(expSet, full.model=as.formula(fmod), null.model=as.formula(nmod), individual=ind)
+  pData(expSet) <- cov
+
+  edgeObj <- edgeSet(expSet, full.model=altMod, null.model=nullMod, individual=ind)
   return(edgeObj)  
 }
