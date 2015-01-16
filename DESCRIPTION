@@ -3,7 +3,7 @@ Type: Package
 Title: Extraction and Analysis of Differential Gene Expression
 Date: 2014-06-01
 Version: 0.99.0
-Author: John D. Storey <jstorey@princeton.edu>, Andrew J. Bass <ajbass@princeton.edu>
+Author: John D. Storey <jstorey@princeton.edu>, Jeffrey T. Leek <jtleek@jhu.edu> and Andrew J. Bass <ajbass@princeton.edu>
 Maintainer: John D. Storey <jstorey@princeton.edu>
 biocViews: MultipleComparisons, DifferentialExpression, TimeCourse, Regression
 Description: The edge package is an integrated differential expression analysis 
