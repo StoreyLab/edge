@@ -200,7 +200,7 @@ edgeModel <- function(data, cov, altMod=NULL, nullMod=NULL, ind=NULL, weights=NU
   if (is.null(nullMod)) {
     nullMod <- ~1
   }
-  if (!is(altMod, "formula") | is(nullMod, "formula")) {
+  if (!is(altMod, "formula") | !is(nullMod, "formula")) {
     stop("alternative and null models must be formatted as a formula")
   }
 

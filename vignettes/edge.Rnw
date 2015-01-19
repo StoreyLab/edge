@@ -43,11 +43,13 @@ foo <- packageDescription("edge")
 \newpage
 \section{Introduction}
 
-{\tt edge} is a package for significance analysis of DNA micro-array experiments and is able to identify genes that are differentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). {\tt edge} performs significance analysis by using a new method developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the odp-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a more intuitive, often times more powerful, approach to multiple hypothesis testing problems when compared to traditional methods. 
+{\tt edge} is a package for significance analysis of DNA micro-array experiments and is able to identify genes that are differentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). {\tt edge} performs significance analysis by using a new method developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a more intuitive, often times more powerful, approach to multiple hypothesis testing compared to traditional methods. 
 
-%\texttt{edge} provides methods, detailed in \cite{storey:2005}, that have been specifically designed for time course experiments because many things can go wrong when using traditional methods designed for static experiments. Even though some significance analysis packages allow for users to enter information about time points, a rigorously developed set of methodology that simplifies the process for time course experiments is available in {\tt edge}. 
+There are three experimental designs where {\tt edge} can identify differentially expressed genes: static, time course and continuous response experiments. In a static sampling experiment, the arrays have been collected from distinct biological groups without respect to time. The goal is to identify genes that have a statistically significant difference in average expression across these distinct biological groups. The second type of experiment is a time course experiment, where the arrays have been sampled with respect to time from one or more distinct biological groups. If only one biological group has been sampled, then the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. If two or more biological groups have been sampled, then the goal is to identify genes that show ``between-class temporal differential expression'', i.e., genes that show statistically significant differences in expression over time between the various groups. The third type of experiment is continuous response, which means that the arrays have been collected from a continuously defined biological state without respect to time. The goal here is to identify genes whose expression shows a statistically significant change with respect to this continuous response.
 
-The improvements in power are substantial; Figure 1 shows a comparison between edge and five leading software packages, based on the \cite{hedenfalk:2001} breast cancer expression study. In addition to identifying differentially expressed genes, {\tt edge} includes implementations of popular packages such as {\tt snm} and {\tt sva}.  
+\texttt{edge} also provides methods that have been specifically designed for time course experiments because many things can go wrong when using the traditional methods that have been designed for static experiments. Even though some significance analysis packages allow for users to enter information about time points, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. 
+
+The improvements in power from using the optimal discovery procedure are substantial; Figure 1 shows a comparison between edge and five leading software packages, based on the \cite{hedenfalk:2001} breast cancer expression study. In addition to identifying differentially expressed genes, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue}.  
 
 \begin{figure}[ht]
 \begin{center}
@@ -57,10 +59,7 @@ The improvements in power are substantial; Figure 1 shows a comparison between e
 \label{fig:test}
 \end{figure}
 
-%There are three experimental designs where {\tt edge} can identify differentially expressed genes: static, time course and continuous response experiments. In a ``static sampling'' experiment, the arrays have been collected from distinct biological groups without respect to time. The goal is to identify genes that have a statistically significant difference in average expression across these distinct biological groups. The second type of experiment is a time course experiment, where the arrays have been sampled with respect to time from one or more distinct biological groups. If only one biological group has been sampled, then the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. If two or more biological groups have been sampled, then the goal is to identify genes that show ``between-class temporal differential expression'', i.e., genes that show statistically significant differences in expression over time between the various groups. The third type of experiment is a ``continuous response'' design, which means that the arrays have been collected from a continuously defined biological state without respect to time. The goal here is to identify genes whose expression shows a statistically significant change with respect to this continuous response.
-
 \section{Citing this package}
-
 \textbf{[1] \bibentry{storey:2007}} \\
 Theory paper that introduces the optimal discovery procedure and shows that it maximizes the expected true postive results for each number of fixed false positive results. The optimality is closely related to the false discovery rate.
 
@@ -69,6 +68,9 @@ Dicusses various ways of estimating the ODP statistic with applications to micro
 
 \textbf{[3] \bibentry{woo:leek:storey:2011}} \\
 Previous implementations of the ODP are computationally infeasible for a large number of hypothesis tests. This paper introduces a computationally efficient implementation of ODP that this package is based on.
+
+\textbf{[4] \bibentry{storey:2005}} \\
+A methodology for analyzing time course microarray data is introduced and applied to two studies on human. 
 
 \section{Getting help}
 Hopefully, most questions relating to the package will be answered in the vignette but to get a more detailed account of how to use the functions simply type within R:
@@ -86,7 +88,7 @@ kidexpr <- kidney$kidexpr
 age <- kidney$age
 sex <- kidney$sex
 @
-The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects and the {\tt sex} variable is whether the subjects were male or female. The expression values for the genes are contained in the {\tt kidexpr} variable which is a 1500 by 72 matrix (a small subset of the real dataset).
+The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects and the {\tt sex} variable is whether the subjects were male or female. The expression values for the genes are contained in the {\tt kidexpr} variable which is a 34061 by 133 matrix.
 
 Once the data has been loaded, the user has two options to create an {\tt edgeSet} object: {\tt edgeModel} or {\tt edgeStudy}. If the experiment models are unknown to the user, {\tt edgeStudy} can be used to create the models:
 <<make_eSet, echo=TRUE>>=
@@ -125,45 +127,47 @@ The following sections of the manual go through various case studies for a more 
 
 \section{Case study: static experiment}
 \label{sec:gibson}
-The {\tt gibson} dataset (see \cite{gibson:2008}) provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). We are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. 
+The {\tt gibson} dataset provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). We are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. See \cite{gibson:2008} for additional information regarding the data.
 
-To import the data:
+To import the data use the {\tt data} function:
 <<import_data_gib>>=
 data(gibson)
 names(gibson)
 @
-There are a few variables in the data set: {\tt batch}, {\tt gibexpr}, {\tt gender}, and {\tt location}. The three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. There are three {\tt locations} where individuals are sampled: ``VILLAGE'', ``DESERT'' and ``AGADIR''. At each location there were either ``males'' or ``females'' ({\tt gender}), and there were two different {\tt batches}. The {\tt gibexpr} variable contains the expression matrix of the experiment.
+There are a few variables in the data set: {\tt batch}, {\tt gibexpr}, {\tt gender}, and {\tt location}. The three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. The {\tt location} variable contains information on where individuals are sampled: ``VILLAGE'', ``DESERT'' or ``AGADIR''. The {\tt gender} variable specifies whether the individuals is a male or female and there are two different {\tt batches} in the study. The {\tt gibexpr} variable contains the expression matrix of the experiment.
 
 The expression values of the first gene are shown below:
 <<fig.height=4, fig.width=6, echo=FALSE>>=
 library(ggplot2)
-gender <- as.factor(gibson$gender) 
-location = as.matrix(gibson$location)
-batch = as.factor(gibson$batch)
+gender <- as.factor(as.matrix(gibson$gender) )
+location = as.factor(as.matrix(gibson$location))
+batch = as.factor(as.matrix(gibson$batch))
 
-qplot(location, gibson$gibexpr[1,], geom="point", colour=gender:batch, xlab= "location", ylab="expression")
+qplot(location, gibson$gibexpr[1,], geom="boxplot", colour=gender:batch, xlab= "location", ylab="expression")
 @
 
+It would be careless to conclude that individuals from ``VILLAGE'' are less expressed than other locations. Instead, the data needs to be adjusted with the covariates in the study.
+
 \subsection{Creating the alternative and null models}
-There are two ways to create the experimental models: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeModel} should be used by users unfamiliar with formulating the alternative and null models: 
+In the {\tt gibson} study, we are interested in finding differentially expressed genes within each location. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeModel} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
 <<edgeStudy_gib, dependson="import_data_gib">>=
 edgeObj <- edgeStudy(data = gibson$gibexpr, adj.var = cbind(gibson$gender, gibson$batch), grp = gibson$location, sampling = "static")
 @
 
-The {\tt gibson} study is a static experiment so the {\tt sampling} argument will be ``static''. The {\tt grp} argument is for the {\tt location} variable and the {\tt adj.var} argument is the adjustment variable.
+The {\tt adj.var} is for the adjustment variables, {\tt grp} is the variable containing the group assignments for each individual in the study and {\tt sampling} describes the type of experiment. Since {\tt gibson} is a static study, the {\tt sampling} argument will be ``static''. The {\tt grp} variable will be the location variable in the study and the adjustment variables are gender and batch.
 
-If the user is familiar with their alternative and null models then {\tt edgeModel} can be used to input the models directly:
-
+Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
 <<edgeModel_gib, dependson="import_data_gib">>=
 cov <- data.frame(Gender = gibson$gender, Batch = gibson$batch, Location = gibson$location)
 null.model <- ~Gender + Batch
 alt.model <- ~Gender + Batch + Location
-edgeObj <- edgeModel(data = gibson$gibexpr, cov = cov, altMod = alt.model, nullMod= null.model)
+edgeObj <- edgeModel(data = gibson$gibexpr, cov = cov, altMod = alt.model, nullMod = null.model)
 @
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment. Notice that the models must be a formula and contain the same variable names as in the {\tt cov} data frame.
+
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment. The null model contains the gender and batch covariables and the alternative model includes the location variable. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The variable {\tt edgeObj} is an {\tt edgeSet} object that stores all the relevant experimental data. It is discussed further in the next section. 
 
 \subsection{The {\tt edgeSet} object}
-Once either {\tt edgeModel} or {\tt edgeStudy} are used, a {\tt edgeSet} object is created. To view some of the slots contained in the object:
+Once either {\tt edgeModel} or {\tt edgeStudy} is used, an {\tt edgeSet} object is created. To view some of the slots contained in the object:
 <<edgeObjSlots_gib>>=
 slotNames(edgeObj)
 @
@@ -173,18 +177,18 @@ A description of each slot is listed below:
 \item {\tt null.model}: the null model of the experiment
 \item {\tt full.matrix}: the alternative model in matrix form
 \item {\tt null.matrix}: the null model in matrix form
-\item {\tt individual}: containing information on individuals in the experiment
+\item {\tt individual}: variable that keeps track of individuals (same individuals are sampled multiple times)
 \item {\tt qvalueObj}: {\tt qvalue} list
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
 {\tt ExpressionSet} contains the expression measurements and the covariates of the experiment. To access the expression values, one can use the function {\tt exprs} or to access the covariates, {\tt pData}. The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}.
 
-The key slot in {\tt edgeObj} is the {\tt qvalueObj} which should be the only empty slot right now. The other slots are directly related to the input data and hypothesis models. As an example of how to access the slots of an {\tt edgeObj} lets say we are interested in viewing the models. The models can be accessed by:
+As an example of how to access the slots of {\tt edgeObj} lets say we are interested in viewing the alternative and null models. The models can be accessed by:
 <<gibson_acc_fm, eval=TRUE, dependson="edgeModel_gib">>=
 fullModel(edgeObj)
 nullModel(edgeObj)
 @
-Now that the models have been verified, we can extract them in matrix form for additional analysis by
+Now that the models have been verified, we can extract them in matrix form for additional analysis:
 <<gibson_acc_fmm, eval=TRUE, dependson="edgeModel_gib">>=
 full.matrix <- fullMatrix(edgeObj)
 null.matrix <- nullMatrix(edgeObj)
@@ -228,7 +232,7 @@ batch = as.factor(gibson$batch)
 
 qplot(location, fitVals[1,], geom="point", colour=gender:batch, xlab= "location", ylab="expression")
 @
-
+Interpreting the models for hypothesis testing is very intuitive: Does the alternative model better fit the data when compared to the null model? 
 \subsection{Significance analysis}
 The user can either use the function {\tt odp} or {\tt lrt} for significance analysis. To use {\tt odp} or {\tt lrt} on the {\tt edgeSet} object:
   <<kd_3_gib, eval=TRUE, cache=FALSE,dependson="cr_edgeSet">>=
@@ -275,13 +279,16 @@ hist(qval)
 
 \section{Case study: independent time course study}
 \label{sec:gibson}
-The {\tt kidney} dataset is an independent time course study;  The goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. Gene expression measurements from kidney samples were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. To access the data: 
+The {\tt kidney} dataset is an independent time course study. The goal of the experiment is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. The study measured gene expression in the kidney from 72 human subjects ranging in age from 27 to 92 years. There is only one array per sample and the subjects age and tissue type are recorded. 
+
+To access the data: 
 <<import_data_kid>>=
 data(kidney)
 names(kidney)
 @
 
-There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. The two main covariates of interest for this example are the {\tt sex} and {\tt age} covariates. The {\tt sex} variable is whether the subject was male or female and the {\tt age} variable is the age of the patients. 
+There are two covariates in the data set: {\tt sex} and {\tt age}. The {\tt sex} variable is whether the subject was male, ``m'', or female, ``f'', and the {\tt age} variable is the age of the patients. 
+
 As a prelimanary analysis, lets view the first gene:
 <<hist,echo=FALSE, fig.width=6, fig.height=4>>=
 kidexpr <- kidney$kidexpr
