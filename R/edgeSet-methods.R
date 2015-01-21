@@ -263,10 +263,12 @@ setMethod("edgeSVA",
             sv.sva <- sva(exprs(object),
                           mod0 = null.matrix,
                           mod = full.matrix, ...)$sv
+            colnames(sv.sva) <- paste("SV", 1:ncol(sv.sva), sep="")
             nullMatrix(object) <- cbind(sv.sva, object@null.matrix)
             fullMatrix(object) <- cbind(sv.sva, object@full.matrix)
-           # fullModel(object) <- update(fullModel(edgeObj), ~. + sur.var)
-            #nullModel(object) <- update(nullModel(edgeObj), ~. + sur.var)
+            pData(object) <- cbind(pData(object), sv.sva) 
+            fullModel(object) <- as.formula(paste("~",(paste(c(attr(terms(fullModel(edgeObj)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
+            nullModel(object) <-  as.formula(paste("~",(paste(c(attr(terms(nullModel(edgeObj)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
             validObject(object)
             object
           })
