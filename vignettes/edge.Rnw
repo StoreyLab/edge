@@ -43,11 +43,11 @@ foo <- packageDescription("edge")
 \newpage
 \section{Introduction}
 
-{\tt edge} is a package for significance analysis of DNA micro-array experiments and is able to identify genes that are differentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). {\tt edge} performs significance analysis by using a new method developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a more intuitive, often times more powerful, approach to multiple hypothesis testing compared to traditional methods. The improvements in power from using the optimal discovery procedure are substantial; Figure~\ref{fig:Comparison} shows a comparison between edge and five leading software packages, based on the \cite{hedenfalk:2001} breast cancer expression study.
+{\tt edge} is a package for significance analysis of DNA micro-array experiments and is able to identify genes that are differentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). {\tt edge} performs significance analysis by using a new method developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a more intuitive, often times more powerful, approach to multiple hypothesis testing when compared to traditional methods. The improvements in power from using the optimal discovery procedure are substantial; Figure~\ref{fig:Comparison} shows a comparison between edge and five leading software packages based on the \cite{hedenfalk:2001} breast cancer expression study.
 
-\texttt{edge} also implements strategies that have been specifically designed for time course experiments because many things can go wrong when using the traditional methods that have been designed for static experiments. Even though some significance analysis packages allow for users to enter information about time points, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. In addition to identifying differentially expressed genes in static and time course studies, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue} that help simplify the analysis process for researchers. 
+\texttt{edge} also implements strategies that have been specifically designed for time course experiments. Many things can go wrong when using methods that have been designed for static experiments, and even though some significance analysis packages allow for users to enter information about time points, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. In addition to identifying differentially expressed genes in both static and time course studies, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue} to help simplify the analysis process for researchers. 
 
-The rest of the document details how to use {\tt edge} in three different case studies: static, independent time course and longitudinal time course. For additional information regarding the optimal discovery procedure or the \cite{storey:2005} methodology for time course experiments,  see section~\ref{sec:citepackage}.
+The rest of the document details how to use {\tt edge} in three different case studies: static, independent time course and longitudinal time course. For additional information regarding the optimal discovery procedure or the \cite{storey:2005} methodology for time course experiments, see section~\ref{sec:citepackage}.
 
 \section{Citing this package}
 \label{sec:citepackage}
@@ -79,7 +79,7 @@ kidexpr <- kidney$kidexpr
 age <- kidney$age
 sex <- kidney$sex
 @
-The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects and the {\tt sex} variable is whether the subjects were male or female. The expression values for the genes are contained in the {\tt kidexpr} variable which is a 34061 by 133 matrix.
+The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects and the {\tt sex} variable is whether the subjects were male or female. The expression values for the genes are contained in the {\tt kidexpr} variable.
 
 Once the data has been loaded, the user has two options to create an {\tt edgeSet} object: {\tt edgeModel} or {\tt edgeStudy}. If the experiment models are unknown to the user, {\tt edgeStudy} can be used to create the models:
 <<make_eSet, echo=TRUE, cache=TRUE>>=
@@ -99,8 +99,9 @@ full.model <- ~sex + ns(age, df=4)
 
 edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, altMod = full.model)
 @
+The {\tt cov} is a data frame of covariates, the {\tt nullMod} is the null model and the {\tt altMod} is the alternative model. The input {\tt cov} is a data frame with the column names the same as the variables in the alternative and null models. See \cite{storey:2005} to see why a natural spline curve is fit to the time variable in the study. 
 
-Once the {\tt edgeSet} object is created, the {\tt odp} or {\tt lrt} function can be used to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
+The {\tt odp} or {\tt lrt} function can be used on {\tt edgeObj} to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
 <<quick_start_eSet, dependson="quick_start_eModel", eval=TRUE, cache=TRUE>>=
 # optimal discovery procedure
 edgeODP <- odp(edgeObj, verbose=FALSE)
@@ -311,7 +312,7 @@ Alternatively, if the user is familiar with their alternative and null models in
 cov <- data.frame(sex = sex, age = age)
 null.model <- ~sex
 alt.model <- ~sex + ns(age, df=4)
-edgeObj <- edgeModel(data = kidexpr, cov = cov, altMod = alt.model, nullMod = null.model)
+edgeKid <- edgeModel(data = kidexpr, cov = cov, altMod = alt.model, nullMod = null.model)
 @
 
 The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the alternative model includes the {\tt age} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene as it ages in the kidney. 
@@ -455,7 +456,7 @@ As an example, the expression values of the first gene are shown in Figure~\ref{
 \subsection{Creating the alternative and null models}
 In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
 <<edgeStudy_end, dependson="import_data_end", cache=TRUE>>=
-edgeObj <- edgeStudy(data = endotoxin$endoexpr, grp = endotoxin$class, tme = endotoxin$time, ind = endotoxin$ind, sampling = "timecourse")
+edgeEndo <- edgeStudy(data = endotoxin$endoexpr, grp = endotoxin$class, tme = endotoxin$time, ind = endotoxin$ind, sampling = "timecourse")
 @
 
 {\tt grp} is for the variable which group each individual belongs to, {\tt tme} is the time variable, {\tt ind} is used when individuals are sampling multiple times and {\tt sampling} describes the type of experiment. Since {\tt endotoxin} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt tme} variable will be the {\tt time} variable, {\tt ind} is the {\tt individuals} variable and the {\tt grp} variable is {\tt class}.
@@ -465,7 +466,7 @@ Alternatively, if the user is familiar with their alternative and null models in
 cov <- data.frame(ind = endotoxin$ind, tme = endotoxin$time, grp = endotoxin$class)
 null.model <- ~grp + ns(tme, df = 2, intercept = FALSE)
 alt.model <- ~grp + ns(tme, df = 2, intercept = FALSE) + (grp):ns(tme, df = 2, intercept = FALSE)
-edgeObj <- edgeModel(data = endotoxin$endoexpr, cov = cov, altMod = alt.model, nullMod = null.model)
+edgeEndo <- edgeModel(data = endotoxin$endoexpr, cov = cov, altMod = alt.model, nullMod = null.model)
 @
 
 The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene as it ages in the kidney. 
@@ -475,7 +476,7 @@ The variable {\tt edgeObj} is an {\tt edgeSet} object that stores all the releva
 \subsection{The {\tt edgeSet} object}
 Once either {\tt edgeModel} or {\tt edgeStudy} is used, an {\tt edgeSet} object is created. To view the slots contained in the object:
 <<edgeObjSlots_end>>=
-slotNames(edgeObj)
+slotNames(edgeEndo)
 @
 A description of each slot is listed below: 
 \begin{itemize}
@@ -490,27 +491,27 @@ A description of each slot is listed below:
 
 {\tt ExpressionSet} contains the expression measurements and other information from the experiment. The {\tt edgeSet} object inherits all the functions from an {\tt ExpressionSet} object. As an example, to access the expression values, one can use the function {\tt exprs} or to access the covariates, {\tt pData}:
 <<exprsCov_end>>=
-gibexpr <- exprs(edgeObj)
-cov <- pData(edgeObj)
+gibexpr <- exprs(edgeEndo)
+cov <- pData(edgeEndo)
 @
 The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. See the advanced section to get a better understanding of how {\tt ExpressionSet} objects integrate into the {\tt edge} framework.
 
 As an example of how to access the slots of {\tt edgeObj} suppose we are interested in viewing the alternative and null models. The models can be accessed by:
 <<endo_acc_fm, dependson="edgeModel_end">>=
-fullModel(edgeObj)
-nullModel(edgeObj)
+fullModel(edgeEndo)
+nullModel(edgeEndo)
 @
 Next, we can extract the models in matrix form for computational analysis:
 <<endo_acc_fmm, eval=TRUE, dependson="edgeModel_end">>=
-full.matrix <- fullMatrix(edgeObj)
-null.matrix <- nullMatrix(edgeObj)
+full.matrix <- fullMatrix(edgeEndo)
+null.matrix <- nullMatrix(edgeEndo)
 @
 See {\tt ?edgeSet} for additional functions to access different slots of the {\tt edgeSet} object. 
 
 \subsection{Fitting the data}
 The {\tt edgeFit} function is an implementation of least squares using the alternative and null models:
 <<tmp2_end, dependson="edgeModel_end">>=
-efObj <- edgeFit(edgeObj, stat.type="lrt")
+efObj <- edgeFit(edgeEndo, stat.type="lrt")
 @
 The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lrt} fitted values. The difference between choosing ``odp'' and ``lrt'' is that ``odp'' centers the data by the null model fit which is necessary for downstream analysis in the optimal discovery procedure. {\tt edgeFit} creates another object with the following slots:
 \begin{itemize}
@@ -546,14 +547,14 @@ Interpreting the models in a hypothesis test is very intuitive: Does the alterna
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
 <<kd_323_gib, eval=TRUE, cache=TRUE>>=
-edgeLRT <- lrt(edgeObj, nullDistn="normal")
+edgeLRT <- lrt(edgeEndo, nullDistn="normal")
 @
 If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt lrt} for additional arguments.
 
 \subsubsection{Optimal discovery procedure}
 {\tt odp} performs the optimal discovery procedure, which is a new approach for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarentees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to FDR. The optimal discovery procedure can be implemented on an {\tt edgeSet} object by the {\tt odp} function:
 <<kd_23_gib, eval=TRUE, cache=TRUE>>=
-edgeODP <- odp(edgeObj, bs.its=30, verbose=FALSE, n.mods=50)
+edgeODP <- odp(edgeEndo, bs.its=30, verbose=FALSE, n.mods=50)
 @
 The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters. 
 
@@ -591,16 +592,32 @@ fdr.level <- 0.01
 sigGenes <- qval < fdr.level
 @
 
-\section{Using the sva package}
-The {\tt sva} package is useful for removing batch effects or any unwanted variation in an experiment. It does this by forming surrogate variables to adjust for sources of unknown variation. {\tt edge} uses the {\tt sva} package in the function {\tt edgeSVA}. Suppose we are working with the {\tt edgeObj} created in the previous example, then to apply {\tt sva} to this object:
-<<sva>>=
-newEdgeObj <- edgeSVA(edgeObj, n.sv=5, B=10)
+\section{Using the {\tt sva} package}
+\label{sec:SVA}
+The {\tt sva} package is useful for removing batch effects or any unwanted variation in an experiment. It does this by forming surrogate variables to adjust for sources of unknown variation. Details on the algorithm can be found in \cite{leek:2007}. {\tt edge} uses the {\tt sva} package in the function {\tt edgeSVA}. Suppose we are working with the {\tt kidney} data in~\ref{sec:kidney}, then the first step is to create an {\tt edgeSet} object by either using {\tt edgeModel} or {\tt edgeStudy}:
+<<edgeModel_kidsva, dependson="import_data_kid">>=
+library(splines)
+cov <- data.frame(sex = sex, age = age)
+null.model <- ~sex
+alt.model <- ~sex + ns(age, df=4)
+edgeObj <- edgeModel(data = kidexpr, cov = cov, altMod = alt.model, nullMod = null.model)
 @
-{\tt n.sv} is the number of surrogate variables and {\tt B} is the number of bootstraps. All the arguments from {\tt sva} can be passed into {\tt edgeSVA}. See {\tt ?sva} for additional input parameters in {\tt edgeSVA}.
 
-Now {\tt odp} can simply be used as before:
+To find the surrogate variables and add them to the experimental models in {\tt edgeObj}, use the function {\tt edgeSVA}:
+<<sva>>=
+
+newEdgeObj <- edgeSVA(edgeObj, n.sv=3, B=10)
+@
+{\tt n.sv} is the number of surrogate variables and {\tt B} is the number of bootstraps. See {\tt edgeSVA} for additional arguments. To see the terms that have been added to the models:
+<<sva_terms>>=
+fullModel(newEdgeObj)
+
+nullModel(newEdgeObj)
+@
+The variables SV1, SV2 and SV3 are the surrogate variables formed by {\tt sva}. Now {\tt odp} can be used as in previous examples:
 <<sva_odp>>=
 edgeODP <- odp(newEdgeObj, verbose=FALSE)
+
 summary(edgeODP)
 @
 
@@ -611,6 +628,57 @@ qvals <- qvalObj$qvalues
 lfdr <- qvalObj$lfdr
 pvals <- qvalObj$pvalues
 @
+
+\section{Using the {\tt snm} package}
+The {\tt snm} package allows for supervised normalization of microarrays on a gene expression matrix. Details on the algorithm can be found in \cite{mecham:2010}. The {\tt snm} package is implemented in the {\tt edgeSNM} function. Continuing the analysis on the {\tt kidney} study in~\ref{sec:kidney}:
+<<edgeStudy_kidsnm, dependson="import_data_kid", cache=TRUE>>=
+# create models
+edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, bio.var = age, sampling = "timecourse")
+@
+Now that we have created {\tt edgeObj}, we can adjust for additional array effects, dye effects and other intensity-dependent effects:
+<<edgeSNM>>=
+int.var <- data.frame(array.effects = as.factor(1:72))
+edgeObj <- edgeSNM(edgeObj, int.var = int.var, diagnose=FALSE, verbose=FALSE)
+@
+The {\tt int.var} is where the data frame of intensity-dependent effects are inputed, {\tt diagnose} is a flag to let the software know whether to produce diagnostic plots. Additional arguments can be found by typing {\tt ?edgeSNM}. The authors of {\tt snm} recommend that the probe level data be analyzed on a log-transformed scale and that the normalized data be inspected for latent structure using SVA~\ref{sec:SVA}. 
+
+Once the data has been normalized, {\tt odp} can be used for get significance results:
+<<snm_odp>>=
+edgeODP <- odp(edgeObj, verbose=FALSE)
+
+summary(edgeODP)
+@
+
+And to extract the q-values, local false discovery rates and p-values:
+<<snm_eres>>==
+qvalObj <- qvalueObj(edgeODP)
+qvals <- qvalObj$qvalues
+lfdr <- qvalObj$lfdr
+pvals <- qvalObj$pvalues
+@
+
+
+\section{Using the {\tt qvalue} package}
+After {\tt odp} or {\tt lrt} is used, the user may wish to change some parameters used when calculating the q-values. This can be done by using the {\tt edgeQvalue} function. Lets review the analysis process for the {\tt kidney} dataset in~\ref{sec:kidney}: create the alternative and null models and then run {\tt odp} or {\tt lrt} to get significance results. Applying these steps in the {\tt kidney} dataset:
+
+<<edgeStudy_kidqval, dependson="import_data_kid", cache=TRUE>>=
+# create models
+edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, bio.var = age, sampling = "timecourse")
+# run significance analysis
+edgeObj <- odp(edgeObj, verbose=FALSE)
+@
+
+Suppose we wanted to estimate $pi_{0}$ using the ``bootstrap'' method in {\tt qvalue} (see {\tt qvalue} vignette for more details):
+<<qvalChange>>=
+old_pi0est <- qvalueObj(edgeObj)$pi0
+edgeObj <- edgeQvalue(edgeObj, pi0.method="bootstrap")
+new_pi0est <- qvalueObj(edgeObj)$pi0
+@
+<<qvalueChangePrint, echo=FALSE>>=
+print(data.frame(old_pi0est=old_pi0est, new_pi0est=new_pi0est))
+@
+In this case, there is negligible difference between using the ``smoother'' method and ``bootstrap'' method but the point is that the arguments from the {\tt qvalue} package can be passed through {\tt edgeQvalue}. See {\tt edgeQvalue} for additional information.
+
 
 \section{Figures}
 \begin{figure}[!htbp]
