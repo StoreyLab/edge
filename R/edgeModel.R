@@ -85,12 +85,12 @@ edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=N
     sampling <- match.arg(sampling, choices=c("static", "timecourse")) 
     if (!is.null(grp)) {
       if (is.factor(grp)) {
-        grp <- data.frame(model.matrix(~grp))
+        grp <- data.frame(grp = as.factor(grp))
       } else {
         stop("grp must be a factor")
       }
-      intercept <- !apply(grp, 2, var)
-      grp <- subset(grp, select=!intercept)
+     # intercept <- !apply(grp, 2, var)
+      #grp <- subset(grp, select=!intercept)
     } else {
       if(sampling == "static") {
         stop("grp variable cannot be missing for static sampling.")
