@@ -18,7 +18,7 @@
 \usepackage[utf8]{inputenc}
 \nobibliography*
 
-\Sexpr{library(knitr); opts_chunk$set(tidy=TRUE, cache=TRUE, warning=FALSE, message=FALSE,fig.align='center')}
+\Sexpr{library(knitr); library(splines); library(edge); opts_chunk$set(tidy=TRUE, cache=TRUE, warning=FALSE, message=FALSE,fig.align='center')}
 
 \begin{document}
 
@@ -72,34 +72,39 @@ help(package="edge")
 
 \section{Quick start guide}
 To get started, first load the {\tt kidney} dataset included in the package: 
-<<qsg_data>>=
+<<qs_load_data>>=
 library(edge)
 data(kidney)
-kidexpr <- kidney$kidexpr
-age <- kidney$age
-sex <- kidney$sex
+names(kidney)
 @
-The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects and the {\tt sex} variable is whether the subjects were male or female. The expression values for the genes are contained in the {\tt kidexpr} variable.
+The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects, the {\tt sex} variable is whether the subjects were male or female and the {\tt tissue} variable is whether the tissue sample is from the cortex or medula. The expression values for the genes are contained in the {\tt kidexpr} variable. In this example, we are only interested in the cortex samples:
+<<qs_assign>>=
+kidexpr <- kidney$kidexpr[, kidney$tissue == "c"]
+age <- kidney$age[kidney$tissue == "c"]
+sex <- kidney$sex[kidney$tissue == "c"]
 
-Once the data has been loaded, the user has two options to create an {\tt edgeSet} object: {\tt edgeModel} or {\tt edgeStudy}. If the experiment models are unknown to the user, {\tt edgeStudy} can be used to create the models:
-<<make_eSet, echo=TRUE, cache=TRUE>>=
+@
+
+
+Once the data has been loaded, the user has two options to create the experimental models: {\tt edgeModel} or {\tt edgeStudy}. If the experiment models are unknown to the user, {\tt edgeStudy} can be used to create the models:
+<<qs_edgeStudy, echo=TRUE, cache=TRUE>>=
 edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse")
 fullMod <- fullModel(edgeObj)
 nullMod <- nullModel(edgeObj)
+
 @
 The variable {\tt sampling} describes the type of experiment performed, {\tt adj.var} is the adjustment variable and {\tt tme} is the time variable in the study. If the experiment is more complex then type {\tt ?edgeStudy} for additional arguments.  
 
 If the alternative and null models are known to the user then {\tt edgeModel} can be used to make an {\tt edgeSet} object:
-<<make_eSet2, echo=TRUE, cache=TRUE>>=
+<<qs_edgeModel, echo=TRUE, cache=TRUE>>=
 library(splines)
-# alternative and null models
 cov <- data.frame(sex = sex, age = age) 
 null.model <- ~sex 
 full.model <- ~sex + ns(age, df=4)
-
 edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, altMod = full.model)
+
 @
-The {\tt cov} is a data frame of covariates, the {\tt nullMod} is the null model and the {\tt altMod} is the alternative model. The input {\tt cov} is a data frame with the column names the same as the variables in the alternative and null models. See \cite{storey:2005} to see why a natural spline curve is fit to the time variable in the study. 
+The {\tt cov} is a data frame of covariates, the {\tt nullMod} is the null model and the {\tt altMod} is the alternative model. The input {\tt cov} is a data frame with the column names the same as the variables in the alternative and null models.
 
 The {\tt odp} or {\tt lrt} function can be used on {\tt edgeObj} to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
 <<quick_start_eSet, dependson="quick_start_eModel", eval=TRUE, cache=TRUE>>=
@@ -107,43 +112,45 @@ The {\tt odp} or {\tt lrt} function can be used on {\tt edgeObj} to implement ei
 edgeODP <- odp(edgeObj, verbose=FALSE)
 # likelihood ratio test
 edgeLRT <- lrt(edgeObj)
+
 @
-To access the p-values, q-values and local false discovery rates for each gene, use the function {\tt qvalueObj}:
+To access the $\pi_{0}$ estimate, p-values, q-values and local false discovery rates for each gene, use the function {\tt qvalueObj}:
 <<qsg_sum, eval=FALSE>>=
 qvalObj <- qvalueObj(edgeODP)
 qvals <- qvalObj$qvalues
 pvals <- qvalObj$pvalues
 lfdr <- qvalObj$lfdr
 pi0 <- qvalObj$pi0
+
 @
 The following sections of the manual go through various case studies for a more comprehensive overview of the {\tt edge} package.
 
 \section{Case study: static experiment}
 \label{sec:gibson}
-In the static sampling experiment, the arrays have been collected from distinct biological groups without respect to time. The goal is to identify genes that have a statistically significant difference in average expression across these distinct biological groups. 
+In the static sampling experiment, the arrays have been collected from distinct biological groups without respect to time. The goal is to identify genes that have a statistically significant difference in average expression across these distinct biological groups. The example data set that will be used in this section is the {\tt gibson} data set and it is a random subset of the data from \cite{gibson:2008}.
 
-The {\tt gibson} dataset provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). We are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. See \cite{gibson:2008} for additional information regarding the data.
+The {\tt gibson} data set provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). We are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. See \cite{gibson:2008} for additional information regarding the data.
 
 \subsection{Importing the data}
 To import the {\tt gibson} data use the {\tt data} function:
-<<import_data_gib>>=
+<<gibson_import_data>>=
 data(gibson)
 names(gibson)
 @
 There are a few variables in the data set: {\tt batch}, {\tt gibexpr}, {\tt gender}, and {\tt location}. The three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. The biological variable is the {\tt location} variable, which contains information on where individuals are sampled: ``VILLAGE'', ``DESERT'' or ``AGADIR''. The {\tt gender} variable specifies whether the individual is a male or a female and there are two different {\tt batches} in the study. The {\tt gibexpr} variable contains the gene expression measurements. 
 
-As an example, the expression values of the first gene are shown in Figure~\ref{fig:gplot}. In the figure, it appears that that individuals from ``VILLAGE'' are less expressed when compared to other lifestyles. We should stop short of that observation because the data needs to be adjusted with the experimental models. Before that, the alternative and null model of the study needs to be formulated which is discussed the next section.
+As an example, the expression values of the first gene are shown in Figure~\ref{fig:gplot}. In the figure, it appears that the individuals from ``VILLAGE'' are more expressed when compared to other lifestyles. We should stop short of that observation because the data needs to be adjusted with the experimental models. Before that, the alternative and null model of the study needs to be carefully formulated which is discussed the next section.
 
 \subsection{Creating the alternative and null models}
 In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
-<<edgeStudy_gib, dependson="import_data_gib", cache=TRUE>>=
+<<gibson_edgeStudy, dependson="gibson_import_data", cache=TRUE>>=
 edgeObj <- edgeStudy(data = gibson$gibexpr, adj.var = cbind(gibson$gender, gibson$batch), grp = gibson$location, sampling = "static")
 @
 
 {\tt adj.var} is for the adjustment variables, {\tt grp} is the variable containing the group assignments for each individual in the study and {\tt sampling} describes the type of experiment. Since {\tt gibson} is a static study, the {\tt sampling} argument will be ``static''. The {\tt grp} variable will be the {\tt location} variable and the adjustment variables are {\tt gender} and {\tt batch}.
 
 Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
-<<edgeModel_gib, dependson="import_data_gib">>=
+<<gibson_edgeModel, dependson="gibson_import_data">>=
 cov <- data.frame(Gender = gibson$gender, Batch = gibson$batch, Location = gibson$location)
 null.model <- ~Gender + Batch
 alt.model <- ~Gender + Batch + Location
@@ -156,7 +163,7 @@ The variable {\tt edgeObj} is an {\tt edgeSet} object that stores all the releva
 
 \subsection{The {\tt edgeSet} object}
 Once either {\tt edgeModel} or {\tt edgeStudy} is used, an {\tt edgeSet} object is created. To view the slots contained in the object:
-<<edgeObjSlots_gib>>=
+<<gibson_edgeSet_slotNames>>=
 slotNames(edgeObj)
 @
 A description of each slot is listed below: 
@@ -166,24 +173,24 @@ A description of each slot is listed below:
 \item {\tt full.matrix}: the alternative model in matrix form
 \item {\tt null.matrix}: the null model in matrix form
 \item {\tt individual}: variable that keeps track of individuals (same individuals are sampled multiple times)
-\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the {\tt qvalue} package for more details.
+\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} package} for more details.
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
 
 {\tt ExpressionSet} contains the expression measurements and other information from the experiment. The {\tt edgeSet} object inherits all the functions from an {\tt ExpressionSet} object. As an example, to access the expression values, one can use the function {\tt exprs} or to access the covariates, {\tt pData}:
-<<exprsCov>>=
+<<gibson_ExpressionSet>>=
 gibexpr <- exprs(edgeObj)
 cov <- pData(edgeObj)
 @
-The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. See the advanced section to get a better understanding of how {\tt ExpressionSet} objects integrate into the {\tt edge} framework.
+The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \href{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}{here}. See the section~\ref{sec:advanced} on {\tt ExpressionSets} to get a better understanding of how it integrates into the {\tt edge} framework.
 
 As an example of how to access the slots of {\tt edgeObj} suppose we are interested in viewing the alternative and null models. The models can be accessed by:
-<<gibson_acc_fm, dependson="edgeModel_gib">>=
+<<gibson_models, dependson="gibson_edgeModel">>=
 fullModel(edgeObj)
 nullModel(edgeObj)
 @
 Next, we can extract the models in matrix form for computational analysis:
-<<gibson_acc_fmm, eval=TRUE, dependson="edgeModel_gib">>=
+<<gibson_matrix, eval=TRUE, dependson="gibson_edgeModel">>=
 full.matrix <- fullMatrix(edgeObj)
 null.matrix <- nullMatrix(edgeObj)
 @
@@ -191,7 +198,7 @@ See {\tt ?edgeSet} for additional functions to access different slots of the {\t
 
 \subsection{Fitting the data}
 The {\tt edgeFit} function is an implementation of least squares using the alternative and null models:
-<<tmp2_gib, dependson="edgeModel_gib">>=
+<<gibson_edgeFit, dependson="gibson_edgeModel">>=
 efObj <- edgeFit(edgeObj, stat.type="lrt")
 @
 The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lrt} fitted values. The difference between choosing ``odp'' and ``lrt'' is that ``odp'' centers the data by the null model fit which is necessary for downstream analysis in the optimal discovery procedure. {\tt edgeFit} creates another object with the following slots:
@@ -206,16 +213,16 @@ The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lr
 \end{itemize}
 
 To access the fitted coefficients of the alternative model in {\tt efObj}:
-<<betacoef, eval=FALSE, dependson="tmp2_gib">>=
+<<gibson_betacoef, eval=FALSE, dependson="gibson_edgeFit">>=
 betaCoef(efObj)
 @
 To access the alternative and null residuals:
-<<fres, eval=FALSE, dependson="tmp2_gib">>=
+<<gibson_residuals, eval=FALSE, dependson="gibson_edgeFit">>=
 alt.res <- resFull(efObj)
 null.res <- resNull(efObj)
 @
 To access the fitted values:
-<<ffit, dependson="tmp2_gib">>=
+<<gibson_fitted, dependson="gibson_edgeFit">>=
 alt.fitted <- fitFull(efObj)
 null.fitted <- fitNull(efObj)
 @
@@ -223,32 +230,30 @@ null.fitted <- fitNull(efObj)
 See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the first gene is shown in Figure~\ref{fig:gplotFit}. The null model fit is the average expression value across the interaction of {\tt batch} and {\tt sex}. The alternative model fit seems to pick up some differences relative to the null model. Next, we have to test whether the observed differences between models in Figure~\ref{fig:gplotFit} is significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it's significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude that it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
 <<kd_33_gib, eval=TRUE, cache=TRUE>>=
 edgeLRT <- lrt(edgeObj, nullDistn="normal")
 @
-If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt lrt} for additional arguments.
+If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt ?lrt} for additional arguments.
 
 
 
 \subsubsection{Optimal discovery procedure}
-{\tt odp} performs the optimal discovery procedure, which is a new approach for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarentees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to FDR. The optimal discovery procedure can be implemented on an {\tt edgeSet} object by the {\tt odp} function:
+{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:2005} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edgeObj} by the {\tt odp} function:
 <<kd_3_gib, eval=TRUE, cache=TRUE>>=
 edgeODP <- odp(edgeObj, bs.its=30, verbose=FALSE, n.mods=50)
 @
-The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters. 
-
-{\tt n.mods} controls the number of clusters in the k-means algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm. The number of {\tt bs.its} iterations recommended is 100.
+The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters in the k-means algorithm. A k-means algorithm is used to assign genes to groups in order to speed the computational time of the algorithm. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm.
 
 \subsection{Significance results}
 The {\tt summary} function can be used on an {\tt edgeSet} object to give an overview of the analysis:
 <<dependson = "kd_3_gib">>=
 summary(edgeODP)
 @
-There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the dataset. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
+There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the data set. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
 
 The function {\tt qvalueObj} can be used on {\tt edgeODP} to extract the significance results:
 <<qvalob2_gib>>=
@@ -259,69 +264,83 @@ The object {\tt sig.results} is a list with the following slots:
 <<qvalobj3_gib>>=
 names(sig.results)
 @
-The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}.
+The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}. To extract the p-values, q-values, local false discovery rates and the $\pi_{0}$ estimate:
 
-The q-value controls the false discovery at a level {\tt alpha} and so making significance decisions with q-values is recommended. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
-<<gibGene1, dependson="qvalob2_gib">>=
-qval <- sig.results$qvalues
-qval[1]
+<<qvalobj2232_gib>>=
+pvalues <- sig.results$pvalues
+qvalues <- sig.results$qvalues
+lfdr <- sig.results$lfdr
+pi0 <- sig.results$pi0
 @
 
-So at this particular gene, the q-value is $3.6e-5$. If we consider a false discovery cutoff rate of 0.01 then this gene is highly significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are indeed significant so this particular gene is differentially expressed at each location. 
+Making significance decisions based on p-values in multiple hypothesis testings problems can lead to accepting a lot of false positives in the study. Instead, using q-values to determine significant genes is recommended because it controls the false discovery rate at a level {\tt alpha}. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
+<<gibGene1, dependson="qvalob2_gib">>=
+qvalues[1]
+@
 
-To get a list of all the signifcant genes at a false discovery rate cutoff of 0.01:
+So for this particular gene, the q-value is $3.6e^{-5}$. If we consider a false discovery rate cutoff of 0.01 then this gene is highly significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are indeed significant so this particular gene is differentially expressed at each location. 
+
+To get a list of all the significant genes at a false discovery rate cutoff of 0.01:
 <<gibSig, dependson="qvalob2_gib">>=
 fdr.level <- 0.01 
-sigGenes <- qval < fdr.level
+sigGenes <- qvalues < fdr.level
 @
+
+View the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} vignette} to get a more thorough discussion in how to use p-values, q-values, $\pi_{0}$ estimate and local false discovery rates to determine significant genes.
 
 \section{Case study: independent time course experiment}
 \label{sec:kidney}
-In the independent time course study, the arrays have been sampled with respect to time from one biological group and the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time.
-
-Gene expression measurements from {\tt kidney} samples were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. See \cite{rodwell:2004} for additional information regarding the dataset.
+In the independent time course study, the arrays have been sampled with respect to time from one biological group and the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. The example data set used in this section is a kidney data set by \cite{rodwell:2004}. Gene expression measurements, from cortex and medulla samples in the kidney, were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. See \cite{rodwell:2004} for additional information regarding the data set.
 
 \subsection{Importing the data}
 To import the {\tt kidney} data use the {\tt data} function:
-<<import_data_kid>>=
+<<kidney_import_data>>=
 data(kidney)
 names(kidney)
 @
 
-There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. We will focus on the expression values of the cortex {\tt tissue} samples:
-<<crtx>>=
+There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. In this example, we will focus on the cortex {\tt tissue} samples:
+<<kidney_variables>>=
 sex <- kidney$sex[kidney$tissue == "c"]
 age <- kidney$age[kidney$tissue == "c"]
-kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+kidexpr <- kidney$kidexpr[, kidney$tissue == "c"]
 @
 
 The two main covariates of interest for this example are the {\tt sex} and {\tt age} covariates. The {\tt sex} variable is whether the subject was male or female and the {\tt age} variable is the age of the patients. {\tt kidexpr} contains the gene expression values for the study.
 
-As an example, the expression values of the first gene are shown in Figure~\ref{fig:kplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
+As an example of a gene in the study, the expression values of the fifth gene are shown in Figure~\ref{fig:kplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study which is discussed in the next section.
 
 \subsection{Creating the alternative and null models}
-In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
-<<edgeStudy_kid, dependson="import_data_kid", cache=TRUE>>=
-edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, bio.var = age, sampling = "timecourse")
+In order to find differentially expressed genes, the alternative and null model for the study need to be formulated. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
+<<kidney_edgeStudy, dependson="kidney_variables", cache=TRUE>>=
+edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse", basis.df=4)
 @
 
-{\tt adj.var} is for the adjustment variables, {\tt bio.var} is the biological variable and {\tt sampling} describes the type of experiment. Since {\tt kidney} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt bio.var} variable will be the {\tt age} variable and the adjustment variable is {\tt sex}.
+{\tt adj.var} is for the adjustment variables, {\tt tme} is the time variable, {\tt df} is the degrees of freedom for the spline fit, and {\tt sampling} describes the type of experiment. Since {\tt kidney} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt tme} variable will be the {\tt age} variable, {\tt df} will be 4 based on previous work by \cite{storey:2005} and the adjustment variable is {\tt sex}. To view the models generated by {\tt edgeStudy}:
+
+<<kidney_viewModels, dependson="kidney_variables", cache=TRUE>>=
+fullModel(edgeObj)
+nullModel(edgeObj)
+@
+
+Notice that the difference between the alternative and null model is the  natural spline fit of the {\tt age} variable. If we look at Figure~\ref{fig:kplot}, it becomes evident that a spline curve can be used to approximate the fit of the data, and 4 degrees of freedom is chosen based on previous analysis of the expression patterns. See \cite{storey:2005} for a detailed discussion on modelling in time course studies. 
 
 Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
-<<edgeModel_kid, dependson="import_data_kid">>=
+<<kidney_edgeModel, dependson="import_data_kid">>=
+library(splines)
 cov <- data.frame(sex = sex, age = age)
 null.model <- ~sex
 alt.model <- ~sex + ns(age, df=4)
-edgeKid <- edgeModel(data = kidexpr, cov = cov, altMod = alt.model, nullMod = null.model)
+edgeObj <- edgeModel(data = kidexpr, cov = cov, altMod = alt.model, nullMod = null.model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the alternative model includes the {\tt age} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene as it ages in the kidney. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the alternative model includes the {\tt age} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in the gene as it ages in the cortex. 
 
 The variable {\tt edgeObj} is an {\tt edgeSet} object that stores all the relevant experimental data. The {\tt edgeSet} object is discussed further in the next section. 
 
 \subsection{The {\tt edgeSet} object}
 Once either {\tt edgeModel} or {\tt edgeStudy} is used, an {\tt edgeSet} object is created. To view the slots contained in the object:
-<<edgeObjSlots_kid>>=
+<<kidney_edgeSet_slotNames>>=
 slotNames(edgeObj)
 @
 A description of each slot is listed below: 
@@ -331,24 +350,24 @@ A description of each slot is listed below:
 \item {\tt full.matrix}: the alternative model in matrix form
 \item {\tt null.matrix}: the null model in matrix form
 \item {\tt individual}: variable that keeps track of individuals (same individuals are sampled multiple times)
-\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the {\tt qvalue} package for more details.
+\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} package} for more details.
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
 
 {\tt ExpressionSet} contains the expression measurements and other information from the experiment. The {\tt edgeSet} object inherits all the functions from an {\tt ExpressionSet} object. As an example, to access the expression values, one can use the function {\tt exprs} or to access the covariates, {\tt pData}:
-<<exprsCov_kid>>=
+<<kidney_ExpressionSet>>=
 gibexpr <- exprs(edgeObj)
 cov <- pData(edgeObj)
 @
-The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. See the advanced section to get a better understanding of how {\tt ExpressionSet} objects integrate into the {\tt edge} framework.
+The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \href{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}{here}. See the section~\ref{sec:advanced} on {\tt ExpressionSets} to get a better understanding of how it integrates into the {\tt edge} framework.
 
 As an example of how to access the slots of {\tt edgeObj} suppose we are interested in viewing the alternative and null models. The models can be accessed by:
-<<kidney_acc_fm, dependson="edgeModel_kid">>=
+<<kidney_models, dependson="kidney_edgeModel">>=
 fullModel(edgeObj)
 nullModel(edgeObj)
 @
 Next, we can extract the models in matrix form for computational analysis:
-<<kidney_acc_fmm, eval=TRUE, dependson="edgeModel_kid">>=
+<<kidney_matrix, eval=TRUE, dependson="kidney_edgeModel">>=
 full.matrix <- fullMatrix(edgeObj)
 null.matrix <- nullMatrix(edgeObj)
 @
@@ -356,7 +375,7 @@ See {\tt ?edgeSet} for additional functions to access different slots of the {\t
 
 \subsection{Fitting the data}
 The {\tt edgeFit} function is an implementation of least squares using the alternative and null models:
-<<tmp2_kid, dependson="edgeModel_kid">>=
+<<kidney_edgeFit, dependson="kidney_edgeModel">>=
 efObj <- edgeFit(edgeObj, stat.type="lrt")
 @
 The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lrt} fitted values. The difference between choosing ``odp'' and ``lrt'' is that ``odp'' centers the data by the null model fit which is necessary for downstream analysis in the optimal discovery procedure. {\tt edgeFit} creates another object with the following slots:
@@ -371,112 +390,131 @@ The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lr
 \end{itemize}
 
 To access the fitted coefficients of the alternative model in {\tt efObj}:
-<<betacoef_kid, eval=FALSE, dependson="tmp2_kid">>=
+<<kidney_betaceof, eval=FALSE, dependson="tmp2_kid">>=
 betaCoef(efObj)
 @
 To access the alternative and null residuals:
-<<fres_kid, eval=FALSE, dependson="tmp2_kid">>=
+<<kidney_residuals, eval=FALSE, dependson="tmp2_kid">>=
 alt.res <- resFull(efObj)
 null.res <- resNull(efObj)
 @
 To access the fitted values:
-<<ffit_kid, dependson="tmp2_kid">>=
+<<kidney_fitted, dependson="tmp2_kid">>=
 alt.fitted <- fitFull(efObj)
 null.fitted <- fitNull(efObj)
 @
 
-See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the first gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the alternative model fits a pattern that might be observed in the raw data. Next, we have to test whether the observed differences between models in Figure~\ref{fig:kplotFit} is significant.
+See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the fifth gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the alternative model fits the raw data better than the null model. Next, we have to test whether the observed differences between models in Figure~\ref{fig:kplotFit} is significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it's significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the fifth gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it's significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
-<<kd_333_gib, eval=TRUE, cache=TRUE>>=
+<<echo=FALSE>>=
+library(splines)
+@
+<<kidney_lrt, eval=TRUE, cache=FALSE, dependson="kidney_edgeModel">>=
 edgeLRT <- lrt(edgeObj, nullDistn="normal")
 @
-If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt lrt} for additional arguments.
+If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt ?lrt} for additional arguments.
+
+
 
 \subsubsection{Optimal discovery procedure}
-{\tt odp} performs the optimal discovery procedure, which is a new approach for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarentees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to FDR. The optimal discovery procedure can be implemented on an {\tt edgeSet} object by the {\tt odp} function:
-<<kd_332_gib, eval=TRUE, cache=TRUE>>=
+{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:2005} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edgeObj} by the {\tt odp} function:
+<<echo=FALSE>>=
+library(splines)
+@
+<<kidney_odp, eval=TRUE, cache=FALSE, dependson="kidney_edgeModel">>=
 edgeODP <- odp(edgeObj, bs.its=30, verbose=FALSE, n.mods=50)
 @
-The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters. 
-
-{\tt n.mods} controls the number of clusters in the k-means algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm. The number of {\tt bs.its} iterations recommended is 100.
+The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters in the k-means algorithm. A k-means algorithm is used to assign genes to groups in order to speed the computational time of the algorithm. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm.
 
 \subsection{Significance results}
 The {\tt summary} function can be used on an {\tt edgeSet} object to give an overview of the analysis:
-<<dependson = "kd_3_gib">>=
+
+<<dependson = "kidney_odp">>=
 summary(edgeODP)
 @
-There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the dataset. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
+There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the data set. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
 
 The function {\tt qvalueObj} can be used on {\tt edgeODP} to extract the significance results:
-<<qvalob23_gib>>=
+<<kidney_sig>>=
 sig.results <- qvalueObj(edgeODP)
 @
 
 The object {\tt sig.results} is a list with the following slots:
-<<qvalobj33_gib>>=
+<<kidney_sigNames>>=
 names(sig.results)
 @
-The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}.
+The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}. To extract the p-values, q-values, local false discovery rates and the $\pi_{0}$ estimate:
 
-The q-value controls the false discovery at a level {\tt alpha} and so making significance decisions with q-values is recommended. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
-<<gibGene13, dependson="qvalob2_gib">>=
-qval <- sig.results$qvalues
-qval[1]
+<<kidney_extract, dependson="kidney_sig">>=
+pvalues <- sig.results$pvalues
+qvalues <- sig.results$qvalues
+lfdr <- sig.results$lfdr
+pi0 <- sig.results$pi0
 @
 
-So at this particular gene, the q-value is $3.6e-5$. If we consider a false discovery cutoff rate of 0.01 then this gene is highly significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are indeed significant so this particular gene is differentially expressed at each location. 
-
-To get a list of all the signifcant genes at a false discovery rate cutoff of 0.01:
-<<gibSig3, dependson="qvalob2_gib">>=
-fdr.level <- 0.01 
-sigGenes <- qval < fdr.level
+Making significance decisions based on p-values in multiple hypothesis testings problems can lead to accepting a lot of false positives in the study. Instead, using q-values to determine significant genes is recommended because it controls the false discovery rate at a level {\tt alpha}. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
+<<kidneyprint, dependson="kidney_extract">>=
+qvalues[5]
 @
+
+So for this particular gene, the q-value is \Sexpr{qvalues[5]}. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are not significant so this particular gene is not differentially expressed as the kidney ages. 
+
+To get a list of all the significant genes at a false discovery rate cutoff of 0.1:
+<<kidney_sigList, dependson="kidney_extract">>=
+fdr.level <- 0.1
+sigGenes <- qvalues < fdr.level
+@
+
+View the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} vignette} to get a more thorough discussion in how to use p-values, q-values, $\pi_{0}$ estimate and local false discovery rates to determine significant genes.
 
 \section{Case study: longitudinal time course experiment}
 \label{sec:endotoxin}
-In the longitudinal time course study, the goal is to identify genes that show ``between-class temporal differential expression'', i.e., genes that show statistically significant differences in expression over time between the various groups. The {\tt endotoxin} dataset provides gene expression measurements in an endotoxin study where four subjects were given endotoxin and four subjects were given a placebo. Blood samples were collected and leukocytes were isolated from the samples before infusion. Measurements were recorded at times 2, 4, 6, 9, 24 hours. We are interested in identifying genes that vary over time between the endotoxin and control groups.
+In the longitudinal time course study, the goal is to identify genes that show ``between-class temporal differential expression'', i.e., genes that show statistically significant differences in expression over time between the various groups. The {\tt endotoxin} data set provides gene expression measurements in an endotoxin study where four subjects were given endotoxin and four subjects were given a placebo. Blood samples were collected and leukocytes were isolated from the samples before infusion. Measurements were recorded at times 2, 4, 6, 9, 24 hours. We are interested in identifying genes that vary over time between the endotoxin and control groups. See \cite{calvano:2005} for more details regarding the {\tt endotoxin} dataset.
 
 \subsection{Importing the data}
 To import the {\tt endotoxin} data use the {\tt data} function:
-<<import_data_end>>=
+<<endotoxin_import_data>>=
 data(endotoxin)
 names(endotoxin)
 @
 
 There are a few covariates in this data set: {\tt expr}, {\tt class}, {\tt individual}, and {\tt time}. There are 8 individuals in the experiment ({\tt ind}) that were sampled at multiple time points ({\tt time}) that were either ``endotoxin'' or ``control'' ({\tt class}). The {\tt expr} variable contains the expression values of the experiment:
 
-As an example, the expression values of the first gene are shown in Figure~\ref{fig:eplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
+To show an example gene, the expression values of the second gene are shown in Figure~\ref{fig:eplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
 
 \subsection{Creating the alternative and null models}
 In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
-<<edgeStudy_end, dependson="import_data_end", cache=TRUE>>=
-edgeEndo <- edgeStudy(data = endotoxin$endoexpr, grp = endotoxin$class, tme = endotoxin$time, ind = endotoxin$ind, sampling = "timecourse")
+<<endotoxin_edgeStudy, dependson="endotoxin_import_data", cache=TRUE>>=
+edgeObj <- edgeStudy(data = endotoxin$endoexpr, grp = endotoxin$class, tme = endotoxin$time, ind = endotoxin$ind, sampling = "timecourse")
 @
 
-{\tt grp} is for the variable which group each individual belongs to, {\tt tme} is the time variable, {\tt ind} is used when individuals are sampling multiple times and {\tt sampling} describes the type of experiment. Since {\tt endotoxin} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt tme} variable will be the {\tt time} variable, {\tt ind} is the {\tt individuals} variable and the {\tt grp} variable is {\tt class}.
+{\tt grp} is for the variable which group each individual belongs to, {\tt tme} is the time variable, {\tt ind} is used when individuals are sampling multiple times and {\tt sampling} describes the type of experiment. Since {\tt endotoxin} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt tme} variable will be the {\tt time} variable, {\tt ind} is the {\tt individuals} variable and the {\tt grp} variable is {\tt class}. To view the models created by {\tt edgeStudy}:
 
-Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
-<<edgeModel_end, dependson="import_data_end">>=
+<<endotoxin_emodels>>=
+fullModel(edgeObj)
+nullModel(edgeObj)
+@
+See \cite{storey:2005} for how the models in the {\tt endotoxin} experiment are formed. Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
+<<endotoxin_edgeModel, dependson="endotoxin_import_data">>=
 cov <- data.frame(ind = endotoxin$ind, tme = endotoxin$time, grp = endotoxin$class)
 null.model <- ~grp + ns(tme, df = 2, intercept = FALSE)
 alt.model <- ~grp + ns(tme, df = 2, intercept = FALSE) + (grp):ns(tme, df = 2, intercept = FALSE)
-edgeEndo <- edgeModel(data = endotoxin$endoexpr, cov = cov, altMod = alt.model, nullMod = null.model)
+edgeObj <- edgeModel(data = endotoxin$endoexpr, cov = cov, altMod = alt.model, nullMod = null.model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene as it ages in the kidney. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene between the endotoxin and the control as time goes on. 
 
 The variable {\tt edgeObj} is an {\tt edgeSet} object that stores all the relevant experimental data. The {\tt edgeSet} object is discussed further in the next section. 
 
 \subsection{The {\tt edgeSet} object}
 Once either {\tt edgeModel} or {\tt edgeStudy} is used, an {\tt edgeSet} object is created. To view the slots contained in the object:
-<<edgeObjSlots_end>>=
-slotNames(edgeEndo)
+<<endotoxin_slotNames>>=
+slotNames(edgeObj)
 @
 A description of each slot is listed below: 
 \begin{itemize}
@@ -485,33 +523,33 @@ A description of each slot is listed below:
 \item {\tt full.matrix}: the alternative model in matrix form
 \item {\tt null.matrix}: the null model in matrix form
 \item {\tt individual}: variable that keeps track of individuals (same individuals are sampled multiple times)
-\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the {\tt qvalue} package for more details.
+\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} package} for more details.
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
 
 {\tt ExpressionSet} contains the expression measurements and other information from the experiment. The {\tt edgeSet} object inherits all the functions from an {\tt ExpressionSet} object. As an example, to access the expression values, one can use the function {\tt exprs} or to access the covariates, {\tt pData}:
-<<exprsCov_end>>=
-gibexpr <- exprs(edgeEndo)
-cov <- pData(edgeEndo)
+<<endotoxin_ExpressionSet>>=
+gibexpr <- exprs(edgeObj)
+cov <- pData(edgeObj)
 @
-The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. See the advanced section to get a better understanding of how {\tt ExpressionSet} objects integrate into the {\tt edge} framework.
+The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \href{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}{here}. See the section~\ref{sec:advanced} on {\tt ExpressionSets} to get a better understanding of how it integrates into the {\tt edge} framework.
 
 As an example of how to access the slots of {\tt edgeObj} suppose we are interested in viewing the alternative and null models. The models can be accessed by:
-<<endo_acc_fm, dependson="edgeModel_end">>=
-fullModel(edgeEndo)
-nullModel(edgeEndo)
+<<endotoxin_models, dependson="endotoxin_edgeModel">>=
+fullModel(edgeObj)
+nullModel(edgeObj)
 @
 Next, we can extract the models in matrix form for computational analysis:
-<<endo_acc_fmm, eval=TRUE, dependson="edgeModel_end">>=
-full.matrix <- fullMatrix(edgeEndo)
-null.matrix <- nullMatrix(edgeEndo)
+<<endotoxin_matrix, eval=TRUE, dependson="endotoxin_edgeModel">>=
+full.matrix <- fullMatrix(edgeObj)
+null.matrix <- nullMatrix(edgeObj)
 @
 See {\tt ?edgeSet} for additional functions to access different slots of the {\tt edgeSet} object. 
 
 \subsection{Fitting the data}
 The {\tt edgeFit} function is an implementation of least squares using the alternative and null models:
-<<tmp2_end, dependson="edgeModel_end">>=
-efObj <- edgeFit(edgeEndo, stat.type="lrt")
+<<endotoxin_edgeFit, dependson="endotoxin_edgeModel">>=
+efObj <- edgeFit(edgeObj, stat.type="lrt")
 @
 The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lrt} fitted values. The difference between choosing ``odp'' and ``lrt'' is that ``odp'' centers the data by the null model fit which is necessary for downstream analysis in the optimal discovery procedure. {\tt edgeFit} creates another object with the following slots:
 \begin{itemize}
@@ -525,72 +563,79 @@ The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lr
 \end{itemize}
 
 To access the fitted coefficients of the alternative model in {\tt efObj}:
-<<betacoef_end, eval=FALSE, dependson="tmp2_end">>=
+<<endotoxin_betacoef, eval=FALSE, dependson="endotoxin_edgeFit">>=
 betaCoef(efObj)
 @
 To access the alternative and null residuals:
-<<fres_end, eval=FALSE, dependson="tmp2_end">>=
+<<endotoxin_residuals, eval=FALSE, dependson="endotoxin_edgeFit">>=
 alt.res <- resFull(efObj)
 null.res <- resNull(efObj)
 @
 To access the fitted values:
-<<ffit_end, dependson="tmp2_end">>=
+<<endotoxin_fitted, dependson="endotoxin_edgeFit">>=
 alt.fitted <- fitFull(efObj)
 null.fitted <- fitNull(efObj)
 @
 
-See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the first gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the alternative model fits a pattern that might be observed in the raw data. Next, we have to test whether the observed differences between models in Figure~\ref{fig:eplotFit} is significant.
+See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the second gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the alternative model fits a pattern that might be observed in the raw data. Next, we have to test whether the observed differences between models in Figure~\ref{fig:eplotFit} is significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it's significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:eplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
-<<kd_323_gib, eval=TRUE, cache=TRUE>>=
-edgeLRT <- lrt(edgeEndo, nullDistn="normal")
+<<endotoxin_lrt, eval=TRUE, cache=FALSE, dependson="endotoxin_edgeModel">>=
+edgeLRT <- lrt(edgeObj, nullDistn="normal")
 @
-If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt lrt} for additional arguments.
+If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt ?lrt} for additional arguments.
 
 \subsubsection{Optimal discovery procedure}
-{\tt odp} performs the optimal discovery procedure, which is a new approach for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarentees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to FDR. The optimal discovery procedure can be implemented on an {\tt edgeSet} object by the {\tt odp} function:
-<<kd_23_gib, eval=TRUE, cache=TRUE>>=
-edgeODP <- odp(edgeEndo, bs.its=30, verbose=FALSE, n.mods=50)
+{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:2005} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edgeObj} by the {\tt odp} function:
+<<endotoxin_odp, eval=TRUE, cache=FALSE, dependson="endotoxin_edgeModel">>=
+edgeODP <- odp(edgeObj, bs.its=30, verbose=FALSE, n.mods=50)
 @
-The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters. 
-
-{\tt n.mods} controls the number of clusters in the k-means algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm. The number of {\tt bs.its} iterations recommended is 100.
+The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters in the k-means algorithm. A k-means algorithm is used to assign genes to groups in order to speed the computational time of the algorithm. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm.
 
 \subsection{Significance results}
 The {\tt summary} function can be used on an {\tt edgeSet} object to give an overview of the analysis:
-<<dependson = "kd_3_gib">>=
+
+<<dependson = "endotoxin_odp">>=
 summary(edgeODP)
 @
-There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the dataset. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
+There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the data set. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
 
 The function {\tt qvalueObj} can be used on {\tt edgeODP} to extract the significance results:
-<<qvalob22_gib>>=
+<<endotoxin_sig>>=
 sig.results <- qvalueObj(edgeODP)
 @
 
 The object {\tt sig.results} is a list with the following slots:
-<<qvalobj32_gib>>=
+<<endotoxin_sigNames>>=
 names(sig.results)
 @
-The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}.
+The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:eqvalHist}. To extract the p-values, q-values, local false discovery rates and the $\pi_{0}$ estimate:
 
-The q-value controls the false discovery at a level {\tt alpha} and so making significance decisions with q-values is recommended. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
-<<gibGene12, dependson="qvalob22_gib">>=
-qval <- sig.results$qvalues
-qval[1]
+<<endotoxin_extract, dependson="endotoxin_sig">>=
+pvalues <- sig.results$pvalues
+qvalues <- sig.results$qvalues
+lfdr <- sig.results$lfdr
+pi0 <- sig.results$pi0
 @
 
-So at this particular gene, the q-value is $3.6e-5$. If we consider a false discovery cutoff rate of 0.01 then this gene is highly significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are indeed significant so this particular gene is differentially expressed at each location. 
-
-To get a list of all the signifcant genes at a false discovery rate cutoff of 0.01:
-<<gibSig2, dependson="qvalob22_gib">>=
-fdr.level <- 0.01 
-sigGenes <- qval < fdr.level
+Making significance decisions based on p-values in multiple hypothesis testings problems can lead to accepting a lot of false positives in the study. Instead, using q-values to determine significant genes is recommended because it controls the false discovery rate at a level {\tt alpha}. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
+<<endotoxinprint, dependson="endotoxin_extract">>=
+qvalues[2]
 @
+
+So for this particular gene, the q-value is \Sexpr{qvalues[2]}. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:eplotFit} are not significant so this particular gene is not differentially expressed between {\tt class} as time varies. 
+
+To get a list of all the significant genes at a false discovery rate cutoff of 0.1:
+<<endotoxin_sigList, dependson="endotoxin_extract">>=
+fdr.level <- 0.1
+sigGenes <- qvalues < fdr.level
+@
+
+View the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} vignette} to get a more thorough discussion in how to use p-values, q-values, $\pi_{0}$ estimate and local false discovery rates to determine significant genes.
 
 \section{Using the {\tt sva} package}
 \label{sec:SVA}
@@ -631,26 +676,25 @@ pvals <- qvalObj$pvalues
 
 \section{Using the {\tt snm} package}
 The {\tt snm} package allows for supervised normalization of microarrays on a gene expression matrix. Details on the algorithm can be found in \cite{mecham:2010}. The {\tt snm} package is implemented in the {\tt edgeSNM} function. Continuing the analysis on the {\tt kidney} study in~\ref{sec:kidney}:
-<<edgeStudy_kidsnm, dependson="import_data_kid", cache=TRUE>>=
+<<edgeStudy_kidsnmn, dependson="import_data_kid", cache=TRUE>>=
 # create models
 edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, bio.var = age, sampling = "timecourse")
 @
 Now that we have created {\tt edgeObj}, we can adjust for additional array effects, dye effects and other intensity-dependent effects:
-<<edgeSNM>>=
+<<edgeSNM2>>=
 int.var <- data.frame(array.effects = as.factor(1:72))
 edgeObj <- edgeSNM(edgeObj, int.var = int.var, diagnose=FALSE, verbose=FALSE)
 @
 The {\tt int.var} is where the data frame of intensity-dependent effects are inputed, {\tt diagnose} is a flag to let the software know whether to produce diagnostic plots. Additional arguments can be found by typing {\tt ?edgeSNM}. The authors of {\tt snm} recommend that the probe level data be analyzed on a log-transformed scale and that the normalized data be inspected for latent structure using SVA~\ref{sec:SVA}. 
 
 Once the data has been normalized, {\tt odp} can be used for get significance results:
-<<snm_odp>>=
+<<snm_odp2>>=
 edgeODP <- odp(edgeObj, verbose=FALSE)
-
 summary(edgeODP)
 @
 
 And to extract the q-values, local false discovery rates and p-values:
-<<snm_eres>>==
+<<d_eres>>==
 qvalObj <- qvalueObj(edgeODP)
 qvals <- qvalObj$qvalues
 lfdr <- qvalObj$lfdr
@@ -680,6 +724,43 @@ print(data.frame(old_pi0est=old_pi0est, new_pi0est=new_pi0est))
 In this case, there is negligible difference between using the ``smoother'' method and ``bootstrap'' method but the point is that the arguments from the {\tt qvalue} package can be passed through {\tt edgeQvalue}. See {\tt edgeQvalue} for additional information.
 
 
+
+\section{Advanced topic: Using the ExpressionSet object}
+\label{sec:advanced}
+Using an existing {\tt ExpressionSet} object from an experiment is another alternative to using {\tt edge}. Let's create an {\tt ExpressionSet} object from the {\tt kidney} dataset:
+<<kidney_expSet, tidy=FALSE, eval=TRUE, dependson=c("crtx","import_data")>>==
+library(edge)
+anonDf <- as(data.frame(age=age, sex=sex), "AnnotatedDataFrame")
+expSet <- ExpressionSet(assayData = kidexpr,
+phenoData = anonDf)
+@
+
+In the {\tt kidney} experiment they were interested in finding the effect of age on gene expression. In this case, we handle the time variable, {\tt age}, by fitting a natural spline curve as done in \cite{storey:2005}. The relevant models for the experiment can be written as
+<<kidneyModel>>=
+library(splines)
+nullMod <- ~1 + sex
+altMod <- ~1 + sex + ns(age, intercept=FALSE, df=4)
+@
+Where {\tt nullMod} is the null model and {\tt altMod} is the alternative model. The {\tt sex} covariate is an adjustment variable while {\tt age} is the biological variable of interest. It is important to note that it is necessary to include the adjustment variables in the formulation of the alternative models as done above.
+
+Having both {\tt expSet} and the hypothesis models, {\tt edgeSet} can then be used to create an {\tt edgeSet} object:
+<<cr_edgeSet, eval=TRUE, dependson=c("kidneyModel","kidney_expSet")>>==
+edgeObj <- edgeSet(expSet, full.model=altMod, null.model=nullMod)
+@
+We can now simply run {\tt odp} for significance results:
+<<aODP>>=
+edgeODP <- odp(edgeObj, verbose=FALSE)
+summary(edgeODP)
+@
+
+And use the function {\tt qvalueObj} to extract the q-values, local false discovery rates and p-values:
+<<snm_eres>>==
+qvalObj <- qvalueObj(edgeODP)
+qvals <- qvalObj$qvalues
+lfdr <- qvalObj$lfdr
+pvals <- qvalObj$pvalues
+@
+
 \section{Figures}
 \begin{figure}[!htbp]
  \centering
@@ -690,13 +771,12 @@ In this case, there is negligible difference between using the ``smoother'' meth
 
 \begin{figure}[!htbp]
  \centering
-<<fig.height=4, fig.width=8, echo=FALSE>>=
+<<fig.height=4, fig.width=8, echo=FALSE, dependson="gibson_import_data">>=
 library(ggplot2)
 gender <- as.factor(as.matrix(gibson$gender) )
 location = as.factor(as.matrix(gibson$location))
 batch = as.factor(as.matrix(gibson$batch))
-
-qplot(location, gibson$gibexpr[1,], geom="boxplot", colour=gender:batch, xlab= "location", ylab="expression")
+qplot(location, gibson$gibexpr[1,], geom="point", colour=gender:batch, xlab= "location", ylab="expression")
 @
 \caption{Plot of the first gene in the {\tt gibson} study.}
 \label{fig:gplot}
@@ -704,15 +784,16 @@ qplot(location, gibson$gibexpr[1,], geom="boxplot", colour=gender:batch, xlab= "
 
 \begin{figure}[!htbp]
  \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("tmp2_gib","import_data_gib", "edgeModel_gib")>>=
+<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("gibson_edgeFit","gibson_import_data")>>=
 library(ggplot2)
 library(reshape2)
+edgeObj <- edgeStudy(data = gibson$gibexpr, adj.var = cbind(gibson$gender, gibson$batch), grp = gibson$location, sampling = "static")
+efObj <- edgeFit(edgeObj)
 fitVals <- fitFull(efObj)
 fitVals0 <- fitNull(efObj)
 gender <- as.factor(gibson$gender)
 location = as.matrix(gibson$location)
 batch = as.factor(gibson$batch)
-
 df <- data.frame(batch = batch, gender = gender, location = location, null.model = fitVals0[1,], full.model = fitVals[1,], raw = exprs(edgeObj)[1,])
 df <- melt(data = df, id.vars=c("batch", "location", "gender"))
 ggplot(df, aes(location, value, color=gender:batch), xlab="location", ylab="expression") + geom_point() + facet_wrap(~variable)
@@ -742,13 +823,13 @@ hist(sig.results)
 
 \begin{figure}[!htbp]
  \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson="import_data_kid">>=
+<<fig.height=4, fig.width=8, echo=FALSE, dependson="kidney_import_data">>=
 library(ggplot2)
 sex <- kidney$sex[kidney$tissue == "c"]
 age <- kidney$age[kidney$tissue == "c"]
-kidexpr <- log(kidney$kidexpr[, kidney$tissue == "c"] + 10)
+kidexpr <- kidney$kidexpr[, kidney$tissue == "c"] 
 
-qplot(age, kidexpr[1,], geom="point", colour=sex, xlab= "age", ylab="expression")
+qplot(age, kidexpr[5,], geom="point", colour=sex, xlab= "age", ylab="expression")
 @
 \caption{Plot of the first gene in the {\tt kidney} study.}
 \label{fig:kplot}
@@ -757,21 +838,61 @@ qplot(age, kidexpr[1,], geom="point", colour=sex, xlab= "age", ylab="expression"
 
 \begin{figure}[!htbp]
  \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("tmp2_kid","import_data_kid")>>=
+<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("kidney_import_data")>>=
 library(ggplot2)
 library(reshape2)
+edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse", basis.df=4)
+efObj <- edgeFit(edgeObj)
 fitVals <- fitFull(efObj)
 fitVals0 <- fitNull(efObj)
 
 
-df <- data.frame(age= age, sex=sex, null.model = fitVals0[1,], full.model = fitVals[1,], raw = exprs(edgeObj)[1,])
+df <- data.frame(age= age, sex=sex, null.model = fitVals0[5,], full.model = fitVals[5,], raw = exprs(edgeObj)[5,])
 df <- melt(data = df, id.vars=c("age", "sex"))
 ggplot(df, aes(age, value, color=sex), xlab="age", ylab="expression") + geom_point() + facet_wrap(~variable)
 @
-\caption{Plot of the first gene in the {\tt gibson} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\caption{Plot of the first gene in the {\tt kidney} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
 \label{fig:kplotFit}
 \end{figure}
 
+
+
+
+\begin{figure}[!htbp]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson="endotoxin_import_data">>=
+library(ggplot2)
+class <- endotoxin$class
+ind <- as.factor(endotoxin$ind)
+tme <- endotoxin$time
+endoexpr <- endotoxin$endoexpr 
+
+qplot(tme, endoexpr[2,], geom="point", colour=class, xlab= "time (hours)", ylab="expression")
+@
+\caption{Plot of the first gene in the {\tt endotoxin} study.}
+\label{fig:eplot}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("endotoxin_import_data")>>=
+library(ggplot2)
+library(reshape2)
+#endoexpr <- endoexpr - rowMeans(endoexpr)
+edgeObj <- edgeStudy(data = endotoxin$endoexpr, grp = endotoxin$class, tme = endotoxin$time, ind = endotoxin$ind, sampling = "timecourse", basis.df=2)
+efObj <- edgeFit(edgeObj)
+fitVals <- fitFull(efObj)
+fitVals0 <- fitNull(efObj)
+
+id=2
+df <- data.frame(class= class, tme=tme, ind=ind, null.model = fitVals0[id,], full.model = fitVals[id,])
+df <- melt(data = df, id.vars=c("class", "tme", "ind"))
+ggplot(df, aes(tme, value, color=class), xlab="time (hours)", ylab="expression") + geom_smooth(se=FALSE) + facet_wrap(~variable)
+@
+\caption{Plot of the first gene in the {\tt endotoxin} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\label{fig:eplotFit}
+\end{figure}
 \section*{Acknowledgements}
 This software development has been supported in part by funding from the National Institutes of Health and the Office of Naval Research.
 
