@@ -124,15 +124,26 @@ To get started, first load the {\tt kidney} dataset included in the package:
 \begin{alltt}
 \hlkwd{library}\hlstd{(edge)}
 \hlkwd{data}\hlstd{(kidney)}
-\hlstd{kidexpr} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{kidexpr}
-\hlstd{age} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{age}
-\hlstd{sex} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{sex}
+\hlkwd{names}\hlstd{(kidney)}
+\end{alltt}
+\begin{verbatim}
+## [1] "tissue"  "age"     "sex"     "kidexpr"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects, the {\tt sex} variable is whether the subjects were male or female and the {\tt tissue} variable is whether the tissue sample is from the cortex or medula. The expression values for the genes are contained in the {\tt kidexpr} variable. In this example, we are only interested in the cortex samples:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{kidexpr} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{kidexpr[, kidney}\hlopt{$}\hlstd{tissue} \hlopt{==} \hlstr{"c"}\hlstd{]}
+\hlstd{age} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{age[kidney}\hlopt{$}\hlstd{tissue} \hlopt{==} \hlstr{"c"}\hlstd{]}
+\hlstd{sex} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{sex[kidney}\hlopt{$}\hlstd{tissue} \hlopt{==} \hlstr{"c"}\hlstd{]}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects and the {\tt sex} variable is whether the subjects were male or female. The expression values for the genes are contained in the {\tt kidexpr} variable.
 
-Once the data has been loaded, the user has two options to create an {\tt edgeSet} object: {\tt edgeModel} or {\tt edgeStudy}. If the experiment models are unknown to the user, {\tt edgeStudy} can be used to create the models:
+
+Once the data has been loaded, the user has two options to create the experimental models: {\tt edgeModel} or {\tt edgeStudy}. If the experiment models are unknown to the user, {\tt edgeStudy} can be used to create the models:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -150,17 +161,15 @@ If the alternative and null models are known to the user then {\tt edgeModel} ca
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(splines)}
-\hlcom{# alternative and null models}
 \hlstd{cov} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{sex} \hlstd{= sex,} \hlkwc{age} \hlstd{= age)}
 \hlstd{null.model} \hlkwb{<-} \hlopt{~}\hlstd{sex}
 \hlstd{full.model} \hlkwb{<-} \hlopt{~}\hlstd{sex} \hlopt{+} \hlkwd{ns}\hlstd{(age,} \hlkwc{df} \hlstd{=} \hlnum{4}\hlstd{)}
-
 \hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeModel}\hlstd{(}\hlkwc{data} \hlstd{= kidexpr,} \hlkwc{cov} \hlstd{= cov,} \hlkwc{nullMod} \hlstd{= null.model,}
     \hlkwc{altMod} \hlstd{= full.model)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The {\tt cov} is a data frame of covariates, the {\tt nullMod} is the null model and the {\tt altMod} is the alternative model. The input {\tt cov} is a data frame with the column names the same as the variables in the alternative and null models. See \cite{storey:2005} to see why a natural spline curve is fit to the time variable in the study. 
+The {\tt cov} is a data frame of covariates, the {\tt nullMod} is the null model and the {\tt altMod} is the alternative model. The input {\tt cov} is a data frame with the column names the same as the variables in the alternative and null models.
 
 The {\tt odp} or {\tt lrt} function can be used on {\tt edgeObj} to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
 \begin{knitrout}
@@ -173,7 +182,7 @@ The {\tt odp} or {\tt lrt} function can be used on {\tt edgeObj} to implement ei
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-To access the p-values, q-values and local false discovery rates for each gene, use the function {\tt qvalueObj}:
+To access the $\pi_{0}$ estimate, p-values, q-values and local false discovery rates for each gene, use the function {\tt qvalueObj}:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -189,9 +198,9 @@ The following sections of the manual go through various case studies for a more 
 
 \section{Case study: static experiment}
 \label{sec:gibson}
-In the static sampling experiment, the arrays have been collected from distinct biological groups without respect to time. The goal is to identify genes that have a statistically significant difference in average expression across these distinct biological groups. 
+In the static sampling experiment, the arrays have been collected from distinct biological groups without respect to time. The goal is to identify genes that have a statistically significant difference in average expression across these distinct biological groups. The example data set that will be used in this section is the {\tt gibson} data set and it is a random subset of the data from \cite{gibson:2008}.
 
-The {\tt gibson} dataset provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). We are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. See \cite{gibson:2008} for additional information regarding the data.
+The {\tt gibson} data set provides gene expression measurements in peripheral blood leukocyte samples from three Moroccan Amazigh groups leading distinct ways of life: desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban (AGADIR). We are interested in finding the genes that differentiate the Moroccan Amazigh groups the most. See \cite{gibson:2008} for additional information regarding the data.
 
 \subsection{Importing the data}
 To import the {\tt gibson} data use the {\tt data} function:
@@ -208,7 +217,7 @@ To import the {\tt gibson} data use the {\tt data} function:
 \end{knitrout}
 There are a few variables in the data set: {\tt batch}, {\tt gibexpr}, {\tt gender}, and {\tt location}. The three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. The biological variable is the {\tt location} variable, which contains information on where individuals are sampled: ``VILLAGE'', ``DESERT'' or ``AGADIR''. The {\tt gender} variable specifies whether the individual is a male or a female and there are two different {\tt batches} in the study. The {\tt gibexpr} variable contains the gene expression measurements. 
 
-As an example, the expression values of the first gene are shown in Figure~\ref{fig:gplot}. In the figure, it appears that that individuals from ``VILLAGE'' are less expressed when compared to other lifestyles. We should stop short of that observation because the data needs to be adjusted with the experimental models. Before that, the alternative and null model of the study needs to be formulated which is discussed the next section.
+As an example, the expression values of the first gene are shown in Figure~\ref{fig:gplot}. In the figure, it appears that the individuals from ``VILLAGE'' are more expressed when compared to other lifestyles. We should stop short of that observation because the data needs to be adjusted with the experimental models. Before that, the alternative and null model of the study needs to be carefully formulated which is discussed in the next section.
 
 \subsection{Creating the alternative and null models}
 In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
@@ -266,7 +275,7 @@ A description of each slot is listed below:
 \item {\tt full.matrix}: the alternative model in matrix form
 \item {\tt null.matrix}: the null model in matrix form
 \item {\tt individual}: variable that keeps track of individuals (same individuals are sampled multiple times)
-\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the {\tt qvalue} package for more details.
+\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} package} for more details.
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
 
@@ -279,7 +288,7 @@ A description of each slot is listed below:
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. See the advanced section to get a better understanding of how {\tt ExpressionSet} objects integrate into the {\tt edge} framework.
+The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \href{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}{here}. See the section~\ref{sec:advanced} on {\tt ExpressionSet} to get a better understanding of how it integrates into the {\tt edge} framework.
 
 As an example of how to access the slots of {\tt edgeObj} suppose we are interested in viewing the alternative and null models. The models can be accessed by:
 \begin{knitrout}
@@ -356,10 +365,10 @@ To access the fitted values:
 \end{kframe}
 \end{knitrout}
 
-See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the first gene is shown in Figure~\ref{fig:gplotFit}. The null model fit is the average expression value across the interaction of {\tt batch} and {\tt sex}. The alternative model fit seems to pick up some differences relative to the null model. Next, we have to test whether the observed differences between models in Figure~\ref{fig:gplotFit} is significant.
+See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the first gene is shown in Figure~\ref{fig:gplotFit}. The null model fit is the average expression value across the interaction of {\tt batch} and {\tt sex}. The alternative model fit seems to pick up some differences relative to the null model. Next, we have to test whether the observed differences between the model fits are significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it's significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude that it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
@@ -370,12 +379,12 @@ The {\tt lrt} function performs a likelihood ratio test to determine p-values:
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt lrt} for additional arguments.
+If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt ?lrt} for additional arguments.
 
 
 
 \subsubsection{Optimal discovery procedure}
-{\tt odp} performs the optimal discovery procedure, which is a new approach for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarentees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to FDR. The optimal discovery procedure can be implemented on an {\tt edgeSet} object by the {\tt odp} function:
+{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:2005} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edgeObj} by the {\tt odp} function:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -384,9 +393,7 @@ If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' the
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters. 
-
-{\tt n.mods} controls the number of clusters in the k-means algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm. The number of {\tt bs.its} iterations recommended is 100.
+The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters in the k-means algorithm. A k-means algorithm is used to assign genes to groups in order to speed up the computational time of the algorithm. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm.
 
 \subsection{Significance results}
 The {\tt summary} function can be used on an {\tt edgeSet} object to give an overview of the analysis:
@@ -440,7 +447,7 @@ The {\tt summary} function can be used on an {\tt edgeSet} object to give an ove
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the dataset. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
+There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the data set. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
 
 The function {\tt qvalueObj} can be used on {\tt edgeODP} to extract the significance results:
 \begin{knitrout}
@@ -464,14 +471,33 @@ The object {\tt sig.results} is a list with the following slots:
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}.
-
-The q-value controls the false discovery at a level {\tt alpha} and so making significance decisions with q-values is recommended. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
+The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{qval} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{qvalues}
-\hlstd{qval[}\hlnum{1}\hlstd{]}
+\hlkwd{hist}\hlstd{(sig.results)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The plot is shown in Figure~\ref{fig:gqvalHist}. To extract the p-values, q-values, local false discovery rates and the $\pi_{0}$ estimate:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pvalues} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{pvalues}
+\hlstd{qvalues} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{qvalues}
+\hlstd{lfdr} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{lfdr}
+\hlstd{pi0} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{pi0}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Making significance decisions based on p-values in multiple hypothesis testings problems can lead to accepting a lot of false positives in the study. Instead, using q-values to determine significant genes is recommended because it controls the false discovery rate at a level {\tt alpha}. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{qvalues[}\hlnum{1}\hlstd{]}
 \end{alltt}
 \begin{verbatim}
 ## [1] 3.659477e-05
@@ -479,23 +505,23 @@ The q-value controls the false discovery at a level {\tt alpha} and so making si
 \end{kframe}
 \end{knitrout}
 
-So at this particular gene, the q-value is $3.6e-5$. If we consider a false discovery cutoff rate of 0.01 then this gene is highly significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are indeed significant so this particular gene is differentially expressed at each location. 
+So for this particular gene, the q-value is \ensuremath{3.6594766\times 10^{-5}}. If we consider a false discovery rate cutoff of 0.1 then this gene is significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are significant so this particular gene is differentially expressed between locations. 
 
-To get a list of all the signifcant genes at a false discovery rate cutoff of 0.01:
+To get a list of all the significant genes at a false discovery rate cutoff of 0.01:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{fdr.level} \hlkwb{<-} \hlnum{0.01}
-\hlstd{sigGenes} \hlkwb{<-} \hlstd{qval} \hlopt{<} \hlstd{fdr.level}
+\hlstd{sigGenes} \hlkwb{<-} \hlstd{qvalues} \hlopt{<} \hlstd{fdr.level}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
+View the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} vignette} to get a more thorough discussion in how to use p-values, q-values, $\pi_{0}$ estimate and local false discovery rates to determine significant genes.
+
 \section{Case study: independent time course experiment}
 \label{sec:kidney}
-In the independent time course study, the arrays have been sampled with respect to time from one biological group and the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time.
-
-Gene expression measurements from {\tt kidney} samples were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. See \cite{rodwell:2004} for additional information regarding the dataset.
+In the independent time course study, the arrays have been sampled with respect to time from one biological group and the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. The example data set used in this section is a kidney data set by \cite{rodwell:2004}. Gene expression measurements, from cortex and medulla samples in the kidney, were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. See \cite{rodwell:2004} for additional information regarding the data set.
 
 \subsection{Importing the data}
 To import the {\tt kidney} data use the {\tt data} function:
@@ -511,55 +537,75 @@ To import the {\tt kidney} data use the {\tt data} function:
 \end{kframe}
 \end{knitrout}
 
-There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. We will focus on the expression values of the cortex {\tt tissue} samples:
+There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. In this example, we will focus on the cortex {\tt tissue} samples:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{sex} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{sex[kidney}\hlopt{$}\hlstd{tissue} \hlopt{==} \hlstr{"c"}\hlstd{]}
 \hlstd{age} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{age[kidney}\hlopt{$}\hlstd{tissue} \hlopt{==} \hlstr{"c"}\hlstd{]}
-\hlstd{kidexpr} \hlkwb{<-} \hlkwd{log}\hlstd{(kidney}\hlopt{$}\hlstd{kidexpr[, kidney}\hlopt{$}\hlstd{tissue} \hlopt{==}
-    \hlstr{"c"}\hlstd{]} \hlopt{+} \hlnum{10}\hlstd{)}
+\hlstd{kidexpr} \hlkwb{<-} \hlstd{kidney}\hlopt{$}\hlstd{kidexpr[, kidney}\hlopt{$}\hlstd{tissue} \hlopt{==} \hlstr{"c"}\hlstd{]}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
 The two main covariates of interest for this example are the {\tt sex} and {\tt age} covariates. The {\tt sex} variable is whether the subject was male or female and the {\tt age} variable is the age of the patients. {\tt kidexpr} contains the gene expression values for the study.
 
-As an example, the expression values of the first gene are shown in Figure~\ref{fig:kplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
+As an example of a gene in the study, the expression values of the fifth gene are shown in Figure~\ref{fig:kplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study which is discussed in the next section.
 
 \subsection{Creating the alternative and null models}
-In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
+In order to find differentially expressed genes, the alternative and null model for the study need to be formulated. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeStudy}\hlstd{(}\hlkwc{data} \hlstd{= kidexpr,} \hlkwc{adj.var} \hlstd{= sex,}
-    \hlkwc{bio.var} \hlstd{= age,} \hlkwc{sampling} \hlstd{=} \hlstr{"timecourse"}\hlstd{)}
+    \hlkwc{tme} \hlstd{= age,} \hlkwc{sampling} \hlstd{=} \hlstr{"timecourse"}\hlstd{,} \hlkwc{basis.df} \hlstd{=} \hlnum{4}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-{\tt adj.var} is for the adjustment variables, {\tt bio.var} is the biological variable and {\tt sampling} describes the type of experiment. Since {\tt kidney} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt bio.var} variable will be the {\tt age} variable and the adjustment variable is {\tt sex}.
+{\tt adj.var} is for the adjustment variables, {\tt tme} is the time variable, {\tt basis.df} is the degrees of freedom for the spline fit, and {\tt sampling} describes the type of experiment. Since {\tt kidney} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt tme} variable will be the {\tt age} variable, {\tt basis.df} will be 4 based on previous work by \cite{storey:2005} and the adjustment variable is {\tt sex}. To view the models generated by {\tt edgeStudy}:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{fullModel}\hlstd{(edgeObj)}
+\end{alltt}
+\begin{verbatim}
+## ~adj.var + ns(tme, df = 4, intercept = FALSE)
+## <environment: 0xd6bc1b8>
+\end{verbatim}
+\begin{alltt}
+\hlkwd{nullModel}\hlstd{(edgeObj)}
+\end{alltt}
+\begin{verbatim}
+## ~adj.var
+## <environment: 0xd6bc1b8>
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Notice that the difference between the alternative and null model is the  natural spline fit of the {\tt age} variable. If we look at Figure~\ref{fig:kplot}, it becomes evident that a spline curve can be used to approximate the fit of the data, and 4 degrees of freedom is chosen based on previous analysis of the expression patterns. See \cite{storey:2005} for a detailed discussion on modelling in time course studies. 
 
 Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
+\hlkwd{library}\hlstd{(splines)}
 \hlstd{cov} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlkwc{sex} \hlstd{= sex,} \hlkwc{age} \hlstd{= age)}
 \hlstd{null.model} \hlkwb{<-} \hlopt{~}\hlstd{sex}
 \hlstd{alt.model} \hlkwb{<-} \hlopt{~}\hlstd{sex} \hlopt{+} \hlkwd{ns}\hlstd{(age,} \hlkwc{df} \hlstd{=} \hlnum{4}\hlstd{)}
-\hlstd{edgeKid} \hlkwb{<-} \hlkwd{edgeModel}\hlstd{(}\hlkwc{data} \hlstd{= kidexpr,} \hlkwc{cov} \hlstd{= cov,} \hlkwc{altMod} \hlstd{= alt.model,}
+\hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeModel}\hlstd{(}\hlkwc{data} \hlstd{= kidexpr,} \hlkwc{cov} \hlstd{= cov,} \hlkwc{altMod} \hlstd{= alt.model,}
     \hlkwc{nullMod} \hlstd{= null.model)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): could not find function "{}ns"{}}}\end{kframe}
+\end{kframe}
 \end{knitrout}
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the alternative model includes the {\tt age} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene as it ages in the kidney. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the alternative model includes the {\tt age} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in the gene as it ages in the cortex. 
 
 The variable {\tt edgeObj} is an {\tt edgeSet} object that stores all the relevant experimental data. The {\tt edgeSet} object is discussed further in the next section. 
 
 \subsection{The {\tt edgeSet} object}
+\label{subsec:edgeSet}
 Once either {\tt edgeModel} or {\tt edgeStudy} is used, an {\tt edgeSet} object is created. To view the slots contained in the object:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -584,7 +630,7 @@ A description of each slot is listed below:
 \item {\tt full.matrix}: the alternative model in matrix form
 \item {\tt null.matrix}: the null model in matrix form
 \item {\tt individual}: variable that keeps track of individuals (same individuals are sampled multiple times)
-\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the {\tt qvalue} package for more details.
+\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} package} for more details.
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
 
@@ -597,7 +643,7 @@ A description of each slot is listed below:
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. See the advanced section to get a better understanding of how {\tt ExpressionSet} objects integrate into the {\tt edge} framework.
+The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \href{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}{here}. See the section~\ref{sec:advanced} on {\tt ExpressionSet} to get a better understanding of how it integrates into the {\tt edge} framework.
 
 As an example of how to access the slots of {\tt edgeObj} suppose we are interested in viewing the alternative and null models. The models can be accessed by:
 \begin{knitrout}
@@ -606,15 +652,13 @@ As an example of how to access the slots of {\tt edgeObj} suppose we are interes
 \hlkwd{fullModel}\hlstd{(edgeObj)}
 \end{alltt}
 \begin{verbatim}
-## ~adj.var + bio.var
-## <environment: 0x10e229c8>
+## ~sex + ns(age, df = 4)
 \end{verbatim}
 \begin{alltt}
 \hlkwd{nullModel}\hlstd{(edgeObj)}
 \end{alltt}
 \begin{verbatim}
-## ~adj.var
-## <environment: 0x10e229c8>
+## ~sex
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -676,13 +720,14 @@ To access the fitted values:
 \end{kframe}
 \end{knitrout}
 
-See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the first gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the alternative model fits a pattern that might be observed in the raw data. Next, we have to test whether the observed differences between models in Figure~\ref{fig:kplotFit} is significant.
+See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the fifth gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the alternative model fits the raw data better than the null model. Next, we have to test whether the observed differences between the model fits are significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it's significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the fifth gene plotted in Figure~\ref{fig:kplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -690,10 +735,13 @@ The {\tt lrt} function performs a likelihood ratio test to determine p-values:
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt lrt} for additional arguments.
+If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt ?lrt} for additional arguments.
+
+
 
 \subsubsection{Optimal discovery procedure}
-{\tt odp} performs the optimal discovery procedure, which is a new approach for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarentees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to FDR. The optimal discovery procedure can be implemented on an {\tt edgeSet} object by the {\tt odp} function:
+{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:2005} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edgeObj} by the {\tt odp} function:
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -702,9 +750,7 @@ If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' the
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters. 
-
-{\tt n.mods} controls the number of clusters in the k-means algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm. The number of {\tt bs.its} iterations recommended is 100.
+The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters in the k-means algorithm. A k-means algorithm is used to assign genes to groups in order to speed up the computational time of the algorithm. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm.
 
 \subsection{Significance results}
 The {\tt summary} function can be used on an {\tt edgeSet} object to give an overview of the analysis:
@@ -718,12 +764,12 @@ The {\tt summary} function can be used on an {\tt edgeSet} object to give an ove
 ## ExpressionSet Summary 
 ##  
 ## ExpressionSet (storageMode: lockedEnvironment)
-## assayData: 34061 features, 72 samples 
+## assayData: 5000 features, 72 samples 
 ##   element names: exprs 
 ## protocolData: none
 ## phenoData
 ##   sampleNames: 1 2 ... 72 (72 total)
-##   varLabels: adj.var bio.var
+##   varLabels: sex age
 ##   varMetadata: labelDescription
 ## featureData: none
 ## experimentData: use 'experimentData(object)'
@@ -732,35 +778,34 @@ The {\tt summary} function can be used on an {\tt edgeSet} object to give an ove
 ## edge Analysis Summary 
 ##  
 ## Total number of arrays: 72 
-## Total number of probes: 34061 
+## Total number of probes: 5000 
 ##  
 ## Biological variables: 
-## 	Null Model:~adj.var
-## <environment: 0xbff83e8>
+## 	Null Model:~sex
 ## 
-## 	Full Model:~adj.var + bio.var
-## <environment: 0xbff83e8>
+## 	Full Model:~sex + ns(age, df = 4)
 ## 
 ## ....... 
 ##  
 ## 
 ## Statistical significance summary:
-## pi0:	0.8493684	
+## pi0:	0.4202189	
 ## 
 ## Cumulative number of significant calls:
 ## 
 ##           <1e-04 <0.001 <0.01 <0.025 <0.05 <0.1
-## p-value       37    222   948   1888  3160 5458
-## q-value        0      0     0      4    19  129
-## local fdr      0      0     0      2     9   62
-##              <1
-## p-value   34061
-## q-value   34061
-## local fdr 25405
+## p-value       33    134   370    605   888 1311
+## q-value        0     16    80    184   327  720
+## local fdr      0      0    36    113   174  328
+##             <1
+## p-value   5000
+## q-value   5000
+## local fdr 4967
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the dataset. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
+
+There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the data set. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
 
 The function {\tt qvalueObj} can be used on {\tt edgeODP} to extract the significance results:
 \begin{knitrout}
@@ -784,36 +829,57 @@ The object {\tt sig.results} is a list with the following slots:
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}.
 
-The q-value controls the false discovery at a level {\tt alpha} and so making significance decisions with q-values is recommended. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
+The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{qval} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{qvalues}
-\hlstd{qval[}\hlnum{1}\hlstd{]}
+\hlkwd{hist}\hlstd{(sig.results)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The plot is shown in Figure~\ref{fig:kqvalHist}. To extract the p-values, q-values, local false discovery rates and the $\pi_{0}$ estimate:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pvalues} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{pvalues}
+\hlstd{qvalues} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{qvalues}
+\hlstd{lfdr} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{lfdr}
+\hlstd{pi0} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{pi0}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Making significance decisions based on p-values in multiple hypothesis testings problems can lead to accepting a lot of false positives in the study. Instead, using q-values to determine significant genes is recommended because it controls the false discovery rate at a level {\tt alpha}. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 5 in this example, lets view the q-value estimate:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{qvalues[}\hlnum{5}\hlstd{]}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.8150455
+## [1] 0.1586294
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-So at this particular gene, the q-value is $3.6e-5$. If we consider a false discovery cutoff rate of 0.01 then this gene is highly significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are indeed significant so this particular gene is differentially expressed at each location. 
+So for this particular gene, the q-value is 0.1586294. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:kplotFit} are not significant so this particular gene is not differentially expressed as the kidney ages. 
 
-To get a list of all the signifcant genes at a false discovery rate cutoff of 0.01:
+To get a list of all the significant genes at a false discovery rate cutoff of 0.1:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{fdr.level} \hlkwb{<-} \hlnum{0.01}
-\hlstd{sigGenes} \hlkwb{<-} \hlstd{qval} \hlopt{<} \hlstd{fdr.level}
+\hlstd{fdr.level} \hlkwb{<-} \hlnum{0.1}
+\hlstd{sigGenes} \hlkwb{<-} \hlstd{qvalues} \hlopt{<} \hlstd{fdr.level}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
+View the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} vignette} to get a more thorough discussion in how to use p-values, q-values, $\pi_{0}$ estimate and local false discovery rates to determine significant genes.
+
 \section{Case study: longitudinal time course experiment}
 \label{sec:endotoxin}
-In the longitudinal time course study, the goal is to identify genes that show ``between-class temporal differential expression'', i.e., genes that show statistically significant differences in expression over time between the various groups. The {\tt endotoxin} dataset provides gene expression measurements in an endotoxin study where four subjects were given endotoxin and four subjects were given a placebo. Blood samples were collected and leukocytes were isolated from the samples before infusion. Measurements were recorded at times 2, 4, 6, 9, 24 hours. We are interested in identifying genes that vary over time between the endotoxin and control groups.
+In the longitudinal time course study, the goal is to identify genes that show ``between-class temporal differential expression'', i.e., genes that show statistically significant differences in expression over time between the various groups. The {\tt endotoxin} data set provides gene expression measurements in an endotoxin study where four subjects were given endotoxin and four subjects were given a placebo. Blood samples were collected and leukocytes were isolated from the samples before infusion. Measurements were recorded at times 2, 4, 6, 9, 24 hours. We are interested in identifying genes that vary over time between the endotoxin and control groups. See \cite{calvano:2005} for more details regarding the {\tt endotoxin} dataset.
 
 \subsection{Importing the data}
 To import the {\tt endotoxin} data use the {\tt data} function:
@@ -831,23 +897,41 @@ To import the {\tt endotoxin} data use the {\tt data} function:
 
 There are a few covariates in this data set: {\tt expr}, {\tt class}, {\tt individual}, and {\tt time}. There are 8 individuals in the experiment ({\tt ind}) that were sampled at multiple time points ({\tt time}) that were either ``endotoxin'' or ``control'' ({\tt class}). The {\tt expr} variable contains the expression values of the experiment:
 
-As an example, the expression values of the first gene are shown in Figure~\ref{fig:eplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
+To show an example gene, the expression values of the second gene are shown in Figure~\ref{fig:eplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
 
 \subsection{Creating the alternative and null models}
 In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{edgeEndo} \hlkwb{<-} \hlkwd{edgeStudy}\hlstd{(}\hlkwc{data} \hlstd{= endotoxin}\hlopt{$}\hlstd{endoexpr,}
-    \hlkwc{grp} \hlstd{= endotoxin}\hlopt{$}\hlstd{class,} \hlkwc{tme} \hlstd{= endotoxin}\hlopt{$}\hlstd{time,}
-    \hlkwc{ind} \hlstd{= endotoxin}\hlopt{$}\hlstd{ind,} \hlkwc{sampling} \hlstd{=} \hlstr{"timecourse"}\hlstd{)}
+\hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeStudy}\hlstd{(}\hlkwc{data} \hlstd{= endotoxin}\hlopt{$}\hlstd{endoexpr,} \hlkwc{grp} \hlstd{= endotoxin}\hlopt{$}\hlstd{class,}
+    \hlkwc{tme} \hlstd{= endotoxin}\hlopt{$}\hlstd{time,} \hlkwc{ind} \hlstd{= endotoxin}\hlopt{$}\hlstd{ind,} \hlkwc{sampling} \hlstd{=} \hlstr{"timecourse"}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-{\tt grp} is for the variable which group each individual belongs to, {\tt tme} is the time variable, {\tt ind} is used when individuals are sampling multiple times and {\tt sampling} describes the type of experiment. Since {\tt endotoxin} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt tme} variable will be the {\tt time} variable, {\tt ind} is the {\tt individuals} variable and the {\tt grp} variable is {\tt class}.
+{\tt grp} is for the variable which group each individual belongs to, {\tt tme} is the time variable, {\tt ind} is used when individuals are sampling multiple times and {\tt sampling} describes the type of experiment. Since {\tt endotoxin} is a time course study, the {\tt sampling} argument will be ``timecourse''. The {\tt tme} variable will be the {\tt time} variable, {\tt ind} is the {\tt individuals} variable and the {\tt grp} variable is {\tt class}. To view the models created by {\tt edgeStudy}:
 
-Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{fullModel}\hlstd{(edgeObj)}
+\end{alltt}
+\begin{verbatim}
+## ~grp + ns(tme, df = 2, intercept = FALSE) + (grp):ns(tme, df = 2, 
+##     intercept = FALSE)
+## <environment: 0x10288038>
+\end{verbatim}
+\begin{alltt}
+\hlkwd{nullModel}\hlstd{(edgeObj)}
+\end{alltt}
+\begin{verbatim}
+## ~grp + ns(tme, df = 2, intercept = FALSE)
+## <environment: 0x10288038>
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+See \cite{storey:2005} for how the models in the {\tt endotoxin} experiment are formed. Alternatively, if the user is familiar with their alternative and null models in the study then {\tt edgeModel} can be used to input the models directly:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -856,15 +940,13 @@ Alternatively, if the user is familiar with their alternative and null models in
 \hlstd{null.model} \hlkwb{<-} \hlopt{~}\hlstd{grp} \hlopt{+} \hlkwd{ns}\hlstd{(tme,} \hlkwc{df} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{intercept} \hlstd{=} \hlnum{FALSE}\hlstd{)}
 \hlstd{alt.model} \hlkwb{<-} \hlopt{~}\hlstd{grp} \hlopt{+} \hlkwd{ns}\hlstd{(tme,} \hlkwc{df} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{intercept} \hlstd{=} \hlnum{FALSE}\hlstd{)} \hlopt{+}
     \hlstd{(grp)}\hlopt{:}\hlkwd{ns}\hlstd{(tme,} \hlkwc{df} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{intercept} \hlstd{=} \hlnum{FALSE}\hlstd{)}
-\hlstd{edgeEndo} \hlkwb{<-} \hlkwd{edgeModel}\hlstd{(}\hlkwc{data} \hlstd{= endotoxin}\hlopt{$}\hlstd{endoexpr,}
-    \hlkwc{cov} \hlstd{= cov,} \hlkwc{altMod} \hlstd{= alt.model,} \hlkwc{nullMod} \hlstd{= null.model)}
+\hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeModel}\hlstd{(}\hlkwc{data} \hlstd{= endotoxin}\hlopt{$}\hlstd{endoexpr,} \hlkwc{cov} \hlstd{= cov,}
+    \hlkwc{altMod} \hlstd{= alt.model,} \hlkwc{nullMod} \hlstd{= null.model)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): could not find function "{}ns"{}}}\end{kframe}
+\end{kframe}
 \end{knitrout}
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene as it ages in the kidney. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene between the endotoxin and the control as time goes on. 
 
 The variable {\tt edgeObj} is an {\tt edgeSet} object that stores all the relevant experimental data. The {\tt edgeSet} object is discussed further in the next section. 
 
@@ -873,7 +955,7 @@ Once either {\tt edgeModel} or {\tt edgeStudy} is used, an {\tt edgeSet} object 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{slotNames}\hlstd{(edgeEndo)}
+\hlkwd{slotNames}\hlstd{(edgeObj)}
 \end{alltt}
 \begin{verbatim}
 ##  [1] "null.model"        "full.model"       
@@ -893,7 +975,7 @@ A description of each slot is listed below:
 \item {\tt full.matrix}: the alternative model in matrix form
 \item {\tt null.matrix}: the null model in matrix form
 \item {\tt individual}: variable that keeps track of individuals (same individuals are sampled multiple times)
-\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the {\tt qvalue} package for more details.
+\item {\tt qvalueObj}: {\tt qvalue} list. Contains p-values, q-values and local false discovery rates of the significance analysis. See the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} package} for more details.
 \item {\tt ExpressionSet}: inherits the slots from {\tt ExpressionSet} object
 \end{itemize}
 
@@ -901,30 +983,28 @@ A description of each slot is listed below:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{gibexpr} \hlkwb{<-} \hlkwd{exprs}\hlstd{(edgeEndo)}
-\hlstd{cov} \hlkwb{<-} \hlkwd{pData}\hlstd{(edgeEndo)}
+\hlstd{gibexpr} \hlkwb{<-} \hlkwd{exprs}\hlstd{(edgeObj)}
+\hlstd{cov} \hlkwb{<-} \hlkwd{pData}\hlstd{(edgeObj)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \url{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}. See the advanced section to get a better understanding of how {\tt ExpressionSet} objects integrate into the {\tt edge} framework.
+The {\tt ExpressionSet} class is a widely used object in Bioconductor and more information can be found \href{http://www.bioconductor.org/packages/2.14/bioc/html/Biobase.html}{here}. See the section~\ref{sec:advanced} on {\tt ExpressionSet} to get a better understanding of how it integrates into the {\tt edge} framework.
 
 As an example of how to access the slots of {\tt edgeObj} suppose we are interested in viewing the alternative and null models. The models can be accessed by:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{fullModel}\hlstd{(edgeEndo)}
+\hlkwd{fullModel}\hlstd{(edgeObj)}
 \end{alltt}
 \begin{verbatim}
-## ~grpendotoxin + ns(tme, df = 2, intercept = FALSE) + (grpendotoxin):ns(tme, 
-##     df = 2, intercept = FALSE)
-## <environment: 0xa283ed0>
+## ~grp + ns(tme, df = 2, intercept = FALSE) + (grp):ns(tme, df = 2, 
+##     intercept = FALSE)
 \end{verbatim}
 \begin{alltt}
-\hlkwd{nullModel}\hlstd{(edgeEndo)}
+\hlkwd{nullModel}\hlstd{(edgeObj)}
 \end{alltt}
 \begin{verbatim}
-## ~grpendotoxin + ns(tme, df = 2, intercept = FALSE)
-## <environment: 0xa283ed0>
+## ~grp + ns(tme, df = 2, intercept = FALSE)
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -932,8 +1012,8 @@ Next, we can extract the models in matrix form for computational analysis:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{full.matrix} \hlkwb{<-} \hlkwd{fullMatrix}\hlstd{(edgeEndo)}
-\hlstd{null.matrix} \hlkwb{<-} \hlkwd{nullMatrix}\hlstd{(edgeEndo)}
+\hlstd{full.matrix} \hlkwb{<-} \hlkwd{fullMatrix}\hlstd{(edgeObj)}
+\hlstd{null.matrix} \hlkwb{<-} \hlkwd{nullMatrix}\hlstd{(edgeObj)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -944,7 +1024,7 @@ The {\tt edgeFit} function is an implementation of least squares using the alter
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{efObj} \hlkwb{<-} \hlkwd{edgeFit}\hlstd{(edgeEndo,} \hlkwc{stat.type} \hlstd{=} \hlstr{"lrt"}\hlstd{)}
+\hlstd{efObj} \hlkwb{<-} \hlkwd{edgeFit}\hlstd{(edgeObj,} \hlkwc{stat.type} \hlstd{=} \hlstr{"lrt"}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -986,38 +1066,37 @@ To access the fitted values:
 \end{kframe}
 \end{knitrout}
 
-See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the first gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the alternative model fits a pattern that might be observed in the raw data. Next, we have to test whether the observed differences between models in Figure~\ref{fig:eplotFit} is significant.
+See {\tt ?edgeFit} for more details on accessing the slots in an {\tt edgeFit} object. The fitted values of the second gene is shown in Figure~\ref{fig:eplotFit}. The null model fit is the average expression. It appears that the alternative model fits a pattern that might be observed in the raw data. Next, we have to test whether the observed differences between the model fits are significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it's significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the alternative model better fit the data when compared to the null model? For the fitted values of the second gene plotted in Figure~\ref{fig:eplotFit}, it seems that the alternative model fits the data better than the null model. In order to conclude it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{edgeLRT} \hlkwb{<-} \hlkwd{lrt}\hlstd{(edgeEndo,} \hlkwc{nullDistn} \hlstd{=} \hlstr{"normal"}\hlstd{)}
+\hlstd{edgeLRT} \hlkwb{<-} \hlkwd{lrt}\hlstd{(edgeObj,} \hlkwc{nullDistn} \hlstd{=} \hlstr{"normal"}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt lrt} for additional arguments.
+If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' then residuals from the alternative model are re-sampled and added to the null model to simulate a distribution where there is no differential expression. Otherwise, the default input is ``normal'' and the assumption is that the null statistics follow a F-distribution. See {\tt ?lrt} for additional arguments.
 
 \subsubsection{Optimal discovery procedure}
-{\tt odp} performs the optimal discovery procedure, which is a new approach for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarentees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to FDR. The optimal discovery procedure can be implemented on an {\tt edgeSet} object by the {\tt odp} function:
+{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:2005} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edgeObj} by the {\tt odp} function:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{edgeODP} \hlkwb{<-} \hlkwd{odp}\hlstd{(edgeEndo,} \hlkwc{bs.its} \hlstd{=} \hlnum{30}\hlstd{,} \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{,}
+\hlstd{edgeODP} \hlkwb{<-} \hlkwd{odp}\hlstd{(edgeObj,} \hlkwc{bs.its} \hlstd{=} \hlnum{30}\hlstd{,} \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{,}
     \hlkwc{n.mods} \hlstd{=} \hlnum{50}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters. 
-
-{\tt n.mods} controls the number of clusters in the k-means algorithm where genes are assigned to a cluster based on the Kullback-Leiber distance. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm. The number of {\tt bs.its} iterations recommended is 100.
+The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters in the k-means algorithm. A k-means algorithm is used to assign genes to groups in order to speed up the computational time of the algorithm. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm.
 
 \subsection{Significance results}
 The {\tt summary} function can be used on an {\tt edgeSet} object to give an overview of the analysis:
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -1033,7 +1112,7 @@ The {\tt summary} function can be used on an {\tt edgeSet} object to give an ove
 ## protocolData: none
 ## phenoData
 ##   sampleNames: 1 2 ... 46 (46 total)
-##   varLabels: tme grpendotoxin
+##   varLabels: ind tme grp
 ##   varMetadata: labelDescription
 ## featureData: none
 ## experimentData: use 'experimentData(object)'
@@ -1045,31 +1124,23 @@ The {\tt summary} function can be used on an {\tt edgeSet} object to give an ove
 ## Total number of probes: 5000 
 ##  
 ## Biological variables: 
-## 	Null Model:~grpendotoxin + ns(tme, df = 2, intercept = FALSE)
-## <environment: 0x87b8038>
+## 	Null Model:~grp + ns(tme, df = 2, intercept = FALSE)
 ## 
-## 	Full Model:~grpendotoxin + ns(tme, df = 2, intercept = FALSE) + (grpendotoxin):ns(tme, 
-##     df = 2, intercept = FALSE)
-## <environment: 0x87b8038>
-## 
-## Individuals: 
-##  [1] 1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4
-## [23] 4 4 5 5 5 5 5 5 6 6 6 6 7 7 7 7 7 7 8 8 8 8
-## [45] 8 8
-## Levels: 1 2 3 4 5 6 7 8
+## 	Full Model:~grp + ns(tme, df = 2, intercept = FALSE) + (grp):ns(tme, df = 2, 
+##     intercept = FALSE)
 ## 
 ## ....... 
 ##  
 ## 
 ## Statistical significance summary:
-## pi0:	0.5425514	
+## pi0:	0.6843337	
 ## 
 ## Cumulative number of significant calls:
 ## 
 ##           <1e-04 <0.001 <0.01 <0.025 <0.05 <0.1
-## p-value      125    250   492    701   916 1282
-## q-value        0     79   249    360   473  709
-## local fdr      0     66   152    219   292  388
+## p-value      107    190   380    549   750 1056
+## q-value        0     82   142    213   277  406
+## local fdr      0     70    94    121   169  221
 ##             <1
 ## p-value   5000
 ## q-value   5000
@@ -1077,7 +1148,7 @@ The {\tt summary} function can be used on an {\tt edgeSet} object to give an ove
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the dataset. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
+There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the data set. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
 
 The function {\tt qvalueObj} can be used on {\tt edgeODP} to extract the significance results:
 \begin{knitrout}
@@ -1101,34 +1172,54 @@ The object {\tt sig.results} is a list with the following slots:
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values. See Figure~\ref{fig:gqvalHist}.
-
-The q-value controls the false discovery at a level {\tt alpha} and so making significance decisions with q-values is recommended. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 1 in this example, lets view the q-value estimate:
+The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{qval} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{qvalues}
-\hlstd{qval[}\hlnum{1}\hlstd{]}
+\hlkwd{hist}\hlstd{(sig.results)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+The plot is shown in Figure~\ref{fig:eqvalHist}. To extract the p-values, q-values, local false discovery rates and the $\pi_{0}$ estimate:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{pvalues} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{pvalues}
+\hlstd{qvalues} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{qvalues}
+\hlstd{lfdr} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{lfdr}
+\hlstd{pi0} \hlkwb{<-} \hlstd{sig.results}\hlopt{$}\hlstd{pi0}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Making significance decisions based on p-values in multiple hypothesis testings problems can lead to accepting a lot of false positives in the study. Instead, using q-values to determine significant genes is recommended because it controls the false discovery rate at a level {\tt alpha}. Q-values measure the proportion of false positives incurred when calling a particular test significant. For example, to complete our analysis of gene 2 in this example, lets view the q-value estimate:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{qvalues[}\hlnum{2}\hlstd{]}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.2543239
+## [1] 0.5336279
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-So at this particular gene, the q-value is $3.6e-5$. If we consider a false discovery cutoff rate of 0.01 then this gene is highly significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are indeed significant so this particular gene is differentially expressed at each location. 
+So for this particular gene, the q-value is 0.5336279. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:eplotFit} are not significant so this particular gene is not differentially expressed between {\tt class} as time varies. 
 
-To get a list of all the signifcant genes at a false discovery rate cutoff of 0.01:
+To get a list of all the significant genes at a false discovery rate cutoff of 0.1:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{fdr.level} \hlkwb{<-} \hlnum{0.01}
-\hlstd{sigGenes} \hlkwb{<-} \hlstd{qval} \hlopt{<} \hlstd{fdr.level}
+\hlstd{fdr.level} \hlkwb{<-} \hlnum{0.1}
+\hlstd{sigGenes} \hlkwb{<-} \hlstd{qvalues} \hlopt{<} \hlstd{fdr.level}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-\section{Using the {\tt sva} package}
+View the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} vignette} to get a more thorough discussion in how to use p-values, q-values, $\pi_{0}$ estimate and local false discovery rates to determine significant genes.
+
+\section{{\tt sva}: Surrogate variable analysis}
 \label{sec:SVA}
 The {\tt sva} package is useful for removing batch effects or any unwanted variation in an experiment. It does this by forming surrogate variables to adjust for sources of unknown variation. Details on the algorithm can be found in \cite{leek:2007}. {\tt edge} uses the {\tt sva} package in the function {\tt edgeSVA}. Suppose we are working with the {\tt kidney} data in~\ref{sec:kidney}, then the first step is to create an {\tt edgeSet} object by either using {\tt edgeModel} or {\tt edgeStudy}:
 \begin{knitrout}
@@ -1148,7 +1239,7 @@ To find the surrogate variables and add them to the experimental models in {\tt 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{newEdgeObj} \hlkwb{<-} \hlkwd{edgeSVA}\hlstd{(edgeObj,} \hlkwc{n.sv} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{B} \hlstd{=} \hlnum{10}\hlstd{)}
+\hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeSVA}\hlstd{(edgeObj,} \hlkwc{n.sv} \hlstd{=} \hlnum{3}\hlstd{,} \hlkwc{B} \hlstd{=} \hlnum{10}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
 ## Number of significant surrogate variables is:  3 
@@ -1156,31 +1247,47 @@ To find the surrogate variables and add them to the experimental models in {\tt 
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-{\tt n.sv} is the number of surrogate variables and {\tt B} is the number of bootstraps. See {\tt edgeSVA} for additional arguments. To see the terms that have been added to the models:
+{\tt n.sv} is the number of surrogate variables and {\tt B} is the number of bootstraps. See {\tt ?edgeSVA} for additional arguments. To see the terms that have been added to the models:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{fullModel}\hlstd{(newEdgeObj)}
+\hlkwd{fullModel}\hlstd{(edgeObj)}
 \end{alltt}
 \begin{verbatim}
 ## ~sex + ns(age, df = 4) + SV1 + SV2 + SV3
-## <environment: 0xb81d7b0>
+## <environment: 0xfbaa9c0>
 \end{verbatim}
 \begin{alltt}
-\hlkwd{nullModel}\hlstd{(newEdgeObj)}
+\hlkwd{nullModel}\hlstd{(edgeObj)}
 \end{alltt}
 \begin{verbatim}
 ## ~sex + SV1 + SV2 + SV3
-## <environment: 0xb81d7b0>
+## <environment: 0xfbaa9c0>
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-The variables SV1, SV2 and SV3 are the surrogate variables formed by {\tt sva}. Now {\tt odp} can be used as in previous examples:
+The variables SV1, SV2 and SV3 are the surrogate variables formed by {\tt sva}. To access the surrogate variables:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{edgeODP} \hlkwb{<-} \hlkwd{odp}\hlstd{(newEdgeObj,} \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{cov} \hlkwb{<-} \hlkwd{pData}\hlstd{(edgeObj)}
+\hlkwd{names}\hlstd{(cov)}
+\end{alltt}
+\begin{verbatim}
+## [1] "sex" "age" "SV1" "SV2" "SV3"
+\end{verbatim}
+\begin{alltt}
+\hlstd{surrogate.vars} \hlkwb{<-} \hlstd{cov[,} \hlnum{3}\hlopt{:}\hlkwd{ncol}\hlstd{(cov)]}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
+Now {\tt odp} or {\tt lrt} can be used as in previous examples:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{edgeODP} \hlkwb{<-} \hlkwd{odp}\hlstd{(edgeObj,} \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{edgeLRT} \hlkwb{<-} \hlkwd{lrt}\hlstd{(edgeObj,} \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{)}
 \hlkwd{summary}\hlstd{(edgeODP)}
 \end{alltt}
 \begin{verbatim}
@@ -1188,7 +1295,7 @@ The variables SV1, SV2 and SV3 are the surrogate variables formed by {\tt sva}. 
 ## ExpressionSet Summary 
 ##  
 ## ExpressionSet (storageMode: lockedEnvironment)
-## assayData: 34061 features, 72 samples 
+## assayData: 5000 features, 72 samples 
 ##   element names: exprs 
 ## protocolData: none
 ## phenoData
@@ -1202,36 +1309,36 @@ The variables SV1, SV2 and SV3 are the surrogate variables formed by {\tt sva}. 
 ## edge Analysis Summary 
 ##  
 ## Total number of arrays: 72 
-## Total number of probes: 34061 
+## Total number of probes: 5000 
 ##  
 ## Biological variables: 
 ## 	Null Model:~sex + SV1 + SV2 + SV3
-## <environment: 0xb81d7b0>
+## <environment: 0xfbaa9c0>
 ## 
 ## 	Full Model:~sex + ns(age, df = 4) + SV1 + SV2 + SV3
-## <environment: 0xb81d7b0>
+## <environment: 0xfbaa9c0>
 ## 
 ## ....... 
 ##  
 ## 
 ## Statistical significance summary:
-## pi0:	0.6331189	
+## pi0:	0.5033573	
 ## 
 ## Cumulative number of significant calls:
 ## 
 ##           <1e-04 <0.001 <0.01 <0.025 <0.05 <0.1
-## p-value      142    451  1712   3041  4773 7463
-## q-value        0      9   111    232   491 1316
-## local fdr      0      0    64    127   245  648
-##              <1
-## p-value   34061
-## q-value   34061
-## local fdr 32302
+## p-value       41    141   428    676   994 1465
+## q-value        0     13    64    181   359  729
+## local fdr      0      0    38    108   189  369
+##             <1
+## p-value   5000
+## q-value   5000
+## local fdr 5000
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-And to extract the q-values, local false discovery rates and p-values:
+And to extract the $\pi_{0}$ estimate, q-values, local false discovery rates and p-values:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -1239,22 +1346,23 @@ And to extract the q-values, local false discovery rates and p-values:
 \hlstd{qvals} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{qvalues}
 \hlstd{lfdr} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{lfdr}
 \hlstd{pvals} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{pvalues}
+\hlstd{pi0} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{pi0}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
-\section{Using the {\tt snm} package}
-The {\tt snm} package allows for supervised normalization of microarrays on a gene expression matrix. Details on the algorithm can be found in \cite{mecham:2010}. The {\tt snm} package is implemented in the {\tt edgeSNM} function. Continuing the analysis on the {\tt kidney} study in~\ref{sec:kidney}:
+\section{{\tt snm}: Supervised normalization of microarray data}
+There has been a lot of work done on separating signal from confounding factors, but a lot of algorithms fail to consider both the models of the study and technical factors such as batch or array processing date. The {\tt snm} package allows for supervised normalization of microarrays on a gene expression matrix. It takes into account both the experimental models and other technical factors in the experiments. Details on the algorithm can be found in \cite{mecham:2010}. The {\tt snm} package is implemented in the {\tt edgeSNM} function. Continuing the analysis on the {\tt kidney} study in~\ref{sec:kidney}:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# create models}
 \hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeStudy}\hlstd{(}\hlkwc{data} \hlstd{= kidexpr,} \hlkwc{adj.var} \hlstd{= sex,}
-    \hlkwc{bio.var} \hlstd{= age,} \hlkwc{sampling} \hlstd{=} \hlstr{"timecourse"}\hlstd{)}
+    \hlkwc{tme} \hlstd{= age,} \hlkwc{basis.df} \hlstd{=} \hlnum{4}\hlstd{,} \hlkwc{sampling} \hlstd{=} \hlstr{"timecourse"}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-Now that we have created {\tt edgeObj}, we can adjust for additional array effects, dye effects and other intensity-dependent effects:
+Now that we have created {\tt edgeObj}, we can adjust for additional array effects, dye effects and other intensity-dependent effects.  In this example, we created array effects that are not existent in the real data set in order to show how to use the function:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -1264,14 +1372,21 @@ Now that we have created {\tt edgeObj}, we can adjust for additional array effec
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-The {\tt int.var} is where the data frame of intensity-dependent effects are inputed, {\tt diagnose} is a flag to let the software know whether to produce diagnostic plots. Additional arguments can be found by typing {\tt ?edgeSNM}. The authors of {\tt snm} recommend that the probe level data be analyzed on a log-transformed scale and that the normalized data be inspected for latent structure using SVA~\ref{sec:SVA}. 
+The {\tt int.var} is where the data frame of intensity-dependent effects are inputed, {\tt diagnose} is a flag to let the software know whether to produce diagnostic plots. Additional arguments can be found by typing {\tt ?edgeSNM}.
 
-Once the data has been normalized, {\tt odp} can be used for get significance results:
+Once the data has been normalized, we can access the normalized matrix by using {\tt exprs}:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{norm.matrix} \hlkwb{<-} \hlkwd{exprs}\hlstd{(edgeObj)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+To run the significance analysis, {\tt odp} or {\tt lrt} can be used:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{edgeODP} \hlkwb{<-} \hlkwd{odp}\hlstd{(edgeObj,} \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{)}
-
 \hlkwd{summary}\hlstd{(edgeODP)}
 \end{alltt}
 \begin{verbatim}
@@ -1279,12 +1394,12 @@ Once the data has been normalized, {\tt odp} can be used for get significance re
 ## ExpressionSet Summary 
 ##  
 ## ExpressionSet (storageMode: lockedEnvironment)
-## assayData: 34061 features, 72 samples 
+## assayData: 5000 features, 72 samples 
 ##   element names: exprs 
 ## protocolData: none
 ## phenoData
 ##   sampleNames: 1 2 ... 72 (72 total)
-##   varLabels: adj.var bio.var
+##   varLabels: adj.var tme
 ##   varMetadata: labelDescription
 ## featureData: none
 ## experimentData: use 'experimentData(object)'
@@ -1293,36 +1408,36 @@ Once the data has been normalized, {\tt odp} can be used for get significance re
 ## edge Analysis Summary 
 ##  
 ## Total number of arrays: 72 
-## Total number of probes: 34061 
+## Total number of probes: 5000 
 ##  
 ## Biological variables: 
 ## 	Null Model:~adj.var
-## <environment: 0xc91e6b8>
+## <environment: 0x91dec40>
 ## 
-## 	Full Model:~adj.var + bio.var
-## <environment: 0xc91e6b8>
+## 	Full Model:~adj.var + ns(tme, df = 4, intercept = FALSE)
+## <environment: 0x91dec40>
 ## 
 ## ....... 
 ##  
 ## 
 ## Statistical significance summary:
-## pi0:	0.7885024	
+## pi0:	0.3902338	
 ## 
 ## Cumulative number of significant calls:
 ## 
 ##           <1e-04 <0.001 <0.01 <0.025 <0.05 <0.1
-## p-value       63    329  1326   2433  3891 6360
-## q-value        0      0     3     10   151  429
-## local fdr      0      0     3      5    84  235
-##              <1
-## p-value   34061
-## q-value   34061
-## local fdr 29182
+## p-value       59    141   386    614   896 1382
+## q-value        0     21   109    206   386  800
+## local fdr      0     16    63    115   197  394
+##             <1
+## p-value   5000
+## q-value   5000
+## local fdr 4964
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-And to extract the q-values, local false discovery rates and p-values:
+And to extract the $\pi_{0}$ estimate, q-values, local false discovery rates and p-values:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -1330,12 +1445,13 @@ And to extract the q-values, local false discovery rates and p-values:
 \hlstd{qvals} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{qvalues}
 \hlstd{lfdr} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{lfdr}
 \hlstd{pvals} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{pvalues}
+\hlstd{pi0} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{pi0}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 
 
-\section{Using the {\tt qvalue} package}
+\section{{\tt qvalue}: Estimate the q-values}
 After {\tt odp} or {\tt lrt} is used, the user may wish to change some parameters used when calculating the q-values. This can be done by using the {\tt edgeQvalue} function. Lets review the analysis process for the {\tt kidney} dataset in~\ref{sec:kidney}: create the alternative and null models and then run {\tt odp} or {\tt lrt} to get significance results. Applying these steps in the {\tt kidney} dataset:
 
 \begin{knitrout}
@@ -1350,7 +1466,7 @@ After {\tt odp} or {\tt lrt} is used, the user may wish to change some parameter
 \end{kframe}
 \end{knitrout}
 
-Suppose we wanted to estimate $pi_{0}$ using the ``bootstrap'' method in {\tt qvalue} (see {\tt qvalue} vignette for more details):
+Suppose we wanted to estimate $\pi_{0}$ using the ``bootstrap'' method in {\tt qvalue} (see \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.html}{{\tt qvalue} vignette} for more details):
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -1368,8 +1484,122 @@ Suppose we wanted to estimate $pi_{0}$ using the ``bootstrap'' method in {\tt qv
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-In this case, there is negligible difference between using the ``smoother'' method and ``bootstrap'' method but the point is that the arguments from the {\tt qvalue} package can be passed through {\tt edgeQvalue}. See {\tt edgeQvalue} for additional information.
+In this case, there is a small difference between using the ``smoother'' method and ``bootstrap'' method but the point is that the arguments from the {\tt qvalue} package can be passed through {\tt edgeQvalue}. See {\tt edgeQvalue} for additional arguments.
 
+
+
+\section{Advanced topic: Using the ExpressionSet object}
+\label{sec:advanced}
+{\tt edge} was designed for complementing {\tt ExpressionSet} objects in significance analysis. The {\tt edgeSet} inherits all the slots from an {\tt ExpressionSet} object and adds vital slots for significance analysis. The rest of this section is for advanced users because it requires knowledge of alternative and null model creation. To begin, lets create an {\tt ExpressionSet} object from the {\tt kidney} dataset:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(edge)}
+\hlstd{anonDf} \hlkwb{<-} \hlkwd{as}\hlstd{(}\hlkwd{data.frame}\hlstd{(}\hlkwc{age}\hlstd{=age,} \hlkwc{sex}\hlstd{=sex),} \hlstr{"AnnotatedDataFrame"}\hlstd{)}
+\hlstd{expSet} \hlkwb{<-} \hlkwd{ExpressionSet}\hlstd{(}\hlkwc{assayData} \hlstd{= kidexpr,}
+\hlkwc{phenoData} \hlstd{= anonDf)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+In the {\tt kidney} experiment they were interested in finding the effect of age on gene expression. In this case, we handle the time variable, {\tt age}, by fitting a natural spline curve as done in \cite{storey:2005}. The relevant models for the experiment can be written as
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(splines)}
+\hlstd{nullMod} \hlkwb{<-} \hlopt{~}\hlnum{1} \hlopt{+} \hlstd{sex}
+\hlstd{altMod} \hlkwb{<-} \hlopt{~}\hlnum{1} \hlopt{+} \hlstd{sex} \hlopt{+} \hlkwd{ns}\hlstd{(age,} \hlkwc{intercept} \hlstd{=} \hlnum{FALSE}\hlstd{,} \hlkwc{df} \hlstd{=} \hlnum{4}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+where {\tt nullMod} is the null model and {\tt altMod} is the alternative model. The {\tt sex} covariate is an adjustment variable while {\tt age} is the biological variable of interest. It is important to note that it is necessary to include the adjustment variables in the formulation of the alternative models as done above.
+
+Having both {\tt expSet} and the hypothesis models, the function {\tt edgeSet} can then be used to create an {\tt edgeSet} object:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{edgeObj} \hlkwb{<-} \hlkwd{edgeSet}\hlstd{(expSet,} \hlkwc{full.model} \hlstd{= altMod,} \hlkwc{null.model} \hlstd{= nullMod)}
+\hlkwd{slotNames}\hlstd{(edgeObj)}
+\end{alltt}
+\begin{verbatim}
+##  [1] "null.model"        "full.model"       
+##  [3] "null.matrix"       "full.matrix"      
+##  [5] "individual"        "qvalueObj"        
+##  [7] "experimentData"    "assayData"        
+##  [9] "phenoData"         "featureData"      
+## [11] "annotation"        "protocolData"     
+## [13] ".__classVersion__"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+From the slot names, it is evident that the {\tt edgeSet} object inherits the {\tt ExpressionSet} slots in addition to other slots relating to the significance analysis. See section~\ref{subsec:edgeSet} for more details on the {\tt edgeSet} slots. We can now simply run {\tt odp} or {\tt lrt} for significance results:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{edgeODP} \hlkwb{<-} \hlkwd{odp}\hlstd{(edgeObj,} \hlkwc{verbose} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlstd{edgeLRT} \hlkwb{<-} \hlkwd{lrt}\hlstd{(edgeObj)}
+\hlkwd{summary}\hlstd{(edgeODP)}
+\end{alltt}
+\begin{verbatim}
+## 
+## ExpressionSet Summary 
+##  
+## ExpressionSet (storageMode: lockedEnvironment)
+## assayData: 5000 features, 72 samples 
+##   element names: exprs 
+## protocolData: none
+## phenoData
+##   sampleNames: 1 2 ... 72 (72 total)
+##   varLabels: age sex
+##   varMetadata: labelDescription
+## featureData: none
+## experimentData: use 'experimentData(object)'
+## Annotation:  
+## 
+## edge Analysis Summary 
+##  
+## Total number of arrays: 72 
+## Total number of probes: 5000 
+##  
+## Biological variables: 
+## 	Null Model:~1 + sex
+## 
+## 	Full Model:~1 + sex + ns(age, intercept = FALSE, df = 4)
+## 
+## ....... 
+##  
+## 
+## Statistical significance summary:
+## pi0:	0.4234395	
+## 
+## Cumulative number of significant calls:
+## 
+##           <1e-04 <0.001 <0.01 <0.025 <0.05 <0.1
+## p-value       58    128   360    560   838 1262
+## q-value        0     30    96    189   316  593
+## local fdr      0     19    60     95   161  304
+##             <1
+## p-value   5000
+## q-value   5000
+## local fdr 4982
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+And use the function {\tt qvalueObj} to extract the $\pi_{0}$ estimate, q-values, local false discovery rates and p-values:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{qvalObj} \hlkwb{<-} \hlkwd{qvalueObj}\hlstd{(edgeODP)}
+\hlstd{qvals} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{qvalues}
+\hlstd{lfdr} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{lfdr}
+\hlstd{pvals} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{pvalues}
+\hlstd{pi0} \hlkwb{<-} \hlstd{qvalObj}\hlopt{$}\hlstd{pi0}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \section{Figures}
 \begin{figure}[!htbp]
@@ -1384,14 +1614,14 @@ In this case, there is negligible difference between using the ``smoother'' meth
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-4-1} 
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-6-1} 
 
 }
 
 
 
 \end{knitrout}
-\caption{Plot of the first gene in the {\tt gibson} study.}
+\caption{Plot of gene 1 in the {\tt gibson} study.}
 \label{fig:gplot}
 \end{figure}
 
@@ -1400,36 +1630,17 @@ In this case, there is negligible difference between using the ``smoother'' meth
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-5-1} 
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
 
 }
 
 
 
 \end{knitrout}
-\caption{Plot of the first gene in the {\tt gibson} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\caption{Plot of gene 1 in the {\tt gibson} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
 \label{fig:gplotFit}
 \end{figure}
 
-\begin{figure}[!htbp]
- \centering
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{plot}\hlstd{(sig.results)}
-\end{alltt}
-\end{kframe}
-
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-6-1} 
-
-}
-
-
-
-\end{knitrout}
-\caption{Apply the function {\tt plot} to the slot {\tt qvalueObj}. Function is derived from the {\tt qvalue} package.}
-\label{fig:gqvalPlot}
-\end{figure}
 \begin{figure}[!htbp]
  \centering
 \begin{knitrout}
@@ -1439,14 +1650,14 @@ In this case, there is negligible difference between using the ``smoother'' meth
 \end{alltt}
 \end{kframe}
 
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
 
 }
 
 
 
 \end{knitrout}
-\caption{Apply the function {\tt hist} to the slot {\tt qvalueObj}. Function is derived from the {\tt qvalue} package.}
+\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt gibson} data set. Function is derived from the {\tt qvalue} package.}
 \label{fig:gqvalHist}
 \end{figure}
 
@@ -1457,14 +1668,14 @@ In this case, there is negligible difference between using the ``smoother'' meth
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-9-1} 
 
 }
 
 
 
 \end{knitrout}
-\caption{Plot of the first gene in the {\tt kidney} study.}
+\caption{Plot of gene 5 in the {\tt kidney} study.}
 \label{fig:kplot}
 \end{figure}
 
@@ -1472,17 +1683,92 @@ In this case, there is negligible difference between using the ``smoother'' meth
 \begin{figure}[!htbp]
  \centering
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-1} 
+
+}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in data.frame(age = age, sex = sex, null.model = fitVals0[1, ], : arguments imply differing number of rows: 72, 46}}
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: id variables not found in data: age, sex}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: Aesthetics must either be length one, or the same length as the dataProblems:age, sex}}\end{kframe}
 \end{knitrout}
-\caption{Plot of the first gene in the {\tt gibson} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\caption{Plot of gene 5 in the {\tt kidney} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
 \label{fig:kplotFit}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+ \centering
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{hist}\hlstd{(sig.results)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-11-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt kidney} data set. Function is derived from the {\tt qvalue} package.}
+\label{fig:kqvalHist}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+ \centering
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-12-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Plot of gene 2 in the {\tt endotoxin} study.}
+\label{fig:eplot}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+ \centering
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-13-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Plot of gene 2 in the {\tt endotoxin} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\label{fig:eplotFit}
+\end{figure}
+
+\begin{figure}[!htbp]
+ \centering
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{hist}\hlstd{(sig.results)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-14-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt endotoxin} data set. Function is derived from the {\tt qvalue} package.}
+\label{fig:eqvalHist}
 \end{figure}
 
 \section*{Acknowledgements}
