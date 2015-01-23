@@ -698,7 +698,7 @@ pi0 <- qvalObj$pi0
 @
 
 \section{{\tt snm}: Supervised normalization of microarray data}
-There has been a lot of work done on separating signal from confounding factors, but a lot of algorithms fail to consider both the models of the study and technical factors such as batch or array processing date. The {\tt snm} package allows for supervised normalization of microarrays on a gene expression matrix. It takes into account both the experimental models and other technical factors in the experiments. Details on the algorithm can be found in \cite{mecham:2010}. The {\tt snm} package is implemented in the {\tt edgeSNM} function. Continuing the analysis on the {\tt kidney} study in~\ref{sec:kidney}:
+There has been a lot of work done on separating signal from confounding factors, but a lot of algorithms fail to consider both the models of the study and the technical factors such as batch or array processing date. The {\tt snm} package allows for supervised normalization of microarrays on a gene expression matrix. It takes into account both the experimental models and other technical factors in the experiments. Details on the algorithm can be found in \cite{mecham:2010}. The {\tt snm} package is implemented in the {\tt edgeSNM} function. Continuing the analysis on the {\tt kidney} study in~\ref{sec:kidney}:
 <<edgeStudy_kidsnmn, dependson="import_data_kid">>=
 # create models
 edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, basis.df=4, sampling = "timecourse")
