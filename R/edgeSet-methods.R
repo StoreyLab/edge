@@ -280,7 +280,7 @@ setMethod("edgeSNM",
             null.matrix <- object@null.matrix
             full.matrix <- full.matrix - projMatrix(null.matrix) %*% full.matrix
             full.matrix <- as.matrix(rm.zero.cols(full.matrix))
-            nullMatrix(object) <- snm(exprs(object),
+            exprs(object) <- snm(exprs(object),
                                        bio.var = full.matrix,
                                        adj.var = null.matrix, 
                                        int.var = int.var, ...)$norm.dat
