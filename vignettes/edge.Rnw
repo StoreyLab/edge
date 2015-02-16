@@ -49,6 +49,14 @@ foo <- packageDescription("edge")
 
 The rest of the document details how to use {\tt edge} in three different case studies: static, independent time course and longitudinal time course. For additional information regarding the optimal discovery procedure or the \cite{storey:2005} methodology for time course experiments, see section~\ref{sec:citepackage}.
 
+\begin{figure}[t]
+ \centering
+\includegraphics[scale=.50]{edgecomp.pdf}
+\caption{Comparison of EDGE to various other leading methods for identifying differential expressed genes in the \cite{hedenfalk:2001} study. Figure is from \cite{leek2005}.}
+\label{fig:Comparison}
+\end{figure}
+
+
 \section{Citing this package}
 \label{sec:citepackage}
 \textbf{[1] \bibentry{storey:2007}} \\
@@ -141,6 +149,18 @@ There are a few variables in the data set: {\tt batch}, {\tt gibexpr}, {\tt gend
 
 As an example, the expression values of the first gene are shown in Figure~\ref{fig:gplot}. In the figure, it appears that the individuals from ``VILLAGE'' are more expressed when compared to other lifestyles. We should stop short of that observation because the data needs to be adjusted with the experimental models. Before that, the alternative and null model of the study needs to be carefully formulated which is discussed in the next section.
 
+\begin{figure}[t]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson="gibson_import_data">>=
+library(ggplot2)
+gender <- as.factor(as.matrix(gibson$gender) )
+location = as.factor(as.matrix(gibson$location))
+batch = as.factor(as.matrix(gibson$batch))
+qplot(location, gibson$gibexpr[1,], geom="point", colour=gender:batch, xlab= "location", ylab="expression")
+@
+\caption{Plot of gene 1 in the {\tt gibson} study.}
+\label{fig:gplot}
+\end{figure}
 \subsection{Creating the alternative and null models}
 In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
 <<gibson_edgeStudy, dependson="gibson_import_data", cache=TRUE>>=
@@ -197,6 +217,27 @@ null.matrix <- nullMatrix(edgeObj)
 See {\tt ?edgeSet} for additional functions to access different slots of the {\tt edgeSet} object. 
 
 \subsection{Fitting the data}
+
+\begin{figure}[t]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("gibson_edgeFit","gibson_import_data")>>=
+library(ggplot2)
+library(reshape2)
+edgeObj <- edgeStudy(data = gibson$gibexpr, adj.var = cbind(gibson$gender, gibson$batch), grp = gibson$location, sampling = "static")
+efObj <- edgeFit(edgeObj)
+fitVals <- fitFull(efObj)
+fitVals0 <- fitNull(efObj)
+gender <- as.factor(gibson$gender)
+location = as.matrix(gibson$location)
+batch = as.factor(gibson$batch)
+df <- data.frame(batch = batch, gender = gender, location = location, null.model = fitVals0[1,], full.model = fitVals[1,], raw = exprs(edgeObj)[1,])
+df <- melt(data = df, id.vars=c("batch", "location", "gender"))
+ggplot(df, aes(location, value, color=gender:batch), xlab="location", ylab="expression") + geom_point() + facet_wrap(~variable)
+@
+\caption{Plot of gene 1 in the {\tt gibson} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\label{fig:gplotFit}
+\end{figure}
+
 The {\tt edgeFit} function is an implementation of least squares using the alternative and null models:
 <<gibson_edgeFit, dependson="gibson_edgeModel">>=
 efObj <- edgeFit(edgeObj, stat.type="lrt")
@@ -249,6 +290,16 @@ edgeODP <- odp(edgeObj, bs.its=30, verbose=FALSE, n.mods=50)
 The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose} prints each bootstrap iteration number and {\tt n.mods} is the number of clusters in the k-means algorithm. A k-means algorithm is used to assign genes to groups in order to speed up the computational time of the algorithm. If {\tt n.mods} is equal to the number of genes then the original optimal discovery procedure is used. Depending on the number of genes, this setting can take a very long time.  Therefore, it is recommended to use a small {\tt n.mods} value to substantially decrease the computational time. In \cite{woo:leek:storey:2011}, it is shown that assigning {\tt n.mods} to about 50 will cause a negligible loss in power. Type {\tt ?odp} for more details on the algorithm.
 
 \subsection{Significance results}
+\begin{figure}[t]
+ \centering
+<<fig.width=8, fig.height=4, echo=FALSE>>=
+sig.results <- qvalueObj(edgeODP)
+hist(sig.results)
+@
+\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt gibson} data set. Function is derived from the {\tt qvalue} package.}
+\label{fig:gqvalHist}
+\end{figure}
+
 The {\tt summary} function can be used on an {\tt edgeSet} object to give an overview of the analysis:
 <<dependson = "kd_3_gib">>=
 summary(edgeODP)
@@ -256,7 +307,7 @@ summary(edgeODP)
 There are three core summaries: {\tt ExpressionSet} summary, {\tt edge} analysis and statistical significance summary. The {\tt ExpressionSet} summary shows a summary of the {\tt ExpressionSet} object. {\tt edge} analysis shows an overview of the models used and other information about the data set. The significance analysis shows the proportion of null genes, $\pi_{0}$, and significant genes at various cutoffs in terms of p-values, q-values and local false discovery rates.
 
 The function {\tt qvalueObj} can be used on {\tt edgeODP} to extract the significance results:
-<<qvalob2_gib>>=
+<<gibson_sig>>=
 sig.results <- qvalueObj(edgeODP)
 @
 
@@ -265,7 +316,7 @@ The object {\tt sig.results} is a list with the following slots:
 names(sig.results)
 @
 The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values:
-<<endotoxin_hist,eval=FALSE>>=
+<<gibson_hist,eval=FALSE>>=
 hist(sig.results)
 @
 
@@ -298,6 +349,19 @@ View the \href{http://www.bioconductor.org/packages/release/bioc/html/qvalue.htm
 In the independent time course study, the arrays have been sampled with respect to time from one biological group and the goal is to identify genes that show ``within-class temporal differential expression'', i.e., genes that show statistically significant changes in expression over time. The example data set used in this section is a kidney data set by \cite{rodwell:2004}. Gene expression measurements, from cortex and medulla samples in the kidney, were obtained from 72 human subjects ranging in age from 27 to 92 years. Only one array was obtained per sample and the age and tissue type of each subject was recorded. See \cite{rodwell:2004} for additional information regarding the data set.
 
 \subsection{Importing the data}
+\begin{figure}[t]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson="kidney_import_data">>=
+library(ggplot2)
+sex <- kidney$sex[kidney$tissue == "c"]
+age <- kidney$age[kidney$tissue == "c"]
+kidexpr <- kidney$kidexpr[, kidney$tissue == "c"] 
+
+qplot(age, kidexpr[5,], geom="point", colour=sex, xlab= "age", ylab="expression")
+@
+\caption{Plot of gene 5 in the {\tt kidney} study.}
+\label{fig:kplot}
+\end{figure}
 To import the {\tt kidney} data use the {\tt data} function:
 <<kidney_import_data>>=
 data(kidney)
@@ -380,6 +444,26 @@ null.matrix <- nullMatrix(edgeObj)
 See {\tt ?edgeSet} for additional functions to access different slots of the {\tt edgeSet} object. 
 
 \subsection{Fitting the data}
+
+\begin{figure}[t]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("kidney_import_data")>>=
+library(ggplot2)
+library(reshape2)
+edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse", basis.df=4)
+efObj <- edgeFit(edgeObj)
+fitVals <- fitFull(efObj)
+fitVals0 <- fitNull(efObj)
+
+
+df <- data.frame(age= age, sex=sex, null.model = fitVals0[5,], full.model = fitVals[5,], raw = exprs(edgeObj)[5,])
+df <- melt(data = df, id.vars=c("age", "sex"))
+ggplot(df, aes(age, value, color=sex), xlab="age", ylab="expression") + geom_point() + facet_wrap(~variable)
+@
+\caption{Plot of gene 5 in the {\tt kidney} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\label{fig:kplotFit}
+\end{figure}
+
 The {\tt edgeFit} function is an implementation of least squares using the alternative and null models:
 <<kidney_edgeFit, dependson="kidney_edgeModel">>=
 efObj <- edgeFit(edgeObj, stat.type="lrt")
@@ -460,6 +544,15 @@ The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. Th
 hist(sig.results)
 @
 
+\begin{figure}[t]
+ \centering
+<<fig.width=8, fig.height=4, echo=FALSE, dependson="kidney_sig">>=
+hist(sig.results)
+@
+\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt kidney} data set. Function is derived from the {\tt qvalue} package.}
+\label{fig:kqvalHist}
+\end{figure}
+
 The plot is shown in Figure~\ref{fig:kqvalHist}. To extract the p-values, q-values, local false discovery rates and the $\pi_{0}$ estimate:
 <<kidney_extract, dependson="kidney_sig">>=
 pvalues <- sig.results$pvalues
@@ -497,6 +590,20 @@ names(endotoxin)
 There are a few covariates in this data set: {\tt expr}, {\tt class}, {\tt individual}, and {\tt time}. There are 8 individuals in the experiment ({\tt ind}) that were sampled at multiple time points ({\tt time}) that were either ``endotoxin'' or ``control'' ({\tt class}). The {\tt expr} variable contains the expression values of the experiment:
 
 To show an example gene, the expression values of the second gene are shown in Figure~\ref{fig:eplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
+\begin{figure}[t]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson="endotoxin_import_data">>=
+library(ggplot2)
+class <- endotoxin$class
+ind <- as.factor(endotoxin$ind)
+tme <- endotoxin$time
+endoexpr <- endotoxin$endoexpr 
+
+qplot(tme, endoexpr[2,], geom="point", colour=class, xlab= "time (hours)", ylab="expression")
+@
+\caption{Plot of gene 2 in the {\tt endotoxin} study.}
+\label{fig:eplot}
+\end{figure}
 
 \subsection{Creating the alternative and null models}
 In order to find differentially expressed genes, there first needs to be an alternative and null model for the study. There are two ways to input the experimental models in {\tt edge}: {\tt edgeModel} and {\tt edgeStudy}. {\tt edgeStudy} should be used by users unfamiliar with formulating the alternative and null models but are familiar with the covariates in the study: 
@@ -562,6 +669,26 @@ The {\tt edgeFit} function is an implementation of least squares using the alter
 <<endotoxin_edgeFit, dependson="endotoxin_edgeModel">>=
 efObj <- edgeFit(edgeObj, stat.type="lrt")
 @
+
+\begin{figure}[t]
+ \centering
+<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("endotoxin_import_data")>>=
+library(ggplot2)
+library(reshape2)
+#endoexpr <- endoexpr - rowMeans(endoexpr)
+edgeObj <- edgeStudy(data = endotoxin$endoexpr, grp = endotoxin$class, tme = endotoxin$time, ind = endotoxin$ind, sampling = "timecourse", basis.df=2)
+efObj <- edgeFit(edgeObj)
+fitVals <- fitFull(efObj)
+fitVals0 <- fitNull(efObj)
+
+id=2
+df <- data.frame(class= class, tme=tme, ind=ind, null.model = fitVals0[id,], full.model = fitVals[id,])
+df <- melt(data = df, id.vars=c("class", "tme", "ind"))
+ggplot(df, aes(tme, value, color=class), xlab="time (hours)", ylab="expression") + geom_smooth(se=FALSE) + facet_wrap(~variable)
+@
+\caption{Plot of gene 2 in the {\tt endotoxin} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
+\label{fig:eplotFit}
+\end{figure}
 The {\tt stat.type} argument specifies whether you want the {\tt odp} or {\tt lrt} fitted values. The difference between choosing ``odp'' and ``lrt'' is that ``odp'' centers the data by the null model fit which is necessary for downstream analysis in the optimal discovery procedure. {\tt edgeFit} creates another object with the following slots:
 \begin{itemize}
 \item {\tt fit.full}: fitted values from the alternative model
@@ -624,8 +751,17 @@ The object {\tt sig.results} is a list with the following slots:
 <<endotoxin_sigNames>>=
 names(sig.results)
 @
+\begin{figure}[t]
+ \centering
+<<fig.width=8, fig.height=4, echo=FALSE, dependson="endotoxin_sig">>=
+hist(sig.results)
+@
+\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt endotoxin} data set. Function is derived from the {\tt qvalue} package.}
+\label{fig:eqvalHist}
+\end{figure}
+
 The key variables are {\tt pi0}, {\tt pvalues}, {\tt lfdr} and {\tt qvalues}. The {\tt pi0} variable provides an estimate of the proportion of null p-values, {\tt pvalues} are the p-values, {\tt qvalues} are the estimated q-values and {\tt lfdr} are the local false discovery rates. Using the function {\tt hist} on {\tt sig.results} will produce a p-value histogram along with the density curves of q-values and local false discovery rate values:
-<<gibson_hist,eval=FALSE>>=
+<<endotoxin_hist,eval=FALSE>>=
 hist(sig.results)
 @
 
@@ -793,148 +929,6 @@ lfdr <- qvalObj$lfdr
 pvals <- qvalObj$pvalues
 pi0 <- qvalObj$pi0
 @
-
-\section{Figures}
-\begin{figure}[!htbp]
- \centering
-\includegraphics[scale=.50]{edgecomp.pdf}
-\caption{Comparison of EDGE to various other leading methods for identifying differential expressed genes in the \cite{hedenfalk:2001} study. Figure is from \cite{leek2005}.}
-\label{fig:Comparison}
-\end{figure}
-
-\begin{figure}[!htbp]
- \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson="gibson_import_data">>=
-library(ggplot2)
-gender <- as.factor(as.matrix(gibson$gender) )
-location = as.factor(as.matrix(gibson$location))
-batch = as.factor(as.matrix(gibson$batch))
-qplot(location, gibson$gibexpr[1,], geom="point", colour=gender:batch, xlab= "location", ylab="expression")
-@
-\caption{Plot of gene 1 in the {\tt gibson} study.}
-\label{fig:gplot}
-\end{figure}
-
-\begin{figure}[!htbp]
- \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("gibson_edgeFit","gibson_import_data")>>=
-library(ggplot2)
-library(reshape2)
-edgeObj <- edgeStudy(data = gibson$gibexpr, adj.var = cbind(gibson$gender, gibson$batch), grp = gibson$location, sampling = "static")
-efObj <- edgeFit(edgeObj)
-fitVals <- fitFull(efObj)
-fitVals0 <- fitNull(efObj)
-gender <- as.factor(gibson$gender)
-location = as.matrix(gibson$location)
-batch = as.factor(gibson$batch)
-df <- data.frame(batch = batch, gender = gender, location = location, null.model = fitVals0[1,], full.model = fitVals[1,], raw = exprs(edgeObj)[1,])
-df <- melt(data = df, id.vars=c("batch", "location", "gender"))
-ggplot(df, aes(location, value, color=gender:batch), xlab="location", ylab="expression") + geom_point() + facet_wrap(~variable)
-@
-\caption{Plot of gene 1 in the {\tt gibson} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
-\label{fig:gplotFit}
-\end{figure}
-
-\begin{figure}[!htbp]
- \centering
-<<fig.width=8, fig.height=4, dependson="gibson_sig">>=
-hist(sig.results)
-@
-\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt gibson} data set. Function is derived from the {\tt qvalue} package.}
-\label{fig:gqvalHist}
-\end{figure}
-
-
-
-\begin{figure}[!htbp]
- \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson="kidney_import_data">>=
-library(ggplot2)
-sex <- kidney$sex[kidney$tissue == "c"]
-age <- kidney$age[kidney$tissue == "c"]
-kidexpr <- kidney$kidexpr[, kidney$tissue == "c"] 
-
-qplot(age, kidexpr[5,], geom="point", colour=sex, xlab= "age", ylab="expression")
-@
-\caption{Plot of gene 5 in the {\tt kidney} study.}
-\label{fig:kplot}
-\end{figure}
-
-
-\begin{figure}[!htbp]
- \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("kidney_import_data")>>=
-library(ggplot2)
-library(reshape2)
-edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse", basis.df=4)
-efObj <- edgeFit(edgeObj)
-fitVals <- fitFull(efObj)
-fitVals0 <- fitNull(efObj)
-
-
-df <- data.frame(age= age, sex=sex, null.model = fitVals0[5,], full.model = fitVals[5,], raw = exprs(edgeObj)[5,])
-df <- melt(data = df, id.vars=c("age", "sex"))
-ggplot(df, aes(age, value, color=sex), xlab="age", ylab="expression") + geom_point() + facet_wrap(~variable)
-@
-\caption{Plot of gene 5 in the {\tt kidney} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
-\label{fig:kplotFit}
-\end{figure}
-
-
-\begin{figure}[!htbp]
- \centering
-<<fig.width=8, fig.height=4, dependson="kidney_sig">>=
-hist(sig.results)
-@
-\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt kidney} data set. Function is derived from the {\tt qvalue} package.}
-\label{fig:kqvalHist}
-\end{figure}
-
-
-\begin{figure}[!htbp]
- \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson="endotoxin_import_data">>=
-library(ggplot2)
-class <- endotoxin$class
-ind <- as.factor(endotoxin$ind)
-tme <- endotoxin$time
-endoexpr <- endotoxin$endoexpr 
-
-qplot(tme, endoexpr[2,], geom="point", colour=class, xlab= "time (hours)", ylab="expression")
-@
-\caption{Plot of gene 2 in the {\tt endotoxin} study.}
-\label{fig:eplot}
-\end{figure}
-
-
-\begin{figure}[!htbp]
- \centering
-<<fig.height=4, fig.width=8, echo=FALSE, dependson=c("endotoxin_import_data")>>=
-library(ggplot2)
-library(reshape2)
-#endoexpr <- endoexpr - rowMeans(endoexpr)
-edgeObj <- edgeStudy(data = endotoxin$endoexpr, grp = endotoxin$class, tme = endotoxin$time, ind = endotoxin$ind, sampling = "timecourse", basis.df=2)
-efObj <- edgeFit(edgeObj)
-fitVals <- fitFull(efObj)
-fitVals0 <- fitNull(efObj)
-
-id=2
-df <- data.frame(class= class, tme=tme, ind=ind, null.model = fitVals0[id,], full.model = fitVals[id,])
-df <- melt(data = df, id.vars=c("class", "tme", "ind"))
-ggplot(df, aes(tme, value, color=class), xlab="time (hours)", ylab="expression") + geom_smooth(se=FALSE) + facet_wrap(~variable)
-@
-\caption{Plot of gene 2 in the {\tt endotoxin} study after applying the alternative and null model fit. The ``raw'' column is the expression values of the original data.}
-\label{fig:eplotFit}
-\end{figure}
-
-\begin{figure}[!htbp]
- \centering
-<<fig.width=8, fig.height=4, dependson="endotoxin_sig">>=
-hist(sig.results)
-@
-\caption{Applying the function {\tt hist} to the slot {\tt qvalueObj} in the {\tt endotoxin} data set. Function is derived from the {\tt qvalue} package.}
-\label{fig:eqvalHist}
-\end{figure}
 
 \section*{Acknowledgements}
 This software development has been supported in part by funding from the National Institutes of Health and the Office of Naval Research.
