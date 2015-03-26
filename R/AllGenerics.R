@@ -41,7 +41,8 @@
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
-#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
+#' pDat <- as(data.frame(sex = sex, age = age), "AnnotatedDataFrame")
+#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
 #'
 #' # Create Models
 #' nModel <- ~sex
@@ -66,8 +67,6 @@
 #' @seealso \code{\link{edgeSet}}, \code{\link{odp}}, \code{\link{edgeFit}}
 #'
 #' @keywords lrt
-#'
-#' @rdname lrt-method
 #' @import Biobase
 #' @import methods
 #' @exportMethod lrt
@@ -124,8 +123,9 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
-#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
-#'
+#' pDat <- as(data.frame(sex = sex, age = age), "AnnotatedDataFrame")
+#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
+#' 
 #' # Create Models
 #' nModel <- ~sex
 #' fModel <- ~sex+ ns(age, df=3, intercept=FALSE)
@@ -157,7 +157,6 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #'
 #' @keywords odp
 #'
-#' @rdname odp-method
 #' @useDynLib edge odpScoreCluster kldistance
 #' @import qvalue MASS splines
 #' @exportMethod odp
@@ -205,8 +204,9 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
-#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
-#'
+#' pDat <- as(data.frame(sex = sex, age = age), "AnnotatedDataFrame")
+#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
+#' 
 #' # Create Models
 #' nModel <- ~sex
 #' fModel <- ~sex+ ns(age, df=3, intercept=FALSE)
@@ -235,7 +235,6 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #'
 #' @seealso \code{\link{odp}}, \code{\link{edgeSet}} and \code{\link{edgeFit}}
 #'
-#' @rdname klClust-method
 #' @keywords klClust
 #' @exportMethod klClust
 setGeneric("klClust", function(object, obj.edgeFit=NULL, n.mods=50, ...)
@@ -271,8 +270,9 @@ setGeneric("klClust", function(object, obj.edgeFit=NULL, n.mods=50, ...)
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
-#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
-#'
+#' pDat <- as(data.frame(sex = sex, age = age), "AnnotatedDataFrame")
+#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
+#' 
 #' # Create Models
 #' nModel <- ~sex
 #' fModel <- ~sex + ns(age, df=3, intercept=FALSE)
@@ -295,7 +295,6 @@ setGeneric("klClust", function(object, obj.edgeFit=NULL, n.mods=50, ...)
 #' \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
-#' @rdname edgeFit-method
 #' @keywords edgeFit
 #' @exportMethod edgeFit
 setGeneric("edgeFit",
@@ -324,8 +323,9 @@ setGeneric("edgeFit",
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
-#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
-#'
+#' pDat <- as(data.frame(sex = sex, age = age), "AnnotatedDataFrame")
+#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
+#' 
 #' # Create Models
 #' nModel <- ~sex
 #' fModel <- ~sex+ ns(age, df=3, intercept=FALSE)
@@ -340,7 +340,6 @@ setGeneric("edgeFit",
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
-#' @rdname edgeSet-method
 #' @keywords edgeSet
 #'
 #' @exportMethod edgeSet
@@ -363,8 +362,8 @@ setGeneric("edgeSet", function(object, full.model, null.model, individual=NULL) 
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
-#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
-#'
+#' pDat <- as(data.frame(sex = sex, age = age), "AnnotatedDataFrame")
+#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
 #' # Create Models
 #' nModel <- ~sex
 #' fModel <- ~sex+ ns(age, df=3, intercept=FALSE)
@@ -376,7 +375,6 @@ setGeneric("edgeSet", function(object, full.model, null.model, individual=NULL) 
 #' edge.lrt <- lrt(edgeObj)
 #' edge.lrt.new <- edgeQvalue(edge.lrt, fdr.level=0.05, pi0.method="bootstrap", adj=1.2)
 #'
-#' @rdname edgeQvalue-method
 #'
 #' @references
 #' Storey JD and Tibshirani R. (2003) Statistical significance for genome-wide studies. Proceedings of the National Academy of Sciences, 100: 9440-9445
@@ -386,7 +384,6 @@ setGeneric("edgeSet", function(object, full.model, null.model, individual=NULL) 
 #' @author John Storey, Andrew Bass
 #'
 #' @keywords edgeQvalue
-#' @rdname edgeQvalue-method
 #' @exportMethod edgeQvalue
 setGeneric("edgeQvalue", function(object, ...)
   standardGeneric("edgeQvalue"))
@@ -407,7 +404,8 @@ setGeneric("edgeQvalue", function(object, ...)
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
-#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = as(data.frame(sex = sex, age = age), "AnnotatedDataFrame"))
+#' pDat <- as(data.frame(sex = sex, age = age), "AnnotatedDataFrame")
+#' expSet <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
 #'
 #' # Create Models
 #' nModel <- ~sex
@@ -425,7 +423,6 @@ setGeneric("edgeQvalue", function(object, ...)
 #' @author John Storey, Andrew Bass
 #' @import sva
 #' @keywords edgeSVA
-#' @rdname edgeSVA-method
 #' @exportMethod edgeSVA
 setGeneric("edgeSVA", function(object, ...)
   standardGeneric("edgeSVA"))
@@ -447,11 +444,13 @@ setGeneric("edgeSVA", function(object, ...)
 #' # Simulate data
 #' require(snm)
 #' singleChannel <- sim.singleChannel(12345)
+#' data <- singleChannel$raw.data
 #' # Create edgeSet object using edgeModel (can use ExpressionSet see manual)
-#' grp = singleChannel$bio.var[,2]
-#' adj.var = data.frame(singleChannel$adj.var[,-1])
-#' Create edgeSet object using edgeModel (can use ExpressionSet -- see manual)
-#' edgeObj <- edgeModel(data=singleChannel$raw.data, sampling="static", grp=grp, adj.var=adj.var)
+#' cov <- data.frame(grp = singleChannel$bio.var[,2])
+#' full.model <- ~grp
+#' null.model <- ~1
+#' # Create edgeSet object using edgeModel (can use ExpressionSet -- see manual)
+#' edgeObj <- edgeModel(data=data, altMod = full.model, nullMod = null.model, cov =cov)
 #'
 #' # Run SNM using intensity-dependent adjustment variable
 #' nEdgeObj <- edgeSNM(edgeObj, int.var=singleChannel$int.var, verbose=FALSE, num.iter=1)
@@ -459,7 +458,6 @@ setGeneric("edgeSVA", function(object, ...)
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
-#' @rdname edgeSNM-method
 #' @keywords edgeSNM
 #' @import snm
 #' @exportMethod edgeSNM
@@ -482,13 +480,11 @@ setGeneric("edgeSNM", function(object, int.var, ...) standardGeneric("edgeSNM"))
 #' 
 #' @keywords fullModel, fullModel<-
 #' 
-#' @rdname fullModel-method
 #' 
 #' @exportMethod fullModel
 setGeneric("fullModel", function(object) standardGeneric("fullModel"))
 
-#' @rdname fullModel-method
-#' 
+#' @rdname fullModel
 #' @exportMethod fullModel<-
 setGeneric("fullModel<-", function(object, value) {
   standardGeneric("fullModel<-") 
@@ -512,12 +508,10 @@ setGeneric("fullModel<-", function(object, value) {
 #' 
 #' @keywords nullModel, nullModel<-
 #' 
-#' @rdname nullModel-method
 #' @exportMethod nullModel
 setGeneric("nullModel", function(object) standardGeneric("nullModel"))
 
-#' @rdname nullModel-method
-#' 
+#' @rdname nullModel 
 #' @exportMethod nullModel<-
 setGeneric("nullModel<-", function(object, value) {
   standardGeneric("nullModel<-") 
@@ -541,14 +535,12 @@ setGeneric("nullModel<-", function(object, value) {
 #' \code{\link{fullModel}}
 #' 
 #' @keywords nullMatrix, nullMatrix<-
-#' 
-#' @rdname nullMatrix-method   
+#'   
 #' 
 #' @exportMethod nullMatrix
 setGeneric("nullMatrix", function(object) standardGeneric("nullMatrix"))
 
-#' @rdname nullMatrix-method
-#'  
+#' @rdname nullMatrix
 #' @exportMethod nullMatrix<-
 setGeneric("nullMatrix<-", function(object, value) {
   standardGeneric("nullMatrix<-") 
@@ -572,13 +564,11 @@ setGeneric("nullMatrix<-", function(object, value) {
 #' 
 #' @keywords fullMatrix, fullMatrix<-
 #' 
-#' @rdname fullMatrix-method
 #' 
 #' @exportMethod fullMatrix
 setGeneric("fullMatrix", function(object) standardGeneric("fullMatrix"))
 
-#' @rdname fullMatrix-method
-#' 
+#' @rdname fullMatrix
 #' @exportMethod fullMatrix<-
 setGeneric("fullMatrix<-", function(object, value) {
   standardGeneric("fullMatrix<-") 
@@ -603,14 +593,12 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' \code{\linkS4class{edgeSet}}
 #' 
 #' @keywords qvalueObj, qvalueObj<-
-#' 
-#' @rdname qvalueObj-method  
+#'  
 #' 
 #' @exportMethod qvalueObj                
 setGeneric("qvalueObj", function(object) standardGeneric("qvalueObj"))
 
-#' @rdname qvalueObj-method
-#' 
+#' @rdname qvalueObj
 #' @exportMethod qvalueObj<-
 setGeneric("qvalueObj<-", function(object, value) {
   standardGeneric("qvalueObj<-") 
@@ -635,13 +623,9 @@ setGeneric("qvalueObj<-", function(object, value) {
 #' 
 #' @keywords individual, individual<-
 #' 
-#' @rdname individual-method
-#' 
 #' @exportMethod individual
 setGeneric("individual", function(object) standardGeneric("individual"))
-
-#' @rdname individual-method
-#' 
+#' @rdname individual
 #' @exportMethod individual<-
 setGeneric("individual<-", function(object, value) {
   standardGeneric("individual<-") 
@@ -660,8 +644,6 @@ setGeneric("individual<-", function(object, value) {
 #' 
 #' @keywords modelFits
 #' 
-#' @rdname modelFits-method
-#' 
 #' @exportMethod modelFits
 setGeneric("modelFits", function(object) standardGeneric("modelFits"))
 
@@ -671,8 +653,6 @@ setGeneric("modelFits", function(object) standardGeneric("modelFits"))
 #'
 #' @param object \code{\linkS4class{edgeFit}}
 #' 
-#' @usage betaCoef(object)
-#' 
 #' @return \code{betaCoef} returns the regression coefficients.
 #'
 #' @author John Storey, Andrew Bass 
@@ -680,8 +660,6 @@ setGeneric("modelFits", function(object) standardGeneric("modelFits"))
 #' @seealso \code{\link{edgeFit}}
 #' 
 #' @keywords betaCoef
-#' 
-#' @rdname betaCoef-method
 #' 
 #' @exportMethod betaCoef
 setGeneric("betaCoef", function(object) standardGeneric("betaCoef"))
@@ -703,7 +681,6 @@ setGeneric("betaCoef", function(object) standardGeneric("betaCoef"))
 #' 
 #' @keywords sType
 #' 
-#' @rdname sType-method
 #' 
 #' @exportMethod sType
 setGeneric("sType", function(object) standardGeneric("sType"))
@@ -724,8 +701,6 @@ setGeneric("sType", function(object) standardGeneric("sType"))
 #' 
 #' @keywords fitFull
 #' 
-#' @rdname fitFull-method
-#' 
 #' @exportMethod fitFull
 setGeneric("fitFull", function(object) standardGeneric("fitFull"))
 
@@ -744,8 +719,6 @@ setGeneric("fitFull", function(object) standardGeneric("fitFull"))
 #' @seealso \code{\link{edgeFit}}
 #' 
 #' @keywords fitNull
-#' 
-#' @rdname fitNull-method
 #' 
 #' @exportMethod fitNull  
 setGeneric("fitNull", function(object) standardGeneric("fitNull"))
@@ -766,8 +739,6 @@ setGeneric("fitNull", function(object) standardGeneric("fitNull"))
 #' 
 #' @keywords resFull
 #' 
-#' @rdname resFull-method
-#' 
 #' @exportMethod resFull
 setGeneric("resFull", function(object) standardGeneric("resFull"))
 
@@ -787,8 +758,6 @@ setGeneric("resFull", function(object) standardGeneric("resFull"))
 #' 
 #' @keywords  resNull
 #' 
-#' @rdname resNull-method
-#' 
 #' @exportMethod resNull 
 setGeneric("resNull", function(object) standardGeneric("resNull"))
 #' Summary of edge objects
@@ -804,3 +773,17 @@ setGeneric("resNull", function(object) standardGeneric("resNull"))
 #'
 #' @export summary
 setGeneric("summary")
+
+#' Efficient printing of edge object
+#'
+#' Printing method
+#' 
+#' @param object \code{\linkS4class{edgeSet}}
+#' @param \dots additional parameters
+#' 
+#' @author John Storey, Andrew Bass
+#' 
+#' @keywords show
+#'
+#' @export show
+setGeneric("show")

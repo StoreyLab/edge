@@ -39,7 +39,7 @@ age <- kidney$age
 kidexpr <- kidney$kidexpr
 
 # Create model
-edge.obj <- edgeModel(dat=kidexpr, adj.var=data.frame(sex), tme=age, sampling="timecourse", basis.df=4)
+edge.obj <- edgeStudy(dat=kidexpr, adj.var=sex, tme=age, sampling="timecourse", basis.df=4)
 
 # Use the ODP/lrt method to determine significant genes
 edge.odp <- odp(edge.obj, bs.its=10)

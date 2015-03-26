@@ -87,9 +87,9 @@ names(kidney)
 @
 The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects, the {\tt sex} variable is whether the subjects were male or female and the {\tt tissue} variable is whether the tissue sample is from the cortex or medula. The expression values for the genes are contained in the {\tt kidexpr} variable. In this example, we are only interested in the cortex samples:
 <<qs_assign>>=
-kidexpr <- kidney$kidexpr[, kidney$tissue == "c"]
-age <- kidney$age[kidney$tissue == "c"]
-sex <- kidney$sex[kidney$tissue == "c"]
+kidexpr <- kidney$kidexpr
+age <- kidney$age
+sex <- kidney$sex
 
 @
 
@@ -99,7 +99,6 @@ Once the data has been loaded, the user has two options to create the experiment
 edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse")
 fullMod <- fullModel(edgeObj)
 nullMod <- nullModel(edgeObj)
-
 @
 The variable {\tt sampling} describes the type of experiment performed, {\tt adj.var} is the adjustment variable and {\tt tme} is the time variable in the study. If the experiment is more complex then type {\tt ?edgeStudy} for additional arguments.  
 
@@ -369,10 +368,10 @@ names(kidney)
 @
 
 There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue}, {\tt kidexpr} and {\tt kidcov}. In this example, we will focus on the cortex {\tt tissue} samples:
-<<kidney_variables>>=
-sex <- kidney$sex[kidney$tissue == "c"]
-age <- kidney$age[kidney$tissue == "c"]
-kidexpr <- kidney$kidexpr[, kidney$tissue == "c"]
+<<kidney_variables>>=d
+sex <- kidney$sex
+age <- kidney$age
+kidexpr <- kidney$kidexpr
 @
 
 The two main covariates of interest for this example are the {\tt sex} and {\tt age} covariates. The {\tt sex} variable is whether the subject was male or female and the {\tt age} variable is the age of the patients. {\tt kidexpr} contains the gene expression values for the study.

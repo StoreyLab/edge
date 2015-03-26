@@ -84,10 +84,6 @@ void kldistance(double *centerFit, double *centerVar, double *fit, double *var, 
 }
 
 
-  
-/********************************************************************************************
-utility functions:  adapted from Numerical Recipes in C
-********************************************************************************************/
 
 /* quicksort routine */
 void sortQK(int low, int high, int n, double *w) {

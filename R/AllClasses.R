@@ -117,25 +117,13 @@ edgeFitCheck <- function(object) {
 #' The \code{full.matrix} and \code{null.matrix} are created by the function
 #' \code{\link{edgeSet}}, and the qvalueObj is the slot of interest determined 
 #' by either \code{odp} or \code{lrt} function.  
-#'
-#' @section Slots: 
-#'  \describe{
-#'    \item{\code{null.model}:}{\code{formula}: 
-#'                              containing null model.}
-#'    \item{\code{full.model}:}{\code{formula}:
-#'                              containing full.model.}
-#'    \item{\code{null.matrix}:}{\code{matrix}: 
-#'                               containing null model data.}
-#'    \item{\code{full.matrix}:}{\code{matrix}:
-#'                               containing full model data.}
-#'    \item{\code{individual}:}{\code{factor}: 
-#'                              containing information on individuals in experiment.}
-#'    \item{\code{qvalueObj}:}{S3 class \code{qvalue}: 
-#'                              containing qvalue object. See 
-#'                              \code{\link{qvalue}}.}
-#'    \item{\code{ExpressionSet}:}{Additional slots inherited from
-#'                                 \code{\link{ExpressionSet}}.}                             
-#'  }
+#' 
+#'  @slot null.model \code{formula} containing null model.
+#'  @slot full.model \code{formula} containing full.model.
+#'  @slot null.matrix \code{matrix} containing null model data.
+#'  @slot full.matrix \code{matrix} containing full model data.
+#'  @slot individual \code{factor} containing information on individuals in experiment.
+#'  @slot qvalueObj S3 class \code{qvalue}: containing qvalue object. See \code{\link{qvalue}}
 #'  
 #' @section Methods:
 #'  \describe{
@@ -188,7 +176,7 @@ edgeFitCheck <- function(object) {
 #'
 #' @rdname 
 #' edgeSet-class
-#' 
+#' @inheritParams ExpressionSet
 #' @exportClass
 #' edgeSet 
 setClass("edgeSet", slots=c(null.model = "formula", 

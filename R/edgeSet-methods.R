@@ -1,3 +1,4 @@
+#' @rdname edgeFit
 setMethod("edgeFit",        
           "edgeSet",
           function(object, stat.type = c("lrt", "odp")) {
@@ -45,6 +46,7 @@ setMethod("edgeFit",
                          stat.type = stat.var)
             return(efObj) 
           })
+#' @rdname odp
 setMethod("odp", 
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
           function(object, obj.edgeFit, odp.parms = NULL, bs.its = 100, 
@@ -59,6 +61,7 @@ setMethod("odp",
                            verbose = verbose, ...)
             return(results)
           })
+#' @rdname odp
 setMethod("odp",
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
           function(object, obj.edgeFit, odp.parms = NULL, bs.its = 100, 
@@ -87,6 +90,7 @@ setMethod("odp",
             qvalueObj(object) <- qvalue(p = pval, ...)
             return(object)
           })
+#' @rdname lrt
 setMethod("lrt", 
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
           function(object, obj.edgeFit, nullDistn = c("normal", "bootstrap"), 
@@ -101,6 +105,7 @@ setMethod("lrt",
                            verbose = verbose, ...)
             return(results)
           })
+#' @rdname lrt
 setMethod("lrt",
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
           function(object, obj.edgeFit, nullDistn = c("normal", "bootstrap"), 
@@ -139,6 +144,7 @@ setMethod("lrt",
               return(object)
             }    
           })
+#' @rdname klClust
 setMethod("klClust",
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
           function(object, obj.edgeFit,  n.mods = 50, ...)  {
@@ -147,6 +153,7 @@ setMethod("klClust",
                                n.mods = n.mods, ...)
             return(results)
           })
+#' @rdname klClust
 setMethod("klClust", 
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
           function(object, obj.edgeFit, n.mods = 50, ...) {
@@ -155,6 +162,7 @@ setMethod("klClust",
             return(mod.parms(obj.edgeFit, 
                              clMembers = mod.member))
           })
+#' @rdname summary
 setMethod("summary",
           signature = signature(object="edgeSet"),
           function(object, ...) {
@@ -197,6 +205,7 @@ setMethod("summary",
               cat("\n")
             }
           })
+#' @rdname show
 setMethod("show",
           signature = signature(object="edgeSet"),
           function(object) {
@@ -242,6 +251,7 @@ setMethod("show",
               cat("\n")
             }
           })
+#' @rdname edgeQvalue
 setMethod("edgeQvalue",
           signature = signature(object="edgeSet"),
           function(object, ...) {
@@ -252,7 +262,7 @@ setMethod("edgeQvalue",
             validObject(object)
             object
           })
-
+#' @rdname edgeSVA
 setMethod("edgeSVA",
           signature = signature(object="edgeSet"),
           function(object, ...) {
@@ -267,12 +277,12 @@ setMethod("edgeSVA",
             nullMatrix(object) <- cbind(sv.sva, object@null.matrix)
             fullMatrix(object) <- cbind(sv.sva, object@full.matrix)
             pData(object) <- cbind(pData(object), sv.sva) 
-            fullModel(object) <- as.formula(paste("~",(paste(c(attr(terms(fullModel(edgeObj)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
-            nullModel(object) <-  as.formula(paste("~",(paste(c(attr(terms(nullModel(edgeObj)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
+            fullModel(object) <- as.formula(paste("~",(paste(c(attr(terms(fullModel(object)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
+            nullModel(object) <-  as.formula(paste("~",(paste(c(attr(terms(nullModel(object)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
             validObject(object)
             object
           })
-
+#' @rdname edgeSNM
 setMethod("edgeSNM",
           signature=signature(object="edgeSet"),
           function(object, int.var, ...) {

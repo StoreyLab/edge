@@ -1,3 +1,4 @@
+#' @rdname summary
 setMethod("summary",
           signature=signature(object="edgeFit"),
           function(object) {
@@ -17,7 +18,7 @@ setMethod("summary",
             cat('\nstat.type:', '\n')
             print(object@stat.type)
           })
-
+#' @rdname show
 setMethod("show",
           signature=signature(object="edgeFit"),
           function(object) {

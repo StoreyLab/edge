@@ -32,10 +32,15 @@ individual in the experiment.}
 \examples{
 require(splines)
 data(endotoxin)
+ind <- endotoxin$ind
+time <- endotoxin$time
+class <- endotoxin$class
 # Create ExpressionSet object
-expSet <- ExpressionSet(assayData = endotoxin$endoexpr, phenoData = as(data.frame(individual=endotoxin$ind, time=endotoxin$time, class=endotoxin$class), "AnnotatedDataFrame"))
+pDat <- as(data.frame(individual=ind, time=time, class=class), "AnnotatedDataFrame")
+expSet <- ExpressionSet(assayData = endotoxin$endoexpr, phenoData = pDat)
 
-# Formulate null and full models in experiement ... Note interaction term is a way of taking into account group effects
+# Formulate null and full models in experiement
+# Note interaction term is a way of taking into account group effects
 mNull <- ~-1 + ns(time, df=4, intercept = FALSE)
 mFull <- ~-1 + ns(time, df=4, intercept = FALSE) + ns(time, df=4, intercept = FALSE):class + class
 

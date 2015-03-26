@@ -12,7 +12,7 @@ updateOldExpSet <- function(from, toClass, ...) {  # to edgeSet
   validObject(object)
   object
 }
-
+#' @rdname edgeSet
 setMethod("edgeSet", 
           signature = signature(object = "ExpressionSet"),
           function(object,

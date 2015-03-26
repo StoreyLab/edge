@@ -31,7 +31,8 @@
 #' kidexpr <- kidney$kidexpr
 #' 
 #' #Create edgeSet object from data
-#' edgeObj <- edgeStudy(data=kidexpr, adj.var=adjustVar, tme=age, sampling="timecourse", basis.df=4)
+#' edgeObj <- edgeStudy(data=kidexpr, adj.var=sex, tme=age, 
+#' sampling="timecourse", basis.df=4)
 #' @name edgeStudy
 #' @rdname edgeStudy
 #' @seealso \code{\link{edgeSet}}
@@ -156,9 +157,10 @@ edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=N
 #' \code{edgeModel} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based adj.var and bio.var variables. Intercept is included in both alternative and null models by default.  
 #' 
 #' @param data matrix- Gene expression data.
-#' @param bio.var matrix- Biological variables.
-#' @param adj.var matrix- Adjustment Variables. Optional.
-#' @param weights matrix- Matrix of weights for each observation. Optional 
+#' @param cov data.frame- Biological covariates.
+#' @param altMod formula- Full model of the experiment.
+#' @param nullMod formula- Null model of the experiment. 
+#' @param ind vector. Individuals in the study. For example, if the same individuals are sampled multiple times.
 #' @return \code{edgeModel} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
 #'   \describe{
 #'     \item{\code{full.model:}}{alternative model equation}
@@ -168,26 +170,27 @@ edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=N
 #'    \item{\code{individual:}}{individuals in experiment (factor)}
 #'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, phenoData) created in function}
 #'  }
-#'  
+#'  cov, altMod=NULL, nullMod=NULL, ind=NULL,
 #' @examples 
-#' # Create ExpressionSet object from kidney dataset 
-#' library(splines) 
+#' # Create ExpressionSet object from kidney dataset
+#' library(splines)
 #' data(kidney)
 #' sex <- kidney$sex
 #' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age) 
 #' kidexpr <- kidney$kidexpr
-#' nullMat <- model.matrix(~sex)
-#' altMat <- model.matrix(~ns(age, df=4))
-#' 
+#' # Create models
+#' null.model <- ~sex 
+#' full.model <- ~sex + ns(age, df=4)
 #' #Create edgeSet object from data
-#' edgeObj <- edgeModel(data=kidexpr, adj.var=nullMat, bio.var=altMat)
+#' edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, altMod = full.model)
 #' @name edgeModel
 #' @rdname edgeModel
 #' @seealso \code{\link{edgeSet}}
 #' @author John Storey, Andy Bass 
 #' @aliases edgeModel
 #' @export
-edgeModel <- function(data, cov, altMod=NULL, nullMod=NULL, ind=NULL, weights=NULL) {
+edgeModel <- function(data, cov, altMod=NULL, nullMod=NULL, ind=NULL) {
   n <- ncol(data)
   m <- nrow(data)
   if (!is.matrix(data)) {

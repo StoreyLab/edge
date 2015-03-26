@@ -3,20 +3,46 @@ Type: Package
 Title: Extraction and Analysis of Differential Gene Expression
 Date: 2014-06-01
 Version: 0.99.0
-Author: John D. Storey <jstorey@princeton.edu>, Jeffrey T. Leek <jtleek@jhu.edu> and Andrew J. Bass <ajbass@princeton.edu>
+Author: John D. Storey <jstorey@princeton.edu>, Jeffrey T. Leek
+    <jtleek@jhu.edu> and Andrew J. Bass <ajbass@princeton.edu>
 Maintainer: John D. Storey <jstorey@princeton.edu>
-biocViews: MultipleComparisons, DifferentialExpression, TimeCourse, Regression
-Description: The edge package is an integrated differential expression analysis 
-             package. The differential expression analysis can be 
-             adjusted by surrogate variables to account for potential 
-             confounding effects. Both static and time-course differential 
-             expression analysis using the optimal discovery procedure are 
-             supported. 
+biocViews: MultipleComparisons, DifferentialExpression, TimeCourse,
+    Regression
+Description: The edge package is an integrated differential expression analysis
+    package. The differential expression analysis can be
+    adjusted by surrogate variables to account for potential
+    confounding effects. Both static and time-course differential
+    expression analysis using the optimal discovery procedure are
+    supported.
 VignetteBuilder: knitr
-Imports: methods, splines, sva, snm, qvalue, MASS
-Suggests: testthat
-Depends: R(>= 2.10.0), Biobase
-URL: https://github.com/StoreyLab/edge
+Imports:
+    methods,
+    splines,
+    sva,
+    snm,
+    qvalue,
+    MASS
+Suggests:
+    testthat,
+    knitr,
+    ggplot2,
+    reshape2
+Depends:
+    R(>= 2.10.0),
+    Biobase
+URL: https://github.com/jdstorey/edge
 LazyData: true
 License: LGPL
-Packaged: 2013-08-21 17:05:52 UTC; andy
+Packaged: 2015-03-24 15:27:10 UTC; andy
+Collate:
+    'AllClasses.R'
+    'AllGenerics.R'
+    'AllMethods.R'
+    'ExpressionSet-methods.R'
+    'edgeFit-methods.R'
+    'edgeModel.R'
+    'edgeSet-methods.R'
+    'klClust-functions.R'
+    'lrt-functions.R'
+    'misc.R'
+    'odp-functions.R'
