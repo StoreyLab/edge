@@ -159,7 +159,7 @@ kl <- function(temp.center.fitFull, temp.fitFull, center.var, sigma2, n) {
   m <- length(sigma2)
   n.cluster <- length(center.var)
   if (!is.loaded("kldistance")) {
-    dyn.load(paste("edgeKLODP", .Platform$dynlib.ext, sep=""))
+    dyn.load(paste("kldistance", .Platform$dynlib.ext, sep=""))
   }
   # C function to calculate kl distance
   kldd <- .C("kldistance", 

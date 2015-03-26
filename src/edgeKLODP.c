@@ -12,7 +12,7 @@ void odpScoreCluster(double *sumDat, double *mu, double *sigma, int *m, int *n, 
 
   /* if alternative component, set up a couple of vectors */
   /* allocate memory */
- 	first = vector(0, *m - 1);
+   first = vector(0, *m - 1);
         
   /* initialize to zero */
 	for(i = 0; i < *m; i++)
@@ -33,7 +33,7 @@ void odpScoreCluster(double *sumDat, double *mu, double *sigma, int *m, int *n, 
 		  first[i] += sumDat[j + i * *n]*sumDat[j + i * *n];
 	}
   }
- 
+
   for(i = 0; i < *m; i++) {
     scr[i] = 0.0;
     

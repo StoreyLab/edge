@@ -1,3 +1,4 @@
+#' @useDynLib edge odpScoreCluster
 odp.score <- function(s.dat.cl, mu, sigma, null, m, n, cluster) {
   # Determines ODP score
   #
@@ -14,19 +15,18 @@ odp.score <- function(s.dat.cl, mu, sigma, null, m, n, cluster) {
   #   scr: Vector of ODP score of each gene
   # Initilizations
   p <- length(sigma)
-  if (!is.loaded("odpScoreCluster"))
-    dyn.load(paste("edgeKLODP", .Platform$dynlib.ext, sep = ""))
+  
   # Call to C file to compute ODP score
   scr <- .C("odpScoreCluster", 
-            sumDat = as.double(s.dat.cl),
-            mu = as.double(mu),
-            sigma = as.double(sigma),
+            sumDat = as.numeric(s.dat.cl),
+            mu = as.numeric(mu),
+            sigma = as.numeric(sigma),
             m = as.integer(m),
             n = as.integer(n),
             p = as.integer(p),
             null = as.integer(null),
             cluster = as.integer(cluster),
-            scr = double(m))$scr
+            scr = numeric(m))$scr
   
   return(scr)
 }

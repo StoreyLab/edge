@@ -156,8 +156,7 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' @seealso \code{\link{klClust}}, \code{\link{edgeSet}} and \code{\link{edgeFit}}
 #'
 #' @keywords odp
-#'
-#' @useDynLib edge odpScoreCluster kldistance
+#' @useDynLib edge kldistance
 #' @import qvalue MASS splines
 #' @exportMethod odp
 setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
