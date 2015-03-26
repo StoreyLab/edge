@@ -10,7 +10,7 @@ Authors@R: c(
     )
 Maintainer: John D. Storey <jstorey@princeton.edu>
 biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
-    Regression
+    Regression, GeneExpression
 Description: The edge package is an integrated differential expression analysis
     package. The differential expression analysis can be
     adjusted by surrogate variables to account for potential

@@ -7,7 +7,6 @@
 NULL
 
 #' @name endotoxin
-#' @aliases endotoxin
 #' @title Gene expression dataset from Calvano et al. (2005) Nature
 #' 
 #' @usage
@@ -19,15 +18,17 @@ NULL
 #' Blood samples were collected and leukocytes were isolated from the samples 
 #' before infusion and at times 2, 4, 6, 9, 24 hours.  
 #' 
-#' @return 
+#' @format
 #' A list called \code{endotoxin} containing:
-#'   \item{endoexpr}{A 500 rows by 46 columns data frame containing expression 
-#'   values.}
-#'   \item{class}{A vector of length 46 containing information about which 
-#'   individuals were given endotoxin}
-#'   \item{ind}{A vector of length 46 providing indexing measurements for each 
-#'   individual in the experiment.}
-#'   \item{time}{A vector of length 46 indicating time measurements.}
+#' \itemize{
+#'   \item endoexpr: A 500 rows by 46 columns data frame containing expression 
+#'   values.
+#'   \item class: A vector of length 46 containing information about which 
+#'   individuals were given endotoxin
+#'   \item ind: A vector of length 46 providing indexing measurements for each 
+#'   \item individual: in the experiment.
+#'   \item time: A vector of length 46 indicating time measurements.
+#' }
 #' 
 #' @note
 #' The data is a random subset of 500 genes from the full dataset. To 
@@ -43,7 +44,6 @@ NULL
 #' analysis of time course microarray experiments. PNAS, 102: 12837-12842. \cr
 #' \url{http://www.pnas.org/content/100/16/9440.full}
 #' 
-#' @seealso \code{\link{edge}}, \code{\link{odp}}, \code{\link{edgeSet}}
 #' @examples
 #' library(splines)
 #' # import data
@@ -74,11 +74,11 @@ NULL
 #' 
 #' # summarize significance results
 #' summary(edge_odp)
-#' @keywords dataset, endotoxin
+#' @docType data
+#' @keywords datasets
 NULL
 
 #' @name kidney
-#' @aliases kidney
 #' @title Gene expression dataset from Rodwell et al. (2004)
 #' 
 #' @usage
@@ -90,14 +90,19 @@ NULL
 #' obtained per sample, and the age and tissue type of each subject was 
 #' recorded.
 #' 
-#' @return 
+#' @format 
 #' A list called \code{kidney} containing:
-#'   \item{kidcov}{A 133 rows by 6 columns data frame detailing the study design.}
-#'   \item{kidexpr}{A 500 rows by 133 columns matrix of gene expression values, where each row corresponds to a different probe-set and each column to a different tissue sample.}
-#'   \item{age}{A vector of length 133 giving the age of each sample.}
-#'   \item{sex}{A vector of length 133 giving the sex of each sample.}
-#'   \item{tissue}{A vector of length 133 giving the tissue type of each sample.}
-#'
+#' \itemize{
+#'   \item kidcov: A 133 rows by 6 columns data frame detailing the study 
+#'   design.
+#'   \item kidexpr: A 500 rows by 133 columns matrix of gene expression values, 
+#'   where each row corresponds to a different probe-set and each column to a 
+#'   different tissue sample.
+#'   \item age: A vector of length 133 giving the age of each sample.
+#'   \item sex: A vector of length 133 giving the sex of each sample.
+#'   \item tissue: A vector of length 133 giving the tissue type of each 
+#'   sample.
+#' }
 #' @note
 #' These data are a random subset of 500 probe-sets from the total number of 
 #' probe-sets in the original data set. To download the full data set, go to 
@@ -112,7 +117,6 @@ NULL
 #' analysis of time course microarray experiments. PNAS, 102: 12837-12842. \cr
 #' \url{http://www.pnas.org/content/100/16/9440.full}
 #' 
-#' @seealso \code{\link{edge}}, \code{\link{odp}}, \code{\link{edgeStudy}}
 #' @examples
 #' # import data
 #' data(kidney)
@@ -133,11 +137,11 @@ NULL
 #' # summarize significance results
 #' summary(edge_odp)
 #' 
-#' @keywords dataset, kidney
+#' @docType data
+#' @keywords datasets
 NULL
 
 #' @name gibson
-#' @aliases gibson
 #' @title Gene expression dataset from Idaghdour et al. (2008)
 #' 
 #' @usage
@@ -149,13 +153,15 @@ NULL
 #' desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban 
 #' (AGADIR).
 #' 
-#' @return 
+#' @format
 #' A list called \code{gibson} containing:
-#'   \item{batch}{Batches in experiment.}
-#'   \item{location}{Location of Moroccan Amazigh groups.}
-#'   \item{gender}{Gender of individuals.}
-#'   \item{gibexpr}{A 500 rows by 46 columns matrix of gene expression values.}
-#'
+#' \itemize{
+#'   \item batch: Batches in experiment.
+#'   \item location: Location of Moroccan Amazigh groups.
+#'   \item gender: Gender of individuals.
+#'   \item gibexpr: A 500 rows by 46 columns matrix of gene expression values.
+#' }
+#' 
 #' @note
 #' These data are a random subset of 500 genes from the total number of genes 
 #' in the original data set. To download the full data set, go to 
@@ -166,7 +172,6 @@ NULL
 #' expression signature of lifestyle in peripheral blood of Moroccan Amazighs. 
 #' PLoS Genetics, 4: e1000052.
 #' 
-#' @seealso \code{\link{edge}}, \code{\link{odp}}, \code{\link{edgeSet}}
 #' @examples
 #' # import
 #' data(gibson)
@@ -191,5 +196,6 @@ NULL
 #' # summarize significance results
 #' summary(edge_odp) 
 #' 
-#' @keywords dataset, gibson
+#' @docType data
+#' @keywords datasets
 NULL

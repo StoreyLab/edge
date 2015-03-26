@@ -16,7 +16,7 @@ void kldistance(double *, double *, double *, double *, int *, int *, int *, dou
 /***********************************************************************
   utility functions 
 ***********************************************************************/
-  void sortQK(int, int, int, double *);
+void sortQK(int, int, int, double *);
 void swapQK(int, int, double *);
 double *vector(int, int);
 void free_vector(double *, int, int);
