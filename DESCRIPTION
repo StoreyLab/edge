@@ -12,11 +12,11 @@ Maintainer: John D. Storey <jstorey@princeton.edu>
 biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
     Regression, GeneExpression
 Description: The edge package is an integrated differential expression analysis
-    package. The differential expression analysis can be
-    adjusted by surrogate variables to account for potential
-    confounding effects. Both static and time-course differential
-    expression analysis using the optimal discovery procedure are
-    supported.
+    package. Statistical testing using the optimal discovery procedure and 
+    the likelihood ratio test are implemented in either static or time-course 
+    experiments. Various implementations of other popular packages such as 
+    snm, sva and qvalue are integrated in edge to provide a set of tools for 
+    analysis.
 VignetteBuilder: knitr
 Imports:
     methods,
