@@ -43,7 +43,7 @@ altMod = full.model)
 edge_sva <- edgeSVA(edge_obj)
 
 # run odp/lrt with surrogate variables added
-edge_odp <- odp(edge_sva, bs.its = 20)
+edge_odp <- odp(edge_sva, bs.its = 30)
 summary(edge_odp)
 }
 \author{

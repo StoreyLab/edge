@@ -135,13 +135,13 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' altMod = full.model)
 #'
 #' # odp method
-#' edge_odp <- odp(edge_obj, bs.its = 50)
+#' edge_odp <- odp(edge_obj, bs.its = 30)
 #'
 #' # input an edgeFit object or ODP parameters... not necessary
 #' edge_fit <- edgeFit(edge_obj, stat.type = "odp")
 #' edge_clust <- klClust(edge_obj, n.mods = 10)
 #' edge_odp <- odp(edge_obj, obj.edgeFit = edge_fit, odp.parms = edge_clust, 
-#' bs.its = 50)
+#' bs.its = 30)
 #'
 #' @references
 #' Storey JD. (2007) The optimal discovery procedure: A new approach to 
@@ -440,7 +440,7 @@ setGeneric("edgeQvalue", function(object, ...)
 #' edge_sva <- edgeSVA(edge_obj)
 #' 
 #' # run odp/lrt with surrogate variables added
-#' edge_odp <- odp(edge_sva, bs.its = 20)
+#' edge_odp <- odp(edge_sva, bs.its = 30)
 #' summary(edge_odp)
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and 
 #' \code{\link{lrt}}

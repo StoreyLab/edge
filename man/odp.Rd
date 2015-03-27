@@ -79,13 +79,13 @@ edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
 altMod = full.model)
 
 # odp method
-edge_odp <- odp(edge_obj, bs.its = 50)
+edge_odp <- odp(edge_obj, bs.its = 30)
 
 # input an edgeFit object or ODP parameters... not necessary
 edge_fit <- edgeFit(edge_obj, stat.type = "odp")
 edge_clust <- klClust(edge_obj, n.mods = 10)
 edge_odp <- odp(edge_obj, obj.edgeFit = edge_fit, odp.parms = edge_clust,
-bs.its = 50)
+bs.its = 30)
 }
 \author{
 John Storey, Andrew Bass

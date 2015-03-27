@@ -842,7 +842,7 @@ edge_obj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, sampling = "time
 Now that we have created {\tt edge\_obj}, we can adjust for additional array effects, dye effects and other intensity-dependent effects.  In this example, we created array effects that are not existent in the real data set in order to show how to use the function:
 <<edgeSNM2>>=
 int.var <- data.frame(array.effects = as.factor(1:72))
-edge_snm <- edgeSNM(edge_obj, int.var = int.var, diagnose=FALSE, verbose=FALSE)
+edge_snm <- edgeSNM(edge_obj, int.var = int.var, num.iter = 2, diagnose=FALSE, verbose=FALSE)
 @
 The {\tt int.var} is where the data frame of intensity-dependent effects are inputed, {\tt diagnose} is a flag to let the software know whether to produce diagnostic plots. Additional arguments can be found by typing {\tt ?edgeSNM}.
 
