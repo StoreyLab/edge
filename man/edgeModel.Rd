@@ -15,36 +15,41 @@ edgeModel(data, cov, altMod = NULL, nullMod = NULL, ind = NULL)
 
 \item{nullMod}{formula- Null model of the experiment.}
 
-\item{ind}{vector. Individuals in the study. For example, if the same individuals are sampled multiple times.}
+\item{ind}{factor. Individuals sampled in the study.}
 }
 \value{
-\code{edgeModel} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
-  \describe{
-    \item{\code{full.model:}}{alternative model equation}
+\code{edgeModel} returns an \code{\linkS4class{edgeSet}} object
+with the following slots assigned:
+\describe{
+   \item{\code{full.model:}}{alternative model equation}
    \item{\code{null.model:}}{null model equation}
    \item{\code{full.matrix:}}{alternative model in matrix form}
    \item{\code{null.matirx:}}{null model in matrix form}
    \item{\code{individual:}}{individuals in experiment (factor)}
-   \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, phenoData) created in function}
+   \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData,
+   phenoData) created in function}
  }
- cov, altMod=NULL, nullMod=NULL, ind=NULL,
 }
 \description{
-\code{edgeModel} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based adj.var and bio.var variables. Intercept is included in both alternative and null models by default.
+\code{edgeModel} is a function to create an edge object without an
+ExpressionSet. Alternative and null models are inputting by users.
 }
 \examples{
-# Create ExpressionSet object from kidney dataset
+# create ExpressionSet object from kidney dataset
 library(splines)
 data(kidney)
 sex <- kidney$sex
 age <- kidney$age
 cov <- data.frame(sex = sex, age = age)
 kidexpr <- kidney$kidexpr
-# Create models
+
+# create models
 null.model <- ~sex
 full.model <- ~sex + ns(age, df=4)
-#Create edgeSet object from data
-edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, altMod = full.model)
+
+# create edgeSet object from data
+edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
+altMod = full.model)
 }
 \author{
 John Storey, Andy Bass

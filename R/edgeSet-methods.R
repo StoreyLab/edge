@@ -24,7 +24,7 @@ setMethod("edgeFit",
             fitNull <- t(H.null %*% t(exprsData))
             resNull <- exprsData - fitNull
             if (stat.var == "odp") {
-              full.matrix <- full.matrix - H.null %*% full.matrix # subtract null model from full
+              full.matrix <- full.matrix - H.null %*% full.matrix
               full.matrix <- rm.zero.cols(full.matrix)
               H.full <- projMatrix(full.matrix)
               B.coef <- resNull %*% full.matrix %*% ginv(t(full.matrix) %*% full.matrix)
@@ -39,13 +39,14 @@ setMethod("edgeFit",
               resFull <- exprsData - fitFull
             } 
             efObj <- new("edgeFit", fit.full = fitFull, fit.null = fitNull, 
-                         dH.full = dHFull, res.full = resFull, res.null = resNull, 
-                         beta.coef = B.coef, 
+                         dH.full = dHFull, res.full = resFull, 
+                         res.null = resNull, beta.coef = B.coef, 
                          #fitted.models = list(full.model = object@full.model,
                         #                      null.model = object@null.model),
                          stat.type = stat.var)
             return(efObj) 
           })
+
 #' @rdname odp
 setMethod("odp", 
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
@@ -61,6 +62,7 @@ setMethod("odp",
                            verbose = verbose, ...)
             return(results)
           })
+
 #' @rdname odp
 setMethod("odp",
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
@@ -90,6 +92,7 @@ setMethod("odp",
             qvalueObj(object) <- qvalue(p = pval, ...)
             return(object)
           })
+
 #' @rdname lrt
 setMethod("lrt", 
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
@@ -105,6 +108,7 @@ setMethod("lrt",
                            verbose = verbose, ...)
             return(results)
           })
+
 #' @rdname lrt
 setMethod("lrt",
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
@@ -144,6 +148,7 @@ setMethod("lrt",
               return(object)
             }    
           })
+
 #' @rdname klClust
 setMethod("klClust",
           signature = signature(object = "edgeSet", obj.edgeFit = "missing"),
@@ -153,6 +158,7 @@ setMethod("klClust",
                                n.mods = n.mods, ...)
             return(results)
           })
+
 #' @rdname klClust
 setMethod("klClust", 
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
@@ -162,6 +168,7 @@ setMethod("klClust",
             return(mod.parms(obj.edgeFit, 
                              clMembers = mod.member))
           })
+
 #' @rdname summary
 setMethod("summary",
           signature = signature(object="edgeSet"),
@@ -174,8 +181,6 @@ setMethod("summary",
             cat('edge Analysis Summary', '\n', '\n')
             cat('Total number of arrays:', ncol(exprs(object)), '\n')
             cat('Total number of probes:', nrow(exprs(object)), '\n', '\n')
-            #  cat('Full model degrees of freedom:', df.model(object)$df.full, '\n')
-            #  cat('Null model degrees of freedom:',df.model(object)$df.null, '\n', '\n')
             cat('Biological variables:', '\n')
             cat('\tNull Model:')
             print(nullModel(object))
@@ -193,7 +198,8 @@ setMethod("summary",
               cuts <- c(0.0001, 0.001, 0.01, 0.025, 0.05, 0.10, 1)
               digits <- getOption("digits")
               cat("\nStatistical significance summary:\n")
-              cat("pi0:", format(object@qvalueObj$pi0, digits = digits), "\n", sep = "\t")
+              cat("pi0:", format(object@qvalueObj$pi0, digits = digits), 
+                  "\n", sep = "\t")
               cat("\n")
               cat("Cumulative number of significant calls:\n")
               cat("\n")
@@ -205,6 +211,7 @@ setMethod("summary",
               cat("\n")
             }
           })
+
 #' @rdname show
 setMethod("show",
           signature = signature(object="edgeSet"),
@@ -217,13 +224,11 @@ setMethod("show",
             cat('edge Analysis Summary', '\n', '\n')
             cat('Total number of arrays:', ncol(exprs(object)), '\n')
             cat('Total number of probes:', nrow(exprs(object)), '\n', '\n')
-           # cat('Full model degrees of freedom:', dfModel(object)$df.full, '\n')
-           # cat('Null model degrees of freedom:',dfModel(object)$df.null, '\n', '\n')
-           cat('Biological variables:', '\n')
-           cat('\tNull Model: ')
-           print(nullModel(object))
-           cat('\tFull Model: ')
-           print(fullModel(object))
+            cat('Biological variables:', '\n')
+            cat('\tNull Model: ')
+            print(nullModel(object))
+            cat('\tFull Model: ')
+            print(fullModel(object))
             cat('\n') 
             if (length(object@individual) != 0) {
               cat('Individuals:', '\n')
@@ -233,13 +238,15 @@ setMethod("show",
               cat('\n')
             }
             cat('Expression data:', '\n')
-            print(signif(exprs(object)[(1:min(5, nrow(exprs(object)))), ]), digits = 3) 
+            print(signif(exprs(object)[(1:min(5, nrow(exprs(object)))), ]), 
+                  digits = 3) 
             cat('.......','\n','\n')
             if (!is.null(object@qvalueObj$pvalues)) {
               cuts <- c(0.0001, 0.001, 0.01, 0.025, 0.05, 0.10, 1)
               digits <- getOption("digits")
               cat("\nStatistical significance summary:\n")
-              cat("pi0:", format(object@qvalueObj$pi0, digits = digits), "\n", sep = "\t")
+              cat("pi0:", format(object@qvalueObj$pi0, digits = digits), "\n", 
+                  sep = "\t")
               cat("\n")
               cat("Cumulative number of significant calls:\n")
               cat("\n")
@@ -251,6 +258,7 @@ setMethod("show",
               cat("\n")
             }
           })
+
 #' @rdname edgeQvalue
 setMethod("edgeQvalue",
           signature = signature(object="edgeSet"),
@@ -262,26 +270,33 @@ setMethod("edgeQvalue",
             validObject(object)
             object
           })
+
 #' @rdname edgeSVA
 setMethod("edgeSVA",
           signature = signature(object="edgeSet"),
           function(object, ...) {
             full.matrix <- object@full.matrix
             null.matrix <- object@null.matrix
-          #  full.matrix <- full.matrix - projMatrix(null.matrix) %*% full.matrix 
-          #  full.matrix <- as.matrix(rm.zero.cols(full.matrix))
             sv.sva <- sva(exprs(object),
                           mod0 = null.matrix,
                           mod = full.matrix, ...)$sv
             colnames(sv.sva) <- paste("SV", 1:ncol(sv.sva), sep="")
-            nullMatrix(object) <- cbind(sv.sva, object@null.matrix)
-            fullMatrix(object) <- cbind(sv.sva, object@full.matrix)
             pData(object) <- cbind(pData(object), sv.sva) 
-            fullModel(object) <- as.formula(paste("~",(paste(c(attr(terms(fullModel(object)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
-            nullModel(object) <-  as.formula(paste("~",(paste(c(attr(terms(nullModel(object)), "term.labels"),colnames(sv.sva)), collapse=" + ")), sep=""))
+            fullModel(object) <- as.formula(paste("~", 
+                                                  paste(c(colnames(sv.sva), 
+                                                           attr(terms(fullModel(object)), 
+                                                                "term.labels")),
+                                                         collapse=" + "), 
+                                                  sep=""))
+            nullModel(object) <-  as.formula(paste("~",paste(c(colnames(sv.sva),
+                                                                attr(terms(nullModel(object)),
+                                                                     "term.labels")), 
+                                                             collapse=" + "), 
+                                                   sep=""))
             validObject(object)
             object
           })
+
 #' @rdname edgeSNM
 setMethod("edgeSNM",
           signature=signature(object="edgeSet"),

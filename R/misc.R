@@ -1,4 +1,5 @@
-bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100, verbose = TRUE) {
+bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100, 
+                      verbose = TRUE) {
   # lrt Null statistic
   #
   # Args:
@@ -48,7 +49,6 @@ rescale <- function(x, sig) {
   n <- ncol(x)
   rowsds <- sqrt((rowMeans(x ^ 2) - means ^ 2) * n / (n - 1))
   ret <- (x - means) * sig / rowsds + means
-  
   return(ret)
 }
 null <- function(obs.fit, ind) {
@@ -71,7 +71,7 @@ null <- function(obs.fit, ind) {
     ind <- NULL
     wts <- rep(1, n)
   }
-  wts <- wts * sqrt(1 - obs.fit@dH.full) #abs because e-16 values can occur double check for better fix
+  wts <- wts * sqrt(1 - obs.fit@dH.full) 
   res.full <- t(t(obs.fit@res.full) / wts)
   # Random mix columns of residuals from full model
   vv <- sample(1:n, replace = TRUE)
@@ -116,7 +116,7 @@ createSet <- function(object, nMod=NULL, fMod=NULL, ind=NULL, grp=factor(NA)) {
   object
 }
 
-rm.zero.cols <- function(x, eps=10e-12) {
+rm.zero.cols <- function(x, eps = 10e-12) {
   # Remove null columns
   #
   # Args:

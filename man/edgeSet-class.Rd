@@ -5,8 +5,8 @@
 \alias{edgeSet-class}
 \title{edgeSet class}
 \description{
-Object inherits slots from an \code{ExpressionSet} object and has additional slots for
-the analysis steps.
+Object inherits slots from an \code{ExpressionSet} object and has
+additional slots for analysis steps.
 }
 \details{
 The edgeSet object is the input for the main functions in the package edge.
@@ -24,23 +24,25 @@ by either \code{odp} or \code{lrt} function.
 \describe{
 \item{\code{null.model}}{\code{formula} containing null model.}
 
-\item{\code{full.model}}{\code{formula} containing full.model.}
+\item{\code{full.model}}{\code{formula} containing full model.}
 
 \item{\code{null.matrix}}{\code{matrix} containing null model data.}
 
 \item{\code{full.matrix}}{\code{matrix} containing full model data.}
 
-\item{\code{individual}}{\code{factor} containing information on individuals in experiment.}
+\item{\code{individual}}{\code{factor} containing information on individuals
+in experiment.}
 
-\item{\code{qvalueObj}}{S3 class \code{qvalue}: containing qvalue object. See \code{\link{qvalue}}}
+\item{\code{qvalueObj}}{S3 class \code{qvalue}: containing qvalue object.
+ See \code{\link{qvalue}}}
 }}
 \note{
 To create an edgeSet object, it is recommended to use the
-\code{\link{edgeSet}} function where the input is an ExpressionSet object, full
-and null models and optionally an individual variable. The edgeSet function generates
-the full and null matrices. Once the edgeSet object is created, the user can
-either use the \code{lrt} or \code{odp} method to determine the qvalueObj
-slot in the edgeSet object.
+\code{\link{edgeSet}} function where the input is an ExpressionSet object,
+full and null models and optionally an individual variable. The edgeSet
+function generates the full and null matrices. Once the edgeSet object is
+created, the user can either use the \code{lrt} or \code{odp} method to
+determine the qvalueObj slot in the edgeSet object.
 }
 \section{Methods}{
 
@@ -48,30 +50,33 @@ slot in the edgeSet object.
  \item{\code{as(exprSet, "edgeSet")}}{Coerce objects of ExpressionSet to
    edgeSet}
  \item{\code{lrt(edgeSet, ...)}}{Likelihood ratio test on edgeSet object}
- \item{\code{odp(edgeSet, ...)}}{Optimal discovery procedure on edgeSet object}
- \item{\code{klClust(edgeSet, ...)}}{Clustering parameters for modular optimal discovery procedure (mODP) method}
+ \item{\code{odp(edgeSet, ...)}}{Optimal discovery procedure on edgeSet
+ object}
+ \item{\code{klClust(edgeSet, ...)}}{Clustering parameters for modular
+ optimal discovery procedure (mODP) method}
  \item{\code{edgeFit(edgeSet, ...)}}{Linear regression for genes based on
              null and full models}
- \item{\code{edgeQvalue(edgeSet, ...)}}{Implements qvalue function on edgeSet object}
- \item{\code{edgeSVA(edgeSet, ...)}}{Implement surpervised normalization of microarrays on gene expression
-                                 matrix on edgeSet object.}
- \item{\code{edgeSNM(edgeSet, ...)}}{Estimate surrogate variables and adds them to null/full models
-                                from edgeSet object}
+ \item{\code{edgeQvalue(edgeSet, ...)}}{Implements qvalue function on
+ edgeSet object}
+ \item{\code{edgeSVA(edgeSet, ...)}}{Implement surpervised normalization of
+  microarrays on gene expression matrix on edgeSet object.}
+ \item{\code{edgeSNM(edgeSet, ...)}}{Estimate surrogate variables and adds
+ them to null/full models from edgeSet object}
  \item{\code{fullMatrix(edgeSet)}}{Access and set full matrix from
-             edgeSet object}
+ edgeSet object}
  \item{\code{nullMatrix(edgeSet)}}{Access and set null matrix from
-             edgeSet object}
+ edgeSet object}
  \item{\code{fullModel(edgeSet)}}{Access and set full model from
-             edgeSet object}
+ edgeSet object}
  \item{\code{nullModel(edgeSet)}}{Access and set null model from
-             edgeSet object}
+ edgeSet object}
  \item{\code{models(edgeSet)}}{Access null and full models from
-             edgeSet object}
+ edgeSet object}
  \item{\code{individual(edgeSet)}}{Set individual slot from edgeSet object}
- \item{\code{dfModel(edgeSet)}}{Access the degree of freedom for null and full models from
-             edgeSet object}
- \item{\code{qvalueObj(edgeSet)}}{Access qvalue object from
-             edgeSet object. See \code{\link{qvalue}}.}
+ \item{\code{dfModel(edgeSet)}}{Access the degree of freedom for null and
+ full models from edgeSet object}
+ \item{\code{qvalueObj(edgeSet)}}{Access qvalue object from edgeSet object.
+ See \code{\link{qvalue}}.}
  \item{\code{validObject(edgeSet)}}{Check validity of edgeSet object.}
  }
 }

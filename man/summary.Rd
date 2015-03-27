@@ -5,7 +5,7 @@
 \alias{summary}
 \alias{summary,edgeFit-method}
 \alias{summary,edgeSet-method}
-\title{Summary of edge objects}
+\title{Summary for edge objects}
 \usage{
 summary(object, ...)
 

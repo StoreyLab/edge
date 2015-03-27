@@ -21,23 +21,21 @@ specified.
 \section{Slots}{
 
  \describe{
-   \item{\code{fit.full}:}{Matrix of class \code{"matrix"},
-                           containing fitted values for full model.}
-   \item{\code{fit.null}:}{Matrix of class \code{"matrix"},
-                           containing fitted values for null model.}
-   \item{\code{res.full}:}{Matrix of class \code{"matrix"},
-                           containing residuals for full model.}
-   \item{\code{res.null}:}{Matrix of class \code{"matrix"},
-                           containing residuals for null model.}
-   \item{\code{dH.full}:}{Vector of class \code{"vector"},
-                          containing diagonal elements in projection matrix
-                          for the full model.}
+   \item{\code{fit.full}:}{Matrix of class \code{"matrix"}, containing
+   fitted values for full model.}
+   \item{\code{fit.null}:}{Matrix of class \code{"matrix"}, containing
+   fitted values for null model.}
+   \item{\code{res.full}:}{Matrix of class \code{"matrix"}, containing
+   residuals for full model.}
+   \item{\code{res.null}:}{Matrix of class \code{"matrix"}, containing
+   residuals for null model.}
+   \item{\code{dH.full}:}{Vector of class \code{"vector"}, containing
+   diagonal elements in projection matrix for the full model.}
    \item{\code{beta.coef}:}{Matrix of class \code{"matrix"},
-                          containing linear fitted coefficients for full model.}
+   containing linear fitted coefficients for full model.}
    \item{\code{stat.type}:}{String of class \code{"string"},
-                            containing information on the statistic of
-                            interest. Currently, the only options are lrt
-                            and odp.}
+   containing information on the statistic of interest. Currently, the only
+   options are lrt and odp.}
  }
 }
 
@@ -50,7 +48,8 @@ specified.
  \item{\code{resNull(edgeFit)}}{Null residuals from null model}
  \item{\code{resFull(edgeFit)}}{Full residuals from full model}
  \item{\code{betaCoef(edgeFit)}}{Beta coefficients in linear model}
- \item{\code{sType(edgeFit)}}{Statistic type for model fitting utilized in function}
+ \item{\code{sType(edgeFit)}}{Statistic type for model fitting utilized
+ in function}
  }
 }
 \author{

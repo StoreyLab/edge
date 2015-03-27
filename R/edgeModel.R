@@ -1,45 +1,57 @@
 #' Creates an edgeSet object and formulates appropriate models for users
 #'
-#' \code{edgeStudy} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based on experiment type: Either "static" or "timecourse". For more detail refer to the user manual.  
+#' \code{edgeStudy} is a function to create an edge object without an 
+#' ExpressionSet. Alternative and null models are created based on experiment 
+#' type: Either "static" or "timecourse". For more detail refer to the user 
+#' manual.  
 #' 
 #' @param data matrix- Gene expression data.
-#' @param sampling string- Type of experiment. Either "static" or "timecourse". Default is "static".
+#' @param sampling string- Type of experiment. Either "static" or 
+#' "timecourse". Default is "static".
 #' @param grp vector- Groups or biological variable in experiment. Optional.
 #' @param tme vector- Covariate of interest in time course study. Optional. 
-#' @param ind factor- Individual factor. Optional. 
+#' @param ind factor- Individual factor for repeated observations of the same 
+#' individuals. Optional. 
 #' @param bio.var matrix- Biological variables. Optional.
-#' @param basis.df numeric- Degree of freedom of the spline fit for time course study. Default is 2.
-#' @param basis.type string- Either "ncs" or "ps" basis for time course study. Default is "ncs".
+#' @param basis.df numeric- Degree of freedom of the spline fit for time 
+#' course study. Default is 2.
+#' @param basis.type string- Either "ncs" or "ps" basis for time course study. 
+#' Default is "ncs".
 #' @param adj.var matrix- Adjustment Variables. Optional.
 #'  
-#' @return \code{edgeStudy} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
+#' @return \code{edgeStudy} returns an \code{\linkS4class{edgeSet}} object 
+#' with the following slots assigned:
 #'   \describe{
 #'     \item{\code{full.model:}}{alternative model equation}
 #'    \item{\code{null.model:}}{null model equation}
 #'    \item{\code{full.matrix:}}{alternative model in matrix form}
 #'    \item{\code{null.matirx:}}{null model in matrix form}
 #'    \item{\code{individual:}}{individuals in experiment (factor)}
-#'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, phenoData) created in function}
+#'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, 
+#'    phenoData) created in function}
 #'  }
 #'  
 #' @examples 
-#' # Create ExpressionSet object from kidney dataset 
+#' # create ExpressionSet object from kidney dataset 
 #' library(splines) 
 #' data(kidney)
 #' sex <- as.matrix(kidney$sex)
 #' age <- as.matrix(kidney$age)
 #' kidexpr <- kidney$kidexpr
 #' 
-#' #Create edgeSet object from data
-#' edgeObj <- edgeStudy(data=kidexpr, adj.var=sex, tme=age, 
-#' sampling="timecourse", basis.df=4)
+#' # create edgeSet object from data
+#' edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, 
+#' sampling = "timecourse", basis.df = 4)
 #' @name edgeStudy
 #' @rdname edgeStudy
 #' @seealso \code{\link{edgeSet}}
 #' @author John Storey, Andy Bass 
 #' @aliases edgeStudy
 #' @export
-edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=NULL, sampling=c("static", "timecourse"), basis.df=2, basis.type = c("ncs", "poly")) {
+edgeStudy = function(data, grp = NULL, adj.var = NULL, bio.var = NULL, 
+                     tme = NULL, ind = NULL, 
+                     sampling = c("static", "timecourse"), basis.df = 2, 
+                     basis.type = c("ncs", "poly")) {
   n <- ncol(data)
   m <- nrow(data)
   if (!is.matrix(data)) {
@@ -154,43 +166,49 @@ edgeStudy = function(data, grp=NULL, adj.var=NULL, bio.var=NULL, tme=NULL, ind=N
 
 #' Generate alternative and null hypothesis in edgeSet object
 #'
-#' \code{edgeModel} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based adj.var and bio.var variables. Intercept is included in both alternative and null models by default.  
+#' \code{edgeModel} is a function to create an edge object without an 
+#' ExpressionSet. Alternative and null models are inputting by users.
 #' 
 #' @param data matrix- Gene expression data.
 #' @param cov data.frame- Biological covariates.
 #' @param altMod formula- Full model of the experiment.
 #' @param nullMod formula- Null model of the experiment. 
-#' @param ind vector. Individuals in the study. For example, if the same individuals are sampled multiple times.
-#' @return \code{edgeModel} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
-#'   \describe{
-#'     \item{\code{full.model:}}{alternative model equation}
+#' @param ind factor. Individuals sampled in the study.
+#' @return \code{edgeModel} returns an \code{\linkS4class{edgeSet}} object 
+#' with the following slots assigned:
+#' \describe{
+#'    \item{\code{full.model:}}{alternative model equation}
 #'    \item{\code{null.model:}}{null model equation}
 #'    \item{\code{full.matrix:}}{alternative model in matrix form}
 #'    \item{\code{null.matirx:}}{null model in matrix form}
 #'    \item{\code{individual:}}{individuals in experiment (factor)}
-#'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, phenoData) created in function}
+#'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, 
+#'    phenoData) created in function}
 #'  }
-#'  cov, altMod=NULL, nullMod=NULL, ind=NULL,
+#'  
 #' @examples 
-#' # Create ExpressionSet object from kidney dataset
+#' # create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' cov <- data.frame(sex = sex, age = age) 
 #' kidexpr <- kidney$kidexpr
-#' # Create models
+#' 
+#' # create models
 #' null.model <- ~sex 
 #' full.model <- ~sex + ns(age, df=4)
-#' #Create edgeSet object from data
-#' edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, altMod = full.model)
+#' 
+#' # create edgeSet object from data
+#' edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
 #' @name edgeModel
 #' @rdname edgeModel
 #' @seealso \code{\link{edgeSet}}
 #' @author John Storey, Andy Bass 
 #' @aliases edgeModel
 #' @export
-edgeModel <- function(data, cov, altMod=NULL, nullMod=NULL, ind=NULL) {
+edgeModel <- function(data, cov, altMod = NULL, nullMod = NULL, ind = NULL) {
   n <- ncol(data)
   m <- nrow(data)
   if (!is.matrix(data)) {
@@ -211,6 +229,7 @@ edgeModel <- function(data, cov, altMod=NULL, nullMod=NULL, ind=NULL) {
   exprs(expSet) <- data
   pData(expSet) <- cov
 
-  edgeObj <- edgeSet(expSet, full.model=altMod, null.model=nullMod, individual=ind)
+  edgeObj <- edgeSet(expSet, full.model = altMod, null.model = nullMod, 
+                     individual = ind)
   return(edgeObj)  
 }

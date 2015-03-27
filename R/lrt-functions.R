@@ -8,8 +8,8 @@ lrtStat <- function(resNull, resFull) {
   # Returns:
   #   stat: vector- F statistic 
   # Calculates RSS
-  rss.full <- rowSums(resFull^2)
-  rss.null <- rowSums(resNull^2)
+  rss.full <- rowSums(resFull ^ 2)
+  rss.null <- rowSums(resNull ^ 2)
   
   # F-statistic
   stat <- (rss.null - rss.full) / (rss.full)  

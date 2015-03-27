@@ -44,12 +44,13 @@ klmod <- function(obj.edgeFit, n.mods = 50) {
     temp.center.fitFull <- as.vector(t(center.fitFull))
     temp.fitFull <- as.vector(t(obj.edgeFit@fit.full))
     
-    kldd <- t(matrix(kl(temp.center.fitFull, temp.fitFull, center.var, sigma2, n=n), ncol=m))
+    kldd <- t(matrix(kl(temp.center.fitFull, temp.fitFull, center.var, 
+                        sigma2, n=n), ncol=m))
     mod.member = apply(kldd, 1, function(x) which.min(x))  	
     
-    # First of all, we check whether there is any cluster that does not include any gene. 
-    # For this case, we exclude this cluster from the original clusters. 
-    # Therefore, it reduces the number of clusters 
+    # First of all, we check whether there is any cluster that does not 
+    # include any gene. For this case, we exclude this cluster from the 
+    # original clusters. Therefore, it reduces the number of clusters 
     notempty <- 1:n.mods %in% unique(mod.member)
 #    notempty <- sort(unique(mod.member))
    # all.equal(notempty, notempty2)
@@ -57,7 +58,8 @@ klmod <- function(obj.edgeFit, n.mods = 50) {
     center.var <- center.var[notempty]
     KL <- KL[notempty, ]
     
-    # Once the number of clusters were decided, we need to find new centers for each cluster 
+    # Once the number of clusters were decided, we need to find new centers 
+    # for each cluster 
     if (any(!notempty)) {
       n.mods <- sum(!notempty)
     }

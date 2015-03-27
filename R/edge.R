@@ -2,7 +2,7 @@
 #'
 #' @name edge
 #' @docType package
-#' @import methods splines sva snm qvalue MASS
+#' @import Biobase methods splines sva snm qvalue MASS
 #' @useDynLib edge odpScoreCluster kldistance
 NULL
 

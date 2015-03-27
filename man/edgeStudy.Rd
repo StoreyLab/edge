@@ -19,39 +19,48 @@ edgeStudy(data, grp = NULL, adj.var = NULL, bio.var = NULL, tme = NULL,
 
 \item{tme}{vector- Covariate of interest in time course study. Optional.}
 
-\item{ind}{factor- Individual factor. Optional.}
+\item{ind}{factor- Individual factor for repeated observations of the same
+individuals. Optional.}
 
-\item{sampling}{string- Type of experiment. Either "static" or "timecourse". Default is "static".}
+\item{sampling}{string- Type of experiment. Either "static" or
+"timecourse". Default is "static".}
 
-\item{basis.df}{numeric- Degree of freedom of the spline fit for time course study. Default is 2.}
+\item{basis.df}{numeric- Degree of freedom of the spline fit for time
+course study. Default is 2.}
 
-\item{basis.type}{string- Either "ncs" or "ps" basis for time course study. Default is "ncs".}
+\item{basis.type}{string- Either "ncs" or "ps" basis for time course study.
+Default is "ncs".}
 }
 \value{
-\code{edgeStudy} returns an \code{\linkS4class{edgeSet}} object with the following slots assigned:
+\code{edgeStudy} returns an \code{\linkS4class{edgeSet}} object
+with the following slots assigned:
   \describe{
     \item{\code{full.model:}}{alternative model equation}
    \item{\code{null.model:}}{null model equation}
    \item{\code{full.matrix:}}{alternative model in matrix form}
    \item{\code{null.matirx:}}{null model in matrix form}
    \item{\code{individual:}}{individuals in experiment (factor)}
-   \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, phenoData) created in function}
+   \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData,
+   phenoData) created in function}
  }
 }
 \description{
-\code{edgeStudy} is a function to create an edge object without an ExpressionSet. Alternative and null models are created based on experiment type: Either "static" or "timecourse". For more detail refer to the user manual.
+\code{edgeStudy} is a function to create an edge object without an
+ExpressionSet. Alternative and null models are created based on experiment
+type: Either "static" or "timecourse". For more detail refer to the user
+manual.
 }
 \examples{
-# Create ExpressionSet object from kidney dataset
+# create ExpressionSet object from kidney dataset
 library(splines)
 data(kidney)
 sex <- as.matrix(kidney$sex)
 age <- as.matrix(kidney$age)
 kidexpr <- kidney$kidexpr
 
-#Create edgeSet object from data
-edgeObj <- edgeStudy(data=kidexpr, adj.var=sex, tme=age,
-sampling="timecourse", basis.df=4)
+# create edgeSet object from data
+edgeObj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age,
+sampling = "timecourse", basis.df = 4)
 }
 \author{
 John Storey, Andy Bass
