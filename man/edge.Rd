@@ -6,19 +6,21 @@
 \alias{edge-package}
 \title{Extraction and Analysis of Differential Gene Expression}
 \description{
-The edge package is an integrated differential expression analysis
-package. Statistical testing using the optimal discovery procedure and
-the likelihood ratio test are implemented in either static or time-course
-experiments. Various implementations of other popular packages such as
-snm, sva and qvalue are integrated in edge to provide a set of tools for
-analysis.
+The edge package implements methods for carrying out differential
+expression analyses of genome-wide gene expression studies. Significance
+testing using the optimal discovery procedure and generalized likelihood
+ratio tests (equivalent to F-tests and t-tests) are implemented for general study
+designs. Special functions are available to facilitate the analysis of
+common study designs, including time course experiments. Other packages
+such as snm, sva, and qvalue are integrated in edge to provide a wide range
+of tools for gene expression analysis.
 }
 \examples{
 \dontrun{
-browseVignettes(edge)
+browseVignettes("edge")
 }
 }
 \author{
-John Storey
+John Storey, Jeffrey Leek, Andrew Bass
 }
 

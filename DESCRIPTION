@@ -11,13 +11,13 @@ Authors@R: c(
 Maintainer: John D. Storey <jstorey@princeton.edu>
 biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
     Regression, GeneExpression
-Description: The edge package is an integrated differential expression analysis
-    library for genome-wide gene expression studies. Significance testing using 
-    the optimal discovery procedure and generalized likelihood ratio tests 
-    (equivalent to F-tests and t-tests) are implemented for general study 
+Description: The edge package implements methods for carrying out differential 
+    expression analyses of genome-wide gene expression studies. Significance 
+    testing using the optimal discovery procedure and generalized likelihood 
+    ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
     designs. Special functions are available to facilitate the analysis of 
     common study designs, including time course experiments. Other packages 
-    such as snm, sva, and qvalue are integrated in edge to provide a broad set 
+    such as snm, sva, and qvalue are integrated in edge to provide a wide range 
     of tools for gene expression analysis.
 VignetteBuilder: knitr
 Imports:
@@ -38,4 +38,3 @@ Depends:
 URL: https://github.com/jdstorey/edge
 LazyData: true
 License: LGPL
-Packaged: 2015-03-24 15:27:10 UTC; andy

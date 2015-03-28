@@ -4,7 +4,7 @@
 \name{edgeFit}
 \alias{edgeFit}
 \alias{edgeFit,edgeSet-method}
-\title{Linear Regression for full and null models}
+\title{Least squares model fit for full and null models}
 \usage{
 edgeFit(object, stat.type = c("lrt", "odp"))
 
@@ -20,7 +20,7 @@ edgeFit(object, stat.type = c("lrt", "odp"))
 \code{edgeFit} returns an \code{\linkS4class{edgeFit}} object.
 }
 \description{
-\code{edgeFit} fits a linear model to each gene. Model fits can be either
+\code{edgeFit} fits a linear model to each gene by least squares. Model fits can be either
 statistic type odp (optimal discovery procedure) or lrt
 (likelihood ratio test).
 }
@@ -61,7 +61,7 @@ ef_lrt <- edgeFit(edge_obj, stat.type = "lrt") # lrt method
 ef_odp <- edgeFit(edge_obj, stat.type = "odp") # odp method
 }
 \author{
-John Storey, Andrew Bass
+John Storey
 }
 \references{
 Storey JD. (2007) The optimal discovery procedure: A new approach to

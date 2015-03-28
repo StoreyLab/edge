@@ -2,19 +2,21 @@
 #' Extraction and Analysis of Differential Gene Expression
 #' 
 #' @description
-#' The edge package is an integrated differential expression analysis
-#' package. Statistical testing using the optimal discovery procedure and 
-#' the likelihood ratio test are implemented in either static or time-course 
-#' experiments. Various implementations of other popular packages such as 
-#' snm, sva and qvalue are integrated in edge to provide a set of tools for 
-#' analysis.
+#' The edge package implements methods for carrying out differential 
+#' expression analyses of genome-wide gene expression studies. Significance 
+#' testing using the optimal discovery procedure and generalized likelihood 
+#' ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
+#' designs. Special functions are available to facilitate the analysis of 
+#' common study designs, including time course experiments. Other packages 
+#' such as snm, sva, and qvalue are integrated in edge to provide a wide range 
+#' of tools for gene expression analysis.
 #' 
 #' @examples
 #' \dontrun{
-#' browseVignettes(edge)
+#' browseVignettes("edge")
 #' }
 #' @name edge
-#' @author John Storey
+#' @author John Storey, Jeffrey Leek, Andrew Bass
 #' @docType package
 #' @import Biobase methods splines sva snm qvalue MASS
 #' @useDynLib edge odpScoreCluster kldistance
@@ -124,9 +126,6 @@ NULL
 #' \code{tissue} data are contained in \code{kidcov} data frame.
 #' 
 #' @references
-#' Rodwell GE et al. (2004) A transcriptional profile of aging in the human 
-#' kidney. PLoS Biology, 2(12): e427.
-#' 
 #' Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance 
 #' analysis of time course microarray experiments. PNAS, 102: 12837-12842. \cr
 #' \url{http://www.pnas.org/content/100/16/9440.full}

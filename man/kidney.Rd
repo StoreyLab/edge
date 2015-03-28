@@ -52,9 +52,6 @@ edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its = 10)
 summary(edge_odp)
 }
 \references{
-Rodwell GE et al. (2004) A transcriptional profile of aging in the human
-kidney. PLoS Biology, 2(12): e427.
-
 Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance
 analysis of time course microarray experiments. PNAS, 102: 12837-12842. \cr
 \url{http://www.pnas.org/content/100/16/9440.full}

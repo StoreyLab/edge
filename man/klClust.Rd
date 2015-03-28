@@ -79,7 +79,7 @@ edge_fit <- edgeFit(edge_obj, stat.type = "odp")
 edge_clust <- klClust(edge_obj, obj.edgeFit = edge_fit)
 }
 \author{
-John Storey, Andrew Bass
+John Storey, Jeffrey Leek
 }
 \references{
 Storey JD. (2007) The optimal discovery procedure: A new approach to

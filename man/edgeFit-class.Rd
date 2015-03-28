@@ -53,7 +53,7 @@ specified.
  }
 }
 \author{
-John Storey, Jeffrey T. Leek, Andrew Bass
+John Storey, Jeffrey Leek, Andrew Bass
 }
 \seealso{
 \code{\link{edgeFit}}

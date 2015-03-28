@@ -171,7 +171,7 @@ edgeFitCheck <- function(object) {
 #' determine the qvalueObj slot in the edgeSet object. 
 #' 
 #' @author
-#' John Storey, Jeffrey T. Leek, Andrew Bass
+#' John Storey, Jeffrey Leek, Andrew Bass
 #' 
 #' @seealso 
 #' \code{\link{edgeSet}}
@@ -245,7 +245,7 @@ setClass("edgeSet", slots=c(null.model = "formula",
 #' specified. 
 #' 
 #' @author 
-#' John Storey, Jeffrey T. Leek, Andrew Bass
+#' John Storey, Jeffrey Leek, Andrew Bass
 #' 
 #' @seealso 
 #' \code{\link{edgeFit}}

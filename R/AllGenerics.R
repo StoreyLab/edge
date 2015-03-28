@@ -101,8 +101,8 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' @param seed numeric- set the seed value.
 #' @param verbose boolean- print iterations for bootstrap method. Default is 
 #' TRUE.
-#' @param ... Additional arguments for \code{klClust}, \code{qvalue} and 
-#' \code{empPvals}.
+#' @param ... Additional arguments for \link{\code{klClust}}, \code{qvalue} and 
+#' \code{empPvals} (latter two from \code{qvalue} package).
 #'
 #'
 #' @details The full ODP estimator computationally grows quadratically with 
@@ -155,7 +155,7 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' Woo S, Leek JT, Storey JD (2010) A computationally efficient modular 
 #' optimal discovery procedure. Bioinformatics, 27(4): 509-515.
 #'
-#' @author John Storey, Andrew Bass
+#' @author John Storey, Jeffrey Leek, Andrew Bass
 #'
 #' @seealso \code{\link{klClust}}, \code{\link{edgeSet}} and 
 #' \code{\link{edgeFit}}
@@ -238,7 +238,7 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #' Woo S, Leek JT, Storey JD (2010) A computationally efficient modular optimal
 #'  discovery procedure. Bioinformatics, 27(4): 509-515.
 #'
-#' @author John Storey, Andrew Bass
+#' @author John Storey, Jeffrey Leek
 #'
 #' @seealso \code{\link{odp}}, \code{\link{edgeSet}} and \code{\link{edgeFit}}
 #'
@@ -247,9 +247,9 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 setGeneric("klClust", function(object, obj.edgeFit = NULL, n.mods = 50, ...)
   standardGeneric("klClust"))
 
-#' Linear Regression for full and null models
+#' Least squares model fit for full and null models
 #'
-#' \code{edgeFit} fits a linear model to each gene. Model fits can be either 
+#' \code{edgeFit} fits a linear model to each gene by least squares. Model fits can be either 
 #' statistic type odp (optimal discovery procedure) or lrt 
 #' (likelihood ratio test).
 #'
@@ -309,7 +309,7 @@ setGeneric("klClust", function(object, obj.edgeFit = NULL, n.mods = 50, ...)
 #' @seealso \code{\linkS4class{edgeFit}}, \code{\link{odp}} and
 #' \code{\link{lrt}}
 #'
-#' @author John Storey, Andrew Bass
+#' @author John Storey
 #' @keywords edgeFit
 #' @exportMethod edgeFit
 setGeneric("edgeFit",
@@ -450,7 +450,7 @@ setGeneric("edgeQvalue", function(object, ...)
 #' Studies by Surrogate Variable Analysis. PLoS Genet 3(9): e161. 
 #' doi:10.1371/journal.pgen.0030161
 #'
-#' @author John Storey, Andrew Bass
+#' @author John Storey, Jeffrey Leek, Andrew Bass
 #' @import sva
 #' @keywords edgeSVA
 #' @exportMethod edgeSVA

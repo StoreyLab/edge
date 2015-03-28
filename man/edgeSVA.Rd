@@ -47,7 +47,7 @@ edge_odp <- odp(edge_sva, bs.its = 30)
 summary(edge_odp)
 }
 \author{
-John Storey, Andrew Bass
+John Storey, Jeffrey Leek, Andrew Bass
 }
 \references{
 Leek JT, Storey JD (2007) Capturing Heterogeneity in Gene Expression

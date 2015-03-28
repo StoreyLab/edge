@@ -33,8 +33,8 @@ is 100.}
 \item{verbose}{boolean- print iterations for bootstrap method. Default is
 TRUE.}
 
-\item{...}{Additional arguments for \code{klClust}, \code{qvalue} and
-\code{empPvals}.}
+\item{...}{Additional arguments for \link{\code{klClust}}, \code{qvalue} and
+\code{empPvals} (latter two from \code{qvalue} package).}
 }
 \value{
 \code{odp} returns an \code{\linkS4class{edgeSet}} object with slot
@@ -88,7 +88,7 @@ edge_odp <- odp(edge_obj, obj.edgeFit = edge_fit, odp.parms = edge_clust,
 bs.its = 30)
 }
 \author{
-John Storey, Andrew Bass
+John Storey, Jeffrey Leek, Andrew Bass
 }
 \references{
 Storey JD. (2007) The optimal discovery procedure: A new approach to
