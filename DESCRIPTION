@@ -4,19 +4,21 @@ Title: Extraction and Analysis of Differential Gene Expression
 Date: 2015-03-26
 Version: 0.99.0
 Authors@R: c(
-    person("John", "Storey", email = "jstorey@princeton.edu", role = c("aut", "cre")),
-    person("Jeffrey", "Leek", email = "jleek@jhsph.edu ", role = c("aut")),
-    person("Andrew", "Bass", email = "ajbass@princeton.edu", role = c("aut", "ctb"))
+    person("John D.", "Storey", email = "jstorey@princeton.edu", role = c("aut", "cre")),
+    person("Jeffrey T.", "Leek", email = "jleek@jhsph.edu ", role = c("aut")),
+    person("Andrew J.", "Bass", email = "ajbass@princeton.edu", role = c("aut"))
     )
 Maintainer: John D. Storey <jstorey@princeton.edu>
 biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
     Regression, GeneExpression
 Description: The edge package is an integrated differential expression analysis
-    package. Statistical testing using the optimal discovery procedure and 
-    the likelihood ratio test are implemented in either static or time-course 
-    experiments. Various implementations of other popular packages such as 
-    snm, sva and qvalue are integrated in edge to provide a set of tools for 
-    analysis.
+    library for genome-wide gene expression studies. Significance testing using 
+    the optimal discovery procedure and generalized likelihood ratio tests 
+    (equivalent to F-tests and t-tests) are implemented for general study 
+    designs. Special functions are available to facilitate the analysis of 
+    common study designs, including time course experiments. Other packages 
+    such as snm, sva, and qvalue are integrated in edge to provide a broad set 
+    of tools for gene expression analysis.
 VignetteBuilder: knitr
 Imports:
     methods,

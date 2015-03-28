@@ -6,6 +6,19 @@
 \alias{edge-package}
 \title{Extraction and Analysis of Differential Gene Expression}
 \description{
-Extraction and Analysis of Differential Gene Expression
+The edge package is an integrated differential expression analysis
+package. Statistical testing using the optimal discovery procedure and
+the likelihood ratio test are implemented in either static or time-course
+experiments. Various implementations of other popular packages such as
+snm, sva and qvalue are integrated in edge to provide a set of tools for
+analysis.
+}
+\examples{
+\dontrun{
+browseVignettes(edge)
+}
+}
+\author{
+John Storey
 }
 
