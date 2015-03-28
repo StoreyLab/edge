@@ -30,15 +30,35 @@ foo <- packageDescription("edge")
 
 \title{{\tt edge}:\\ \underline{E}xtraction of \underline{D}ifferential \underline{G}ene \underline{E}xpression \\ Version \Sexpr{foo$Version}}
 
-\author{John D. Storey\thanks{\url{http://genomine.org/contact.html}}, Jeffrey T. Leek, Andrew J. Bass}
-%\author{Jeffrey T. Leek}
-%\author{Andrew J. Bass}
-%\affil[1]{Princeton University}
-%\affil[2]{John Hopkins University}
+\author[1,2]{John D. Storey\thanks{\url{http://genomine.org/contact.html}}}
+\author[3]{Jeffrey T. Leek}
+\author[1]{Andrew J. Bass}
+\affil[1]{Lewis-Sigler Institute for Integrative Genomics, Princeton University, Princeton NJ USA}
+\affil[2]{Center for Statistics and Machine Learning, Princeton University, Princeton NJ USA}
+\affil[3]{Department of Biostatistics, John Hopkins University, Baltimore MD USA}
 
-\renewcommand\Authands{ and }
+%\renewcommand\Authands{ and }
 
 \maketitle
+
+\Large 
+\begin{center}
+
+First edition: October 2005
+
+Most recent edition:  March 2015
+\end{center}
+\normalsize
+
+\ 
+
+\ 
+
+\noindent {\bf Note:}  {\tt edge} was first released in 2005 and described in the publication \cite{leek2005}.  It was an independently released R package by the John Storey Lab, which included multi-threading and a graphical user interface.  However, the current version is now available through Bioconductor as a standard R package.
+
+
+
+\clearpage
 \tableofcontents
 
 %\clearpage
@@ -52,20 +72,18 @@ common study designs, including time course experiments. Other packages
 such as {\tt snm}, {\tt sva}, and {\tt qvalue} are integrated in {\tt edge} to provide a wide range 
 of tools for gene expression analysis.
 
-{\tt edge} was first released in 2005 and described in the publication \cite{leek2005}.  It was an independently released R package by the John Storey Lab, which included multi-threading and a graphical user interface.  However, the current version is now available through Bioconductor as a standard R package.
-
 {\tt edge} performs significance analysis by using a framework developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas standard methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a principled, often times more powerful, approach to multiple hypothesis testing compared to traditional methods. The improvements in power from using the optimal discovery procedure can be substantial; Figure~\ref{fig:Comparison} shows a comparison between {\tt edge} and five leading software packages based on the \cite{hedenfalk:2001} breast cancer expression study.
-
-\texttt{edge} also implements strategies that have been specifically designed for time course experiments and other complex study designs. Specifically, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. In addition to identifying differentially expressed genes in multi-class, time course, and general study designs, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue} to help simplify the analysis process for researchers. 
-
-The rest of the document details how to use {\tt edge} in three different case studies: static sampling among $K$ groups, independent time course, and longitudinal time course. For additional information regarding the optimal discovery procedure or the \cite{storey:2005} methodology for time course experiments, see section~\ref{sec:citepackage}.
 
 \begin{figure}[htb]
  \centering
 \includegraphics[scale=.50]{edgecomp.pdf}
-\caption{Comparison of EDGE to various other leading methods for identifying differential expressed genes in the \cite{hedenfalk:2001} study. Figure is from \cite{leek2005}.}
+\caption{Comparison of EDGE to various other leading methods for identifying differential expressed genes in the \cite{hedenfalk:2001} study. This figure is from \cite{leek2005}.}
 \label{fig:Comparison}
 \end{figure}
+
+\texttt{edge} also implements strategies that have been specifically designed for time course experiments and other complex study designs. Specifically, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. In addition to identifying differentially expressed genes in multi-class, time course, and general study designs, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue} to help simplify the analysis process for researchers. 
+
+The rest of the document details how to use {\tt edge} in three different case studies: static sampling among $K$ groups, independent time course, and longitudinal time course. For additional information regarding the optimal discovery procedure or the \cite{storey:2005} methodology for time course experiments, see section~\ref{sec:citepackage}.
 
 
 \section{Citing this package}
