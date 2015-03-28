@@ -33,7 +33,7 @@ is 100.}
 \item{verbose}{boolean- print iterations for bootstrap method. Default is
 TRUE.}
 
-\item{...}{Additional arguments for \link{\code{klClust}}, \code{qvalue} and
+\item{...}{Additional arguments for \code{klClust}, \code{qvalue} and
 \code{empPvals} (latter two from \code{qvalue} package).}
 }
 \value{

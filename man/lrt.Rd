@@ -5,7 +5,7 @@
 \alias{lrt}
 \alias{lrt,edgeSet,edgeFit-method}
 \alias{lrt,edgeSet,missing-method}
-\title{Performs F-test (likelihood ratio test)}
+\title{Performs F-test (likelihood ratio test using Normal likelihood)}
 \usage{
 lrt(object, obj.edgeFit, nullDistn = c("normal", "bootstrap"), bs.its = 100,
   seed = NULL, verbose = TRUE, ...)

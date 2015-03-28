@@ -1,4 +1,4 @@
-#' Performs F-test (likelihood ratio test)
+#' Performs F-test (likelihood ratio test using Normal likelihood)
 #'
 #' \code{lrt} performs a generalized likelihood ratio test using the full and 
 #' null models to determine p-values (either from a F-distribution or from 
@@ -101,7 +101,7 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' @param seed numeric- set the seed value.
 #' @param verbose boolean- print iterations for bootstrap method. Default is 
 #' TRUE.
-#' @param ... Additional arguments for \link{\code{klClust}}, \code{qvalue} and 
+#' @param ... Additional arguments for \code{klClust}, \code{qvalue} and 
 #' \code{empPvals} (latter two from \code{qvalue} package).
 #'
 #'

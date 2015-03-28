@@ -1,5 +1,5 @@
 #' @title
-#' Extraction and Analysis of Differential Gene Expression
+#' Extraction of Differential Gene Expression
 #' 
 #' @description
 #' The edge package implements methods for carrying out differential 

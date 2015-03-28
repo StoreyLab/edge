@@ -28,28 +28,37 @@ options(keep.source = TRUE, width = 48)
 foo <- packageDescription("edge")
 @
 
-\title{{\tt edge}:\\ Extraction of Differential Gene Expression \\ Version \Sexpr{foo$Version}}
+\title{{\tt edge}:\\ \underline{E}xtraction of \underline{D}ifferential \underline{G}ene \underline{E}xpression \\ Version \Sexpr{foo$Version}}
 
-\author[1]{John D. Storey\thanks{\url{http://genomine.org/contact.html}}}
-\author[2]{Jeffrey T. Leek}
-\author[1]{Andrew J. Bass}
-\affil[1]{Princeton University}
-\affil[2]{John Hopkins University}
+\author{John D. Storey\thanks{\url{http://genomine.org/contact.html}}, Jeffrey T. Leek, Andrew J. Bass}
+%\author{Jeffrey T. Leek}
+%\author{Andrew J. Bass}
+%\affil[1]{Princeton University}
+%\affil[2]{John Hopkins University}
 
 \renewcommand\Authands{ and }
 
 \maketitle
 \tableofcontents
-\newpage
+
+%\clearpage
 \section{Introduction}
+The {\tt edge} package implements methods for carrying out differential 
+expression analyses of genome-wide gene expression studies. Significance 
+testing using the optimal discovery procedure and generalized likelihood 
+ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
+designs. Special functions are available to facilitate the analysis of 
+common study designs, including time course experiments. Other packages 
+such as {\tt snm}, {\tt sva}, and {\tt qvalue} are integrated in {\tt edge} to provide a wide range 
+of tools for gene expression analysis.
 
-{\tt edge} is a package for significance analysis of DNA micro-array experiments and is able to identify genes that are differentially expressed between two or more different biological conditions (e.g., healthy versus diseased tissue). {\tt edge} performs significance analysis by using a new method developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas previously existing methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a more intuitive, often times more powerful, approach to multiple hypothesis testing when compared to traditional methods. The improvements in power from using the optimal discovery procedure are substantial; Figure~\ref{fig:Comparison} shows a comparison between edge and five leading software packages based on the \cite{hedenfalk:2001} breast cancer expression study.
+{\tt edge} performs significance analysis by using a framework developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas standard methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a principled, often times more powerful, approach to multiple hypothesis testing compared to traditional methods. The improvements in power from using the optimal discovery procedure can be substantial; Figure~\ref{fig:Comparison} shows a comparison between {\tt edge} and five leading software packages based on the \cite{hedenfalk:2001} breast cancer expression study.
 
-\texttt{edge} also implements strategies that have been specifically designed for time course experiments. Many things can go wrong when using methods that have been designed for static experiments and even though some significance analysis packages allow for users to enter information about time points, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. In addition to identifying differentially expressed genes in both static and time course studies, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue} to help simplify the analysis process for researchers. 
+\texttt{edge} also implements strategies that have been specifically designed for time course experiments and other complex study designs. Specifically, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. In addition to identifying differentially expressed genes in multi-class, time course, and general study designs, {\tt edge} includes implementations of popular packages such as {\tt snm}, {\tt sva} and {\tt qvalue} to help simplify the analysis process for researchers. 
 
-The rest of the document details how to use {\tt edge} in three different case studies: static, independent time course and longitudinal time course. For additional information regarding the optimal discovery procedure or the \cite{storey:2005} methodology for time course experiments, see section~\ref{sec:citepackage}.
+The rest of the document details how to use {\tt edge} in three different case studies: static sampling among $K$ groups, independent time course, and longitudinal time course. For additional information regarding the optimal discovery procedure or the \cite{storey:2005} methodology for time course experiments, see section~\ref{sec:citepackage}.
 
-\begin{figure}[t]
+\begin{figure}[htb]
  \centering
 \includegraphics[scale=.50]{edgecomp.pdf}
 \caption{Comparison of EDGE to various other leading methods for identifying differential expressed genes in the \cite{hedenfalk:2001} study. Figure is from \cite{leek2005}.}
@@ -72,11 +81,11 @@ Previous implementations of the ODP are computationally infeasible for a large n
 A methodology for analyzing time course microarray data is introduced and applied to two time course studies on humans. 
 
 \section{Getting help}
-Hopefully, most questions relating to the package will be answered in the vignette but to get a more detailed account of how to use the functions simply type within R:
+Hopefully, most questions relating to the package will be answered in this vignette but to get a more detailed account of how to use the functions simply type within R:
 <<help_qvalue>>=
 help(package="edge")
 @
-\noindent Please contact the authors directly with any issues regarding bugs. Otherwise, any questions or problems implementing {\tt edge} will most efficiently be addressed on the Bioconductor mailing list, \url{http://stat.ethz.ch/mailman/listinfo/bioconductor}.
+\noindent If you identify bugs related to basic usage please contact the authors directly.  Otherwise, any questions or problems regarding {\tt edge} will most efficiently be addressed on the Bioconductor support site, \url{https://support.bioconductor.org/}.
 
 \section{Quick start guide}
 To get started, first load the {\tt kidney} dataset included in the package: 
@@ -85,7 +94,7 @@ library(edge)
 data(kidney)
 names(kidney)
 @
-The {\tt kidney} study is interested in determining differentially expressed genes in the kidney as it ages. The {\tt age} variable is the age of the subjects, the {\tt sex} variable is whether the subjects were male or female and the {\tt tissue} variable is whether the tissue sample is from the cortex or medula. The expression values for the genes are contained in the {\tt kidexpr} variable. In this example, we are only interested in the cortex samples:
+The {\tt kidney} study is interested in determining differentially expressed genes with respect to age in kidney tissue. The {\tt age} variable is the age of the subjects and the {\tt sex} variable is whether the subjects were male or female. The expression values for the genes are contained in the {\tt kidexpr} variable.
 <<qs_assign>>=
 kidexpr <- kidney$kidexpr
 age <- kidney$age
@@ -282,7 +291,7 @@ If the null distribution, {\tt nullDistn}, is calculated using ``bootstrap'' the
 
 
 \subsubsection{Optimal discovery procedure}
-{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:2005} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edge\_obj} by the {\tt odp} function:
+{\tt odp} performs the optimal discovery procedure, which is a new approach developed by \cite{storey:etal:2007} for optimally performing many hypothesis tests in a high-dimensional study. When testing a feature, information from all the features is utilized when testing for significance of a feature. It guarantees to maximize the number of expected true positive results for each fixed number of expected false positive results which is related to the false discovery rate. The optimal discovery procedure can be implemented on {\tt edge\_obj} by the {\tt odp} function:
 <<kd_3_gib, eval=TRUE, cache=TRUE>>=
 edge_odp <- odp(edge_obj, bs.its=30, verbose=FALSE, n.mods=50)
 @
