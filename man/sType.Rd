@@ -21,6 +21,29 @@ Access the statistic type in an \code{\linkS4class{edgeFit}} object. Can
 either be the optimal discovery procedure (odp) or the likelihood ratio
 test (lrt).
 }
+\examples{
+# import data
+library(splines)
+data(kidney)
+sex <- kidney$sex
+age <- kidney$age
+cov <- data.frame(sex = sex, age = age)
+kidexpr <- kidney$kidexpr
+
+# create models
+null.model <- ~sex
+full.model <- ~sex + ns(age, df = 4)
+
+# create edgeSet object from data
+edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
+altMod = full.model)
+
+# run edgeFit to get model fits
+edge_fit <- edgeFit(edge_obj)
+
+# extract the statistic type of model fits
+stat_type <- sType(edge_fit)
+}
 \author{
 John Storey, Andrew Bass
 }

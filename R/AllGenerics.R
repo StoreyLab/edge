@@ -509,6 +509,30 @@ setGeneric("edgeSNM", function(object, int.var, ...) standardGeneric("edgeSNM"))
 #' 
 #' @usage fullModel(object)
 #' 
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # extract out the full model equation
+#' mod_full <- fullModel(edge_obj)
+#' 
+#' # change the full model in the experiment 
+#' fullModel(edge_obj) <- ~sex + ns(age, df = 2)
+#' 
+#' 
 #' @return \code{fullModel} returns the formula for the full model.
 #'    
 #' @author John Storey, Andrew Bass
@@ -539,6 +563,29 @@ setGeneric("fullModel<-", function(object, value) {
 #' 
 #' @return \code{nullModel} returns the formula for the null model.
 #'
+#' @examples 
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # extract the null model equation
+#' mod_null <- nullModel(edge_obj)
+#' 
+#' # change null model in experiment but must update full model
+#' nullModel(edge_obj) <- ~1
+#' fullModel(edge_obj) <- ~1 + ns(age, df=4)
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso \code{\linkS4class{edgeSet}}
@@ -566,6 +613,26 @@ setGeneric("nullModel<-", function(object, value) {
 #' @usage nullMatrix(object)
 #' 
 #' @return \code{nullMatrix} returns the value of the null model matrix.
+#'
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # extract the null model as a matrix
+#' mat_null <- nullMatrix(edge_obj)
 #'
 #' @author John Storey, Andrew Bass
 #' 
@@ -597,6 +664,25 @@ setGeneric("nullMatrix<-", function(object, value) {
 #' 
 #' @return \code{fullMatrix} returns the value of the full model matrix.
 #'
+#' @examples 
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # extract the full model equation as a matrix
+#' mat_full <- fullMatrix(edge_obj)
 #' @author Andrew Bass, John Storey
 #' 
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{fullModel}}
@@ -625,7 +711,36 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' @param value S3 \code{object}: \code{\link{qvalue}} object
 #' 
 #' @return  \code{qvalueObj} returns a \code{\link{qvalue}} object.
-#'     
+#' 
+#' @examples
+#' # import data
+#' library(splines)
+#' library(qvalue)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # run the odp method
+#' edge_odp <- odp(edge_obj, bs.its = 20)
+#' 
+#' # extract out significance results
+#' qval_obj <- qvalueObj(edge_odp)
+#' 
+#' # run qvalue and assign it to edgeSet slot
+#' pvals <- qval_obj$pvalues
+#' qval_new <- qvalue(pvals, pfdr = TRUE, fdr.level = 0.1)
+#' qvalueObj(edge_odp) <- qval_new
+#'  
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso \code{\link{lrt}}, \code{\link{odp}} and 
@@ -656,6 +771,33 @@ setGeneric("qvalueObj<-", function(object, value) {
 #' @return \code{individual} returns information regarding individuals 
 #' in the experiment.
 #'    
+#' @examples
+#' library(splines)
+#' # import data
+#' data(endotoxin)
+#' ind <- endotoxin$ind
+#' time <- endotoxin$time
+#' endoexpr <- endotoxin$endoexpr
+#' class <- endotoxin$class
+#' cov <- data.frame(individual = ind, time = time, class = class)
+#' 
+#' # create ExpressionSet object
+#' pDat <- as(cov, "AnnotatedDataFrame")
+#' exp_set <- ExpressionSet(assayData = endoexpr, phenoData = pDat)
+#' 
+#' # formulate null and full models in experiement
+#' # note: interaction term is a way of taking into account group effects
+#' mNull <- ~ns(time, df=4, intercept = FALSE)
+#' mFull <- ~ns(time, df=4, intercept = FALSE) + 
+#' ns(time, df=4, intercept = FALSE):class + class
+#' 
+#' # create edgeSet object
+#' edge_obj <- edgeSet(exp_set, full.model = mFull, null.model = mNull, 
+#' individual = ind)
+#' 
+#' # extract out the individuals factor
+#' ind_exp <- individual(edge_obj)
+#' 
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso \code{\linkS4class{edgeSet}}
@@ -670,22 +812,6 @@ setGeneric("individual", function(object) standardGeneric("individual"))
 setGeneric("individual<-", function(object, value) {
   standardGeneric("individual<-") 
 })  
-#' Fitted models for an \code{\linkS4class{edgeFit}} object.
-#'
-#' @param object \code{\linkS4class{edgeFit}} object
-#' 
-#' @usage modelFits(object)
-#' 
-#' @return \code{modelFits} returns the formula for the fitted models.
-#'
-#' @author John Storey, Andrew Bass
-#' 
-#' @seealso \code{\link{edgeFit}}, \code{\linkS4class{edgeSet}}
-#' 
-#' @keywords modelFits
-#' 
-#' @exportMethod modelFits
-setGeneric("modelFits", function(object) standardGeneric("modelFits"))
 
 #' Regression coefficients from full model fit
 #'
@@ -699,6 +825,31 @@ setGeneric("modelFits", function(object) standardGeneric("modelFits"))
 #' @author John Storey, Andrew Bass 
 #' 
 #' @seealso \code{\link{edgeFit}}
+#' 
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # run edgeFit to get model fits
+#' edge_fit <- edgeFit(edge_obj)
+#' 
+#' # extract beta coefficients
+#' beta <- betaCoef(edge_fit)
+#' 
+#' 
 #' 
 #' @keywords betaCoef
 #' 
@@ -714,6 +865,29 @@ setGeneric("betaCoef", function(object) standardGeneric("betaCoef"))
 #' @param object \code{\linkS4class{edgeFit}}
 #' 
 #' @usage sType(object)
+#' 
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # run edgeFit to get model fits
+#' edge_fit <- edgeFit(edge_obj)
+#' 
+#' # extract the statistic type of model fits
+#' stat_type <- sType(edge_fit)
 #' 
 #' @return \code{sType} returns the statistic type- either "odp" or "lrt".
 #'
@@ -738,6 +912,29 @@ setGeneric("sType", function(object) standardGeneric("sType"))
 #' 
 #' @return \code{fitFull} returns a matrix of fitted values from full model.
 #'
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # run edgeFit to get model fits
+#' edge_fit <- edgeFit(edge_obj)
+#' 
+#' # extract fitted values for full model
+#' fitted_full <- fitFull(edge_fit)
+#'
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso \code{\link{edgeFit}}
@@ -756,7 +953,30 @@ setGeneric("fitFull", function(object) standardGeneric("fitFull"))
 #' 
 #' @usage fitNull(object)
 #' 
-#' @return \code{fitFull} returns a matrix of fitted values from null model.
+#' @return \code{fitNull} returns a matrix of fitted values from null model.
+#'
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # run edgeFit to get model fits
+#' edge_fit <- edgeFit(edge_obj)
+#' 
+#' # extract fitted values from null model
+#' fitted_null <- fitNull(edge_fit) 
 #'
 #' @author  John Storey, Andrew Bass
 #' 
@@ -778,6 +998,29 @@ setGeneric("fitNull", function(object) standardGeneric("fitNull"))
 #' 
 #' @return \code{resFull} returns a matrix of residuals from full model.
 #'
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # run edgeFit to get model fits
+#' edge_fit <- edgeFit(edge_obj)
+#' 
+#' # extract out the full residuals from the model fit
+#' res_full <- resFull(edge_fit)
+#'
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso \code{\link{edgeFit}}
@@ -798,6 +1041,28 @@ setGeneric("resFull", function(object) standardGeneric("resFull"))
 #' 
 #' @return \code{resNull} returns a matrix of residuals from null model.
 #'
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # run edgeFit to get model fits
+#' edge_fit <- edgeFit(edge_obj)
+#' 
+#' # extract out the null residuals from the model fits
+#' res_null <- resNull(edge_fit)
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso  \code{\link{edgeFit}}
@@ -814,7 +1079,33 @@ setGeneric("resNull", function(object) standardGeneric("resNull"))
 #' @param object \code{\linkS4class{edgeSet}}
 #' @param \dots additional parameters
 #' 
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # get summary
+#' summary(edge_obj)
+#' 
+#' # run odp and summarize
+#' edge_odp <- odp(edge_obj, bs.its= 20)
+#' summary(edge_odp)
 #' @author John Storey, Andrew Bass
+#' 
+#' @return
+#' Summary of edgeSet object
 #' 
 #' @keywords summary
 #'
@@ -827,6 +1118,28 @@ setGeneric("summary")
 #' 
 #' @param object \code{\linkS4class{edgeSet}}
 #' @param \dots additional parameters
+#' 
+#' @return
+#' show returns an invisible NULL.
+#' @examples
+#' # import data
+#' library(splines)
+#' data(kidney)
+#' sex <- kidney$sex
+#' age <- kidney$age
+#' cov <- data.frame(sex = sex, age = age)
+#' kidexpr <- kidney$kidexpr
+#' 
+#' # create models 
+#' null.model <- ~sex
+#' full.model <- ~sex + ns(age, df = 4)
+#' 
+#' # create edgeSet object from data
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
+#' altMod = full.model)
+#' 
+#' # show method
+#' edge_obj
 #' 
 #' @author John Storey, Andrew Bass
 #' 

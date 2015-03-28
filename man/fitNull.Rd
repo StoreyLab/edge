@@ -14,11 +14,34 @@ fitNull(object)
 \item{object}{\code{\linkS4class{edgeFit}}}
 }
 \value{
-\code{fitFull} returns a matrix of fitted values from null model.
+\code{fitNull} returns a matrix of fitted values from null model.
 }
 \description{
 Access the fitted data from the null model in an
 \code{\linkS4class{edgeFit}} object.
+}
+\examples{
+# import data
+library(splines)
+data(kidney)
+sex <- kidney$sex
+age <- kidney$age
+cov <- data.frame(sex = sex, age = age)
+kidexpr <- kidney$kidexpr
+
+# create models
+null.model <- ~sex
+full.model <- ~sex + ns(age, df = 4)
+
+# create edgeSet object from data
+edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
+altMod = full.model)
+
+# run edgeFit to get model fits
+edge_fit <- edgeFit(edge_obj)
+
+# extract fitted values from null model
+fitted_null <- fitNull(edge_fit)
 }
 \author{
 John Storey, Andrew Bass

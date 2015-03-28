@@ -12,9 +12,9 @@ individual(object)
 
 individual(object) <- value
 
-\S4method{individual}{edgeSet}(object) <- value
-
 \S4method{individual}{edgeSet}(object)
+
+\S4method{individual}{edgeSet}(object) <- value
 }
 \arguments{
 \item{object}{\code{\linkS4class{edgeSet}}}
@@ -28,6 +28,33 @@ in the experiment.
 \description{
 These generic functions access and set the individual slot in
 \code{\linkS4class{edgeSet}}.
+}
+\examples{
+library(splines)
+# import data
+data(endotoxin)
+ind <- endotoxin$ind
+time <- endotoxin$time
+endoexpr <- endotoxin$endoexpr
+class <- endotoxin$class
+cov <- data.frame(individual = ind, time = time, class = class)
+
+# create ExpressionSet object
+pDat <- as(cov, "AnnotatedDataFrame")
+exp_set <- ExpressionSet(assayData = endoexpr, phenoData = pDat)
+
+# formulate null and full models in experiement
+# note: interaction term is a way of taking into account group effects
+mNull <- ~ns(time, df=4, intercept = FALSE)
+mFull <- ~ns(time, df=4, intercept = FALSE) +
+ns(time, df=4, intercept = FALSE):class + class
+
+# create edgeSet object
+edge_obj <- edgeSet(exp_set, full.model = mFull, null.model = mNull,
+individual = ind)
+
+# extract out the individuals factor
+ind_exp <- individual(edge_obj)
 }
 \author{
 John Storey, Andrew Bass

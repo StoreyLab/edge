@@ -18,8 +18,35 @@ summary(object, ...)
 
 \item{\dots}{additional parameters}
 }
+\value{
+Summary of edgeSet object
+}
 \description{
 Summary of edgeFit and edgeSet objects
+}
+\examples{
+# import data
+library(splines)
+data(kidney)
+sex <- kidney$sex
+age <- kidney$age
+cov <- data.frame(sex = sex, age = age)
+kidexpr <- kidney$kidexpr
+
+# create models
+null.model <- ~sex
+full.model <- ~sex + ns(age, df = 4)
+
+# create edgeSet object from data
+edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
+altMod = full.model)
+
+# get summary
+summary(edge_obj)
+
+# run odp and summarize
+edge_odp <- odp(edge_obj, bs.its= 20)
+summary(edge_odp)
 }
 \author{
 John Storey, Andrew Bass

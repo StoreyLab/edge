@@ -12,9 +12,9 @@ qvalueObj(object)
 
 qvalueObj(object) <- value
 
-\S4method{qvalueObj}{edgeSet}(object) <- value
-
 \S4method{qvalueObj}{edgeSet}(object)
+
+\S4method{qvalueObj}{edgeSet}(object) <- value
 }
 \arguments{
 \item{object}{\code{\linkS4class{edgeSet}}}
@@ -27,6 +27,35 @@ qvalueObj(object) <- value
 \description{
 These generic functions access and set the \code{qvalue} object in the
 \code{\linkS4class{edgeSet}} object.
+}
+\examples{
+# import data
+library(splines)
+library(qvalue)
+data(kidney)
+sex <- kidney$sex
+age <- kidney$age
+cov <- data.frame(sex = sex, age = age)
+kidexpr <- kidney$kidexpr
+
+# create models
+null.model <- ~sex
+full.model <- ~sex + ns(age, df = 4)
+
+# create edgeSet object from data
+edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
+altMod = full.model)
+
+# run the odp method
+edge_odp <- odp(edge_obj, bs.its = 20)
+
+# extract out significance results
+qval_obj <- qvalueObj(edge_odp)
+
+# run qvalue and assign it to edgeSet slot
+pvals <- qval_obj$pvalues
+qval_new <- qvalue(pvals, pfdr = TRUE, fdr.level = 0.1)
+qvalueObj(edge_odp) <- qval_new
 }
 \author{
 John Storey, Andrew Bass

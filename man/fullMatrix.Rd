@@ -12,9 +12,9 @@ fullMatrix(object)
 
 fullMatrix(object) <- value
 
-\S4method{fullMatrix}{edgeSet}(object) <- value
-
 \S4method{fullMatrix}{edgeSet}(object)
+
+\S4method{fullMatrix}{edgeSet}(object) <- value
 }
 \arguments{
 \item{object}{\code{\linkS4class{edgeSet}}}
@@ -28,6 +28,26 @@ covariates amd rows are observations}
 \description{
 These generic functions access and set the full matrix for
 \code{\linkS4class{edgeSet}} object.
+}
+\examples{
+# import data
+library(splines)
+data(kidney)
+sex <- kidney$sex
+age <- kidney$age
+cov <- data.frame(sex = sex, age = age)
+kidexpr <- kidney$kidexpr
+
+# create models
+null.model <- ~sex
+full.model <- ~sex + ns(age, df = 4)
+
+# create edgeSet object from data
+edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
+altMod = full.model)
+
+# extract the full model equation as a matrix
+mat_full <- fullMatrix(edge_obj)
 }
 \author{
 Andrew Bass, John Storey

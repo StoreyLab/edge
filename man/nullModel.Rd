@@ -12,9 +12,9 @@ nullModel(object)
 
 nullModel(object) <- value
 
-\S4method{nullModel}{edgeSet}(object) <- value
-
 \S4method{nullModel}{edgeSet}(object)
+
+\S4method{nullModel}{edgeSet}(object) <- value
 }
 \arguments{
 \item{object}{\code{\linkS4class{edgeSet}}}
@@ -27,6 +27,30 @@ nullModel(object) <- value
 \description{
 These generic functions access and set the null model for
 \code{\linkS4class{edgeSet}} object.
+}
+\examples{
+# import data
+library(splines)
+data(kidney)
+sex <- kidney$sex
+age <- kidney$age
+cov <- data.frame(sex = sex, age = age)
+kidexpr <- kidney$kidexpr
+
+# create models
+null.model <- ~sex
+full.model <- ~sex + ns(age, df = 4)
+
+# create edgeSet object from data
+edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
+altMod = full.model)
+
+# extract the null model equation
+mod_null <- nullModel(edge_obj)
+
+# change null model in experiment but must update full model
+nullModel(edge_obj) <- ~1
+fullModel(edge_obj) <- ~1 + ns(age, df=4)
 }
 \author{
 John Storey, Andrew Bass
