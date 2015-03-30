@@ -72,7 +72,7 @@ setMethod("odp",
               set.seed(seed)
             }     
             if (is.null(odp.parms)) {
-              odp.parms <- klClust(object, 
+              odp.parms <- klClust(object,
                                    n.mods = n.mods, ...)
             } else if (sum(!(names(odp.parms) %in% c("mu.full", "sig.full", 
                                                      "mu.null", "sig.null", 
@@ -163,9 +163,11 @@ setMethod("klClust",
 setMethod("klClust", 
           signature = signature(object = "edgeSet", obj.edgeFit = "edgeFit"),
           function(object, obj.edgeFit, n.mods = 50, ...) {
-            mod.member <- klmod(obj.edgeFit,
+            nf <- mod.df(object@full.matrix)
+            nn <- mod.df(object@null.matrix)
+            mod.member <- klmod(obj.edgeFit, nf = nf,
                                 n.mods = n.mods)
-            return(mod.parms(obj.edgeFit, 
+            return(mod.parms(obj.edgeFit, nf = nf, nn=nn,
                              clMembers = mod.member))
           })
 

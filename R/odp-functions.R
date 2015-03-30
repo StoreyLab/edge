@@ -18,15 +18,15 @@ odp.score <- function(s.dat.cl, mu, sigma, null, m, n, cluster) {
   
   # Call to C file to compute ODP score
   scr <- .C("odpScoreCluster", 
-            sumDat = as.numeric(s.dat.cl),
-            mu = as.numeric(mu),
-            sigma = as.numeric(sigma),
+            sumDat = as.double(s.dat.cl),
+            mu = as.double(mu),
+            sigma = as.double(sigma),
             m = as.integer(m),
             n = as.integer(n),
             p = as.integer(p),
             null = as.integer(null),
             cluster = as.integer(cluster),
-            scr = numeric(m))$scr
+            scr = double(m))$scr
   
   return(scr)
 }

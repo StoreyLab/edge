@@ -14,13 +14,14 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
   n.probes <- nrow(obs.fit@res.full)
   null.stat <- matrix(nrow = n.probes,
                       ncol = bs.its)
+  nf <-  mod.df(object@full.matrix)
   sType <- obs.fit@stat.type
   for (i in 1:bs.its) {
     if (verbose) {
       cat("\r", "Null iteration: ", i)
       if (i == bs.its) cat("\n")
     }
-    exprs(object) <- null(obs.fit = obs.fit, 
+    exprs(object) <- null(obs.fit = obs.fit, nf = nf,
                           ind = object@individual)
     null.fit <- edgeFit(object, 
                         stat.type = sType)
@@ -51,7 +52,7 @@ rescale <- function(x, sig) {
   ret <- (x - means) * sig / rowsds + means
   return(ret)
 }
-null <- function(obs.fit, ind) {
+null <- function(obs.fit, nf, ind) {
   # Calculates null data
   #
   # Args:
@@ -80,7 +81,7 @@ null <- function(obs.fit, ind) {
   if (stat.var == "lrt") {
     null.dat <- obs.fit@fit.null + bs.res
   } else {
-    sig1 <- sqrt(rowSums(obs.fit@res.full ^ 2) / (n - ncol(obs.fit@beta.coef)))
+    sig1 <- sqrt(rowSums(obs.fit@res.full ^ 2) / (n - nf))
     bs.res <- rescale(x = bs.res, 
                       sig = sig1)
     null.dat <- obs.fit@fit.null + bs.res

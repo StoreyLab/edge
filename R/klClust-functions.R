@@ -1,4 +1,4 @@
-klmod <- function(obj.edgeFit, n.mods = 50) {
+klmod <- function(obj.edgeFit, nf, n.mods = 50) {
   # Clustering algorithm
   #
   # Args:
@@ -17,13 +17,12 @@ klmod <- function(obj.edgeFit, n.mods = 50) {
     mod.member <- as.factor(1:m)
     return(mod.member)
   }
-  sigma2 <- rowSums(obj.edgeFit@res.full ^ 2) / (n - ncol(obj.edgeFit@beta.coef))
+  sigma2 <- rowSums(obj.edgeFit@res.full ^ 2) / (n - nf)
   int.n.mods <- n.mods
   orig.n.mods <- n.mods
-  
+  set.seed(100)
   int.center <- sample(x = m, 
-                       size = n.mods,
-                       replace = FALSE)    
+                       size = n.mods, replace = FALSE)    
   center.fitFull <- obj.edgeFit@fit.full[int.center, ]
   center.var <- sigma2[int.center]
   
@@ -99,7 +98,7 @@ klmod <- function(obj.edgeFit, n.mods = 50) {
 }
 
 # Clustering parameters
-mod.parms <- function(obj.edgeFit, clMembers) {
+mod.parms <- function(obj.edgeFit, nf, nn, clMembers) {
             # Calculates parameters of interest from clusters
             #
             # Args:
@@ -115,9 +114,8 @@ mod.parms <- function(obj.edgeFit, clMembers) {
             #     clustMembers: members for each gene
             # Initlizations
             n <- ncol(obj.edgeFit@res.full)
-            nf <- ncol(obj.edgeFit@beta.coef)
             varFull <- rowSums(obj.edgeFit@res.full ^ 2) / (n - nf)
-            varNull <- rowSums(obj.edgeFit@res.null ^ 2) / (n - nf)
+            varNull <- rowSums(obj.edgeFit@res.null ^ 2) / (n - nn)
             mod.membership <- clMembers
             n.mods <- length(unique(mod.membership))
             
@@ -160,9 +158,6 @@ kl <- function(temp.center.fitFull, temp.fitFull, center.var, sigma2, n) {
   # Initializations
   m <- length(sigma2)
   n.cluster <- length(center.var)
-  if (!is.loaded("kldistance")) {
-    dyn.load(paste("kldistance", .Platform$dynlib.ext, sep=""))
-  }
   # C function to calculate kl distance
   kldd <- .C("kldistance", 
              centerFit=as.double(temp.center.fitFull),
@@ -175,3 +170,8 @@ kl <- function(temp.center.fitFull, temp.fitFull, center.var, sigma2, n) {
              kldd=double(m * n.cluster))$kldd
   return(kldd)
 }  
+
+mod.df = function(x) {
+  df = try(sum(diag(x%*%solve(t(x)%*%x)%*%t(x))), silent=TRUE)
+  df
+}
