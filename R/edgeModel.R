@@ -160,7 +160,8 @@ edgeStudy = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
   expSet <- new("ExpressionSet")
   pData(expSet) <- data.frame(pdat)
   exprs(expSet) <- as.matrix(data)
-  edgeObj <- edgeSet(expSet, full.model=as.formula(fmod), null.model=as.formula(nmod), individual=ind)
+  edgeObj <- edgeSet(expSet, full.model=as.formula(fmod), 
+                     null.model=as.formula(nmod), individual=ind)
   return(edgeObj)  
 }
 
@@ -171,8 +172,8 @@ edgeStudy = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
 #' 
 #' @param data matrix- Gene expression data.
 #' @param cov data.frame- Biological covariates.
-#' @param altMod formula- Full model of the experiment.
-#' @param nullMod formula- Null model of the experiment. 
+#' @param full.model formula- Full model of the experiment.
+#' @param null.model formula- Null model of the experiment. 
 #' @param ind factor. Individuals sampled in the study.
 #' @return \code{edgeModel} returns an \code{\linkS4class{edgeSet}} object 
 #' with the following slots assigned:
@@ -200,28 +201,29 @@ edgeStudy = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
 #' full.model <- ~sex + ns(age, df=4)
 #' 
 #' # create edgeSet object from data
-#' edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edgeObj <- edgeModel(data = kidexpr, cov = cov, null.model = null.model, 
+#' full.model = full.model)
 #' @name edgeModel
 #' @rdname edgeModel
 #' @seealso \code{\link{edgeSet}}
 #' @author John Storey, Andy Bass 
 #' @aliases edgeModel
 #' @export
-edgeModel <- function(data, cov, altMod = NULL, nullMod = NULL, ind = NULL) {
+edgeModel <- function(data, cov, full.model = NULL, null.model = NULL, 
+                      ind = NULL) {
   n <- ncol(data)
   m <- nrow(data)
   if (!is.matrix(data)) {
     stop("data must be a matrix")
   } else if (!is.data.frame(cov)) {
     stop("cov must be a data frame")
-  } else if (is.null(altMod)) {
+  } else if (is.null(full.model)) {
     stop("need an alternative model")
   }
-  if (is.null(nullMod)) {
-    nullMod <- ~1
+  if (is.null(null.model)) {
+    null.model <- ~1
   }
-  if (!is(altMod, "formula") | !is(nullMod, "formula")) {
+  if (!is(full.model, "formula") | !is(null.model, "formula")) {
     stop("alternative and null models must be formatted as a formula")
   }
 
@@ -229,7 +231,7 @@ edgeModel <- function(data, cov, altMod = NULL, nullMod = NULL, ind = NULL) {
   exprs(expSet) <- data
   pData(expSet) <- cov
 
-  edgeObj <- edgeSet(expSet, full.model = altMod, null.model = nullMod, 
+  edgeObj <- edgeSet(expSet, full.model = full.model, null.model = null.model, 
                      individual = ind)
   return(edgeObj)  
 }

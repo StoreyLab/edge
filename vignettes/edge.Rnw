@@ -136,10 +136,10 @@ library(splines)
 cov <- data.frame(sex = sex, age = age) 
 null_model <- ~sex 
 full_model <- ~sex + ns(age, df=4)
-edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null_model, altMod = full_model)
+edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, full.model = full_model)
 @
 
-The {\tt cov} is a data frame of covariates, the {\tt nullMod} is the null model and the {\tt altMod} is the alternative model. The input {\tt cov} is a data frame with the column names the same as the variables in the alternative and null models.
+The {\tt cov} is a data frame of covariates, the {\tt null.model} is the null model and the {\tt full.model} is the alternative model. The input {\tt cov} is a data frame with the column names the same as the variables in the alternative and null models.
 
 The {\tt odp} or {\tt lrt} function can be used on {\tt edge\_obj} to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
 <<quick_start_eSet, dependson="quick_start_eModel", eval=TRUE, cache=TRUE>>=
@@ -201,10 +201,10 @@ Alternatively, if the user is familiar with their alternative and null models in
 cov <- data.frame(Gender = gibson$gender, Batch = gibson$batch, Location = gibson$location)
 null_model <- ~Gender + Batch
 null_model <- ~Gender + Batch + Location
-edge_obj <- edgeModel(data = gibson$gibexpr, cov = cov, altMod = null_model, nullMod = null_model)
+edge_obj <- edgeModel(data = gibson$gibexpr, cov = cov, full.model = null_model, null.model = null_model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt gender} and {\tt batch} covariates and the alternative model includes the {\tt location} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference between Moroccan Amazigh groups for this particular gene. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt gender} and {\tt batch} covariates and the alternative model includes the {\tt location} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference between Moroccan Amazigh groups for this particular gene. 
 
 The variable {\tt edge\_obj} is an {\tt edgeSet} object that stores all the relevant experimental data. The {\tt edgeSet} object is discussed further in the next section. 
 
@@ -428,10 +428,10 @@ library(splines)
 cov <- data.frame(sex = sex, age = age)
 null_model <- ~sex
 null_model <- ~sex + ns(age, df=4)
-edge_obj <- edgeModel(data = kidexpr, cov = cov, altMod = null_model, nullMod = null_model)
+edge_obj <- edgeModel(data = kidexpr, cov = cov, full.model = null_model, null.model = null_model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the alternative model includes the {\tt age} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in the gene as it ages in the cortex. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the alternative model includes the {\tt age} variable. Therefore, we are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in the gene as it ages in the cortex. 
 
 The variable {\tt edge\_obj} is an {\tt edgeSet} object that stores all the relevant experimental data. The {\tt edgeSet} object is discussed further in the next section. 
 
@@ -648,10 +648,10 @@ See \cite{storey:2005} for how the models in the {\tt endotoxin} experiment are 
 cov <- data.frame(ind = endotoxin$ind, tme = endotoxin$time, grp = endotoxin$class)
 null_model <- ~grp + ns(tme, df = 2, intercept = FALSE)
 null_model <- ~grp + ns(tme, df = 2, intercept = FALSE) + (grp):ns(tme, df = 2, intercept = FALSE)
-edge_obj <- edgeModel(data = endotoxin$endoexpr, cov = cov, altMod = null_model, nullMod = null_model)
+edge_obj <- edgeModel(data = endotoxin$endoexpr, cov = cov, full.model = null_model, null.model = null_model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt altMod} and {\tt nullMod} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene between the endotoxin and the control as time goes on. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the alternative and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the alternative model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene between the endotoxin and the control as time goes on. 
 
 The variable {\tt edge\_obj} is an {\tt edgeSet} object that stores all the relevant experimental data. The {\tt edgeSet} object is discussed further in the next section. 
 
@@ -822,7 +822,7 @@ library(splines)
 cov <- data.frame(sex = sex, age = age)
 null_model <- ~sex
 full_model <- ~sex + ns(age, df=4)
-edge_obj <- edgeModel(data = kidexpr, cov = cov, altMod = full_model, nullMod = null_model)
+edge_obj <- edgeModel(data = kidexpr, cov = cov, full.model = full_model, null.model = null_model)
 @
 
 To find the surrogate variables and add them to the experimental models in {\tt edge\_obj}, use the function {\tt edgeSVA}:
@@ -934,7 +934,7 @@ null_model <- ~1 + sex
 full_model <- ~1 + sex + ns(age, intercept = FALSE, df = 4)
 @
 
-where {\tt nullMod} is the null model and {\tt altMod} is the alternative model. The {\tt sex} covariate is an adjustment variable while {\tt age} is the biological variable of interest. It is important to note that it is necessary to include the adjustment variables in the formulation of the alternative models as done above.
+where {\tt null\_model} is the null model and {\tt full\_model} is the alternative model. The {\tt sex} covariate is an adjustment variable while {\tt age} is the biological variable of interest. It is important to note that it is necessary to include the adjustment variables in the formulation of the alternative models as done above.
 
 Having both {\tt expSet} and the hypothesis models, the function {\tt edgeSet} can then be used to create an {\tt edgeSet} object:
 <<cr_edgeSet, dependson=c("kidneyModel","kidney_expSet")>>==

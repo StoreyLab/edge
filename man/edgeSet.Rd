@@ -40,16 +40,16 @@ cov <- data.frame(sex = sex, age = age)
 kidexpr <- kidney$kidexpr
 
 # create models
-null.model <- ~sex
-full.model <- ~sex + ns(age, df = 4)
+null_model <- ~sex
+full_model <- ~sex + ns(age, df = 4)
 
 # create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
-altMod = full.model)
+edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+full.model = full_model)
 
 # Optionally add individuals to experiment for kidney data not applicable
-edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
-altMod = full.model, ind = factor(1:72))
+edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+full.model = full_model, ind = factor(1:72))
 }
 \author{
 John Storey, Andrew Bass

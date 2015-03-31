@@ -33,11 +33,11 @@ data <- singleChannel$raw.data
 
 # create edgeSet object using edgeModel (can use ExpressionSet see manual)
 cov <- data.frame(grp = singleChannel$bio.var[,2])
-full.model <- ~grp
-null.model <- ~1
+full_model <- ~grp
+null_model <- ~1
 # Create edgeSet object using edgeModel
-edge_obj <- edgeModel(data = data, altMod = full.model,
-nullMod = null.model, cov = cov)
+edge_obj <- edgeModel(data = data, full.model = full_model,
+null.model = null_model, cov = cov)
 
 # Run SNM using intensity-dependent adjustment variable
 edge_snm <- edgeSNM(edge_obj, int.var = singleChannel$int.var,

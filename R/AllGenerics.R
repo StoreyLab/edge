@@ -48,12 +48,12 @@
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #'
 #' # lrt method
 #' edge_lrt <- lrt(edge_obj, nullDistn = "normal")
@@ -127,12 +127,12 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #'
 #' # odp method
 #' edge_odp <- odp(edge_obj, bs.its = 30)
@@ -209,12 +209,12 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #'
 #' # ODP method
 #' edge_clust <- klClust(edge_obj)
@@ -282,12 +282,12 @@ setGeneric("klClust", function(object, obj.edgeFit = NULL, n.mods = 50, ...)
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #'
 #' # retrieve statistics from linear regression for each gene
 #' ef_lrt <- edgeFit(edge_obj, stat.type = "lrt") # lrt method
@@ -341,16 +341,16 @@ setGeneric("edgeFit",
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #'
 #' # Optionally add individuals to experiment for kidney data not applicable
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model, ind = factor(1:72))
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model, ind = factor(1:72))
 #'
 #' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and 
 #' \code{\link{lrt}}
@@ -382,12 +382,12 @@ setGeneric("edgeSet", function(object, full.model, null.model,
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #'
 #' # Run lrt (or odp) and edgeQvalue
 #' edge_lrt <- lrt(edge_obj)
@@ -429,12 +429,12 @@ setGeneric("edgeQvalue", function(object, ...)
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run surrogate variable analysis
 #' edge_sva <- edgeSVA(edge_obj)
@@ -481,11 +481,11 @@ setGeneric("edgeSVA", function(object, ...)
 #' 
 #' # create edgeSet object using edgeModel (can use ExpressionSet see manual)
 #' cov <- data.frame(grp = singleChannel$bio.var[,2])
-#' full.model <- ~grp
-#' null.model <- ~1
+#' full_model <- ~grp
+#' null_model <- ~1
 #' # Create edgeSet object using edgeModel
-#' edge_obj <- edgeModel(data = data, altMod = full.model, 
-#' nullMod = null.model, cov = cov)
+#' edge_obj <- edgeModel(data = data, full.model = full_model, 
+#' null.model = null_model, cov = cov)
 #'
 #' # Run SNM using intensity-dependent adjustment variable
 #' edge_snm <- edgeSNM(edge_obj, int.var = singleChannel$int.var, 
@@ -519,12 +519,12 @@ setGeneric("edgeSNM", function(object, int.var, ...) standardGeneric("edgeSNM"))
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # extract out the full model equation
 #' mod_full <- fullModel(edge_obj)
@@ -573,12 +573,12 @@ setGeneric("fullModel<-", function(object, value) {
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # extract the null model equation
 #' mod_null <- nullModel(edge_obj)
@@ -624,12 +624,12 @@ setGeneric("nullModel<-", function(object, value) {
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # extract the null model as a matrix
 #' mat_null <- nullMatrix(edge_obj)
@@ -674,12 +674,12 @@ setGeneric("nullMatrix<-", function(object, value) {
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # extract the full model equation as a matrix
 #' mat_full <- fullMatrix(edge_obj)
@@ -723,12 +723,12 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run the odp method
 #' edge_odp <- odp(edge_obj, bs.its = 20)
@@ -836,12 +836,12 @@ setGeneric("individual<-", function(object, value) {
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run edgeFit to get model fits
 #' edge_fit <- edgeFit(edge_obj)
@@ -876,12 +876,12 @@ setGeneric("betaCoef", function(object) standardGeneric("betaCoef"))
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run edgeFit to get model fits
 #' edge_fit <- edgeFit(edge_obj)
@@ -922,12 +922,12 @@ setGeneric("sType", function(object) standardGeneric("sType"))
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run edgeFit to get model fits
 #' edge_fit <- edgeFit(edge_obj)
@@ -965,12 +965,12 @@ setGeneric("fitFull", function(object) standardGeneric("fitFull"))
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run edgeFit to get model fits
 #' edge_fit <- edgeFit(edge_obj)
@@ -1008,12 +1008,12 @@ setGeneric("fitNull", function(object) standardGeneric("fitNull"))
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run edgeFit to get model fits
 #' edge_fit <- edgeFit(edge_obj)
@@ -1051,12 +1051,12 @@ setGeneric("resFull", function(object) standardGeneric("resFull"))
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # run edgeFit to get model fits
 #' edge_fit <- edgeFit(edge_obj)
@@ -1089,12 +1089,12 @@ setGeneric("resNull", function(object) standardGeneric("resNull"))
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # get summary
 #' summary(edge_obj)
@@ -1131,12 +1131,12 @@ setGeneric("summary")
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create models 
-#' null.model <- ~sex
-#' full.model <- ~sex + ns(age, df = 4)
+#' null_model <- ~sex
+#' full_model <- ~sex + ns(age, df = 4)
 #' 
 #' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model, 
-#' altMod = full.model)
+#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' full.model = full_model)
 #' 
 #' # show method
 #' edge_obj

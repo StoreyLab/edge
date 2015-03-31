@@ -4,16 +4,16 @@
 \alias{edgeModel}
 \title{Generate alternative and null hypothesis in edgeSet object}
 \usage{
-edgeModel(data, cov, altMod = NULL, nullMod = NULL, ind = NULL)
+edgeModel(data, cov, full.model = NULL, null.model = NULL, ind = NULL)
 }
 \arguments{
 \item{data}{matrix- Gene expression data.}
 
 \item{cov}{data.frame- Biological covariates.}
 
-\item{altMod}{formula- Full model of the experiment.}
+\item{full.model}{formula- Full model of the experiment.}
 
-\item{nullMod}{formula- Null model of the experiment.}
+\item{null.model}{formula- Null model of the experiment.}
 
 \item{ind}{factor. Individuals sampled in the study.}
 }
@@ -48,8 +48,8 @@ null.model <- ~sex
 full.model <- ~sex + ns(age, df=4)
 
 # create edgeSet object from data
-edgeObj <- edgeModel(data = kidexpr, cov = cov, nullMod = null.model,
-altMod = full.model)
+edgeObj <- edgeModel(data = kidexpr, cov = cov, null.model = null.model,
+full.model = full.model)
 }
 \author{
 John Storey, Andy Bass

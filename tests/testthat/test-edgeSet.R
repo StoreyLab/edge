@@ -6,7 +6,8 @@ dat_noise <- matrix(rnorm(3000), ncol = 10)
 cov <- data.frame(grp = c(rep(1, 5), rep(0, 5)))
 
 # make edgeSet object ---------------------------------------------------------
-edge_obj <- edgeModel(dat_noise, cov = cov, altMod = ~1 + grp, nullMod = ~1)
+edge_obj <- edgeModel(dat_noise, cov = cov, full.model = ~1 + grp, 
+                      null.model = ~1)
 
 edge_obj <- lrt(edge_obj)
 

@@ -13,7 +13,8 @@ for (i in 1:nexp) {
   cov <- data.frame(grp = c(rep(1, nobs/2), rep(0, nobs/2)))
   
   # make edgeSet object -------------------------------------------------------
-  edge_obj <- edgeModel(dat_noise, cov = cov, altMod = ~1 + grp, nullMod = ~1)
+  edge_obj <- edgeModel(dat_noise, cov = cov, full.model = ~1 + grp,
+                        null.model = ~1)
   
   # run statistical tests and store p-values ----------------------------------
   edge_lrt <- lrt(edge_obj)
