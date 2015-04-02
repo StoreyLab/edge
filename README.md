@@ -9,7 +9,7 @@ testing using the optimal discovery procedure and generalized likelihood
 ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
 designs. Special functions are available to facilitate the analysis of 
 common study designs, including time course experiments. Other packages 
-such as {\tt snm}, {\tt sva}, and {\tt qvalue} are integrated in dea to provide a wide range 
+such as [snm](http://www.bioconductor.org/packages/release/bioc/html/snm.html), [sva](http://www.bioconductor.org/packages/release/bioc/html/sva.html), and [qvalue](https://github.com/jdstorey/qvalue) are integrated in dea to provide a wide range 
 of tools for gene expression analysis.
 
 
