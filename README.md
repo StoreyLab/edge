@@ -3,13 +3,13 @@ dea: Differential Expression Analysis
 
 Introduction
 ------
-The edge package implements methods for carrying out differential 
+The dea package implements methods for carrying out differential 
 expression analyses of genome-wide gene expression studies. Significance 
 testing using the optimal discovery procedure and generalized likelihood 
 ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
 designs. Special functions are available to facilitate the analysis of 
 common study designs, including time course experiments. Other packages 
-such as {\tt snm}, {\tt sva}, and {\tt qvalue} are integrated in edge to provide a wide range 
+such as {\tt snm}, {\tt sva}, and {\tt qvalue} are integrated in dea to provide a wide range 
 of tools for gene expression analysis.
 
 
@@ -22,27 +22,27 @@ To install, open R and type:
     install_github("jdstorey/qvalue", build_vignettes = TRUE)
     install_github("jdstorey/dea", build_vignettes = TRUE)
     
-Instructions on using edge can be viewed by typing:
+Instructions on using dea can be viewed by typing:
 
     library("dea")
     browseVignettes("dea")
 
 ### Main functions
-* build_models
-* build_study
-* odp
-* lrt
-* fit_models
-* kl_clust
-* apply_sva
-* apply_snm
-* apply_qvalue
+* `build_models`
+* `build_study`
+* `odp`
+* `lrt`
+* `fit_models`
+* `kl_clust`
+* `apply_sva`
+* `apply_snm`
+* `apply_qvalue`
 
 ### Quick start guide
 
 To get started, first load the kidney dataset included in the package: 
 ```R
-library(edge)
+library(dea)
 data(kidney)
 names(kidney)
 ```
