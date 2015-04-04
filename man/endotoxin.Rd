@@ -13,6 +13,9 @@
   individual in the experiment.
   \item time: A vector of length 46 indicating time measurements.
 }}
+\usage{
+data(endotoxin)
+}
 \value{
 endotoxin dataset
 }

@@ -30,6 +30,7 @@ NULL
 #' Blood samples were collected and leukocytes were isolated from the samples 
 #' before infusion and at times 2, 4, 6, 9, 24 hours.  
 #' 
+#' @usage data(endotoxin)
 #' @format
 #' \itemize{
 #'   \item endoexpr: A 500 rows by 46 columns data frame containing expression 
