@@ -81,10 +81,11 @@ NULL
 #' 
 #' # summarize significance results
 #' summary(de_odp)
+#' @name endotoxin
 #' @return endotoxin dataset
 #' @docType data
 #' @keywords datasets
-"endotoxin"
+NULL
 
 #' @title Gene expression dataset from Rodwell et al. (2004)
 #' 
@@ -137,10 +138,11 @@ NULL
 #' 
 #' # summarize significance results
 #' summary(de_odp)
+#' @name kidney
 #' @return kidney dataset
 #' @docType data
 #' @keywords datasets
-"kidney"
+NULL
 
 #' @title Gene expression dataset from Idaghdour et al. (2008)
 #' 
@@ -195,7 +197,8 @@ NULL
 #' 
 #' # summarize significance results
 #' summary(de_odp) 
+#' @name gibson
 #' @return gibson dataset
 #' @docType data
 #' @keywords datasets
-"gibson"
+NULL

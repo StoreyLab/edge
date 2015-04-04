@@ -2,7 +2,7 @@
 % Please edit documentation in R/form_models.R
 \name{build_study}
 \alias{build_study}
-\title{Creates an deSet object and formulates appropriate models for users}
+\title{Creates an deSet object with appropriate models for users}
 \usage{
 build_study(data, grp = NULL, adj.var = NULL, bio.var = NULL,
   tme = NULL, ind = NULL, sampling = c("static", "timecourse"),
@@ -13,7 +13,7 @@ build_study(data, grp = NULL, adj.var = NULL, bio.var = NULL,
 
 \item{grp}{\code{vector}: groups or biological variable in experiment. Optional.}
 
-\item{adj.var}{\code{matrix}: Adjustment Variables. Optional.}
+\item{adj.var}{\code{matrix}: adjustment variables. Optional.}
 
 \item{bio.var}{\code{matrix}: biological variables. Optional.}
 
@@ -25,10 +25,10 @@ individuals. Optional.}
 \item{sampling}{\code{string}: type of experiment. Either "static" or
 "timecourse". Default is "static".}
 
-\item{basis.df}{\code{numeric}: Degree of freedom of the spline fit for time
+\item{basis.df}{\code{numeric}: degree of freedom of the spline fit for time
 course study. Default is 2.}
 
-\item{basis.type}{\code{string}: Either "ncs" or "ps" basis for time course study.
+\item{basis.type}{\code{string}: either "ncs" or "ps" basis for time course study.
 Default is "ncs".}
 }
 \value{
@@ -46,8 +46,8 @@ with the following slots assigned:
 }
 \description{
 \code{build_study} is a function to create a deSet object without an
-ExpressionSet. Alternative and null models are created based on experiment
-type: Either "static" or "timecourse". For more detail refer to the user
+ExpressionSet. Alternative and null models are created based on the experiment
+type: Either "static" or "timecourse". For more details, refer to the user
 manual.
 }
 \examples{

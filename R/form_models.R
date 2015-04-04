@@ -1,8 +1,8 @@
-#' Creates an deSet object and formulates appropriate models for users
+#' Creates an deSet object with appropriate models for users
 #'
 #' \code{build_study} is a function to create a deSet object without an 
-#' ExpressionSet. Alternative and null models are created based on experiment 
-#' type: Either "static" or "timecourse". For more detail refer to the user 
+#' ExpressionSet. Alternative and null models are created based on the experiment 
+#' type: Either "static" or "timecourse". For more details, refer to the user 
 #' manual.  
 #' 
 #' @param data \code{matrix}: gene expression data.
@@ -13,11 +13,11 @@
 #' @param ind \code{factor}: individual factor for repeated observations of the same 
 #' individuals. Optional. 
 #' @param bio.var \code{matrix}: biological variables. Optional.
-#' @param basis.df \code{numeric}: Degree of freedom of the spline fit for time 
+#' @param basis.df \code{numeric}: degree of freedom of the spline fit for time 
 #' course study. Default is 2.
-#' @param basis.type \code{string}: Either "ncs" or "ps" basis for time course study. 
+#' @param basis.type \code{string}: either "ncs" or "ps" basis for time course study. 
 #' Default is "ncs".
-#' @param adj.var \code{matrix}: Adjustment Variables. Optional.
+#' @param adj.var \code{matrix}: adjustment variables. Optional.
 #'  
 #' @return \code{build_study} returns an \code{\linkS4class{deSet}} object 
 #' with the following slots assigned:
@@ -162,14 +162,14 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
   return(edgeObj)  
 }
 
-#' Generate alternative and null hypothesis in deSet object
+#' Generate full and null hypothesis in deSet object
 #'
 #' \code{build_models} is a function to create a deSet without an 
-#' ExpressionSet. Alternative and null models are inputting by users.
+#' ExpressionSet. Full and null models are inputted by users. 
 #' 
 #' @param data \code{matrix}: gene expression data.
 #' @param cov \code{data.frame}: biological covariates.
-#' @param full.model \code{formula}: the adjusment and biological variables of 
+#' @param full.model \code{formula}: the adjustment and the biological variables of 
 #' interest.
 #' @param null.model \code{formula}: the adjustment variables. 
 #' @param ind \code{factor}: individuals sampled in the study.

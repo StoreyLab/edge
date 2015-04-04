@@ -2,7 +2,7 @@
 % Please edit documentation in R/form_models.R
 \name{build_models}
 \alias{build_models}
-\title{Generate alternative and null hypothesis in deSet object}
+\title{Generate full and null hypothesis in deSet object}
 \usage{
 build_models(data, cov, full.model = NULL, null.model = NULL, ind = NULL)
 }
@@ -11,7 +11,7 @@ build_models(data, cov, full.model = NULL, null.model = NULL, ind = NULL)
 
 \item{cov}{\code{data.frame}: biological covariates.}
 
-\item{full.model}{\code{formula}: the adjusment and biological variables of
+\item{full.model}{\code{formula}: the adjustment and the biological variables of
 interest.}
 
 \item{null.model}{\code{formula}: the adjustment variables.}
@@ -33,7 +33,7 @@ with the following slots assigned:
 }
 \description{
 \code{build_models} is a function to create a deSet without an
-ExpressionSet. Alternative and null models are inputting by users.
+ExpressionSet. Full and null models are inputted by users.
 }
 \examples{
 # create ExpressionSet object from kidney dataset
