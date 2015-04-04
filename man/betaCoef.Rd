@@ -3,51 +3,50 @@
 \docType{methods}
 \name{betaCoef}
 \alias{betaCoef}
-\alias{betaCoef,edgeFit-method}
+\alias{betaCoef,deFit-method}
 \title{Regression coefficients from full model fit}
 \usage{
 betaCoef(object)
 
-\S4method{betaCoef}{edgeFit}(object)
+\S4method{betaCoef}{deFit}(object)
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeFit}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deFit}}}
 }
 \value{
 \code{betaCoef} returns the regression coefficients.
 }
 \description{
-Access the full model fitted coefficients of an
-\code{\linkS4class{edgeFit}} object.
+Access the full model fitted coefficients of a
+\code{\linkS4class{deFit}} object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
-# run edgeFit to get model fits
-edge_fit <- edgeFit(edge_obj)
+# run fit_models to get model fits
+de_fit <- fit_models(de_obj)
 
 # extract beta coefficients
-beta <- betaCoef(edge_fit)
+beta <- betaCoef(de_fit)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\link{edgeFit}}
+\code{\link{fit_models}}
 }
-\keyword{betaCoef}
 

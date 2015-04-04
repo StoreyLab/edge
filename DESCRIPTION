@@ -2,7 +2,7 @@ Package: edge
 Type: Package
 Title: Extraction of Differential Gene Expression
 Date: 2015-03-26
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: c(
     person("John D.", "Storey", email = "jstorey@princeton.edu", role = c("aut", "cre")),
     person("Jeffrey T.", "Leek", email = "jleek@jhsph.edu ", role = c("aut")),
@@ -33,8 +33,8 @@ Suggests:
     ggplot2,
     reshape2
 Depends:
-    R(>= 2.10.0),
+    R(>= 3.1.0),
     Biobase
 URL: https://github.com/jdstorey/edge
 LazyData: true
-License: LGPL + file LICENSE
+License: LGPL

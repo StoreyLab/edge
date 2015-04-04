@@ -41,12 +41,11 @@ void odpScoreCluster(double *sumDat, double *mu, double *sigma, int *m, int *n, 
       /* alternative component */
       if(*null == 0) {
          /* middle[j] += 2 * sumDat[i + (l + 1) * *m] * mu[g + l * *m];*/
-		 for(j=0; j< *n ; j++){ 
-			  middle[g] += 2 * sumDat[j + i * *n]*sumDat[j + g * *n + *n * *m];
-		 }
+		    for(j=0; j< *n ; j++){ 
+			    middle[g] += 2 * sumDat[j + i * *n]*sumDat[j + g * *n + *n * *m];
+		    }
   		  /*last[g] += nGrp[l] * mu[g + l * *m] * mu[g + l * *m];*/ 
-		
-		scr[i] += pow(1 / sigma[g], *n) * exp(-0.5 / sigma[g] / sigma[g] * (first[i] - middle[g] + mu[g])) * cluster[g];
+		    scr[i] += pow(1 / sigma[g], *n) * exp(-0.5 / sigma[g] / sigma[g] * (first[i] - middle[g] + mu[g])) * cluster[g];
       } else /* null component */
         scr[i] += pow(1 / sigma[g], *n) * exp(-0.5 / sigma[g] / sigma[g] * first[i]) * cluster[g];
     }

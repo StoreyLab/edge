@@ -3,21 +3,21 @@
 \docType{methods}
 \name{nullModel}
 \alias{nullModel}
-\alias{nullModel,edgeSet-method}
+\alias{nullModel,deSet-method}
 \alias{nullModel<-}
-\alias{nullModel<-,edgeSet-method}
-\title{Null model equation from edgeSet object}
+\alias{nullModel<-,deSet-method}
+\title{Null model equation from deSet object}
 \usage{
 nullModel(object)
 
 nullModel(object) <- value
 
-\S4method{nullModel}{edgeSet}(object)
+\S4method{nullModel}{deSet}(object)
 
-\S4method{nullModel}{edgeSet}(object) <- value
+\S4method{nullModel}{deSet}(object) <- value
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
 \item{value}{\code{formula}: The experiment design for the null model.}
 }
@@ -26,37 +26,37 @@ nullModel(object) <- value
 }
 \description{
 These generic functions access and set the null model for
-\code{\linkS4class{edgeSet}} object.
+\code{\linkS4class{deSet}} object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
 # extract the null model equation
-mod_null <- nullModel(edge_obj)
+mod_null <- nullModel(de_obj)
 
 # change null model in experiment but must update full model
-nullModel(edge_obj) <- ~1
-fullModel(edge_obj) <- ~1 + ns(age, df=4)
+nullModel(de_obj) <- ~1
+fullModel(de_obj) <- ~1 + ns(age, df=4)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\linkS4class{edgeSet}}
+\code{\linkS4class{deSet}}
 }
 \keyword{nullModel,}
 \keyword{nullModel<-}

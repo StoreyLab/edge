@@ -3,21 +3,21 @@
 \docType{methods}
 \name{individual}
 \alias{individual}
-\alias{individual,edgeSet-method}
+\alias{individual,deSet-method}
 \alias{individual<-}
-\alias{individual<-,edgeSet-method}
+\alias{individual<-,deSet-method}
 \title{Individuals sampled in experiment}
 \usage{
 individual(object)
 
 individual(object) <- value
 
-\S4method{individual}{edgeSet}(object)
+\S4method{individual}{deSet}(object)
 
-\S4method{individual}{edgeSet}(object) <- value
+\S4method{individual}{deSet}(object) <- value
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeSet}}}
+\item{object}{\code{\linkS4class{deSet}}}
 
 \item{value}{\code{factor}: individual identifier for each observation}
 }
@@ -27,16 +27,16 @@ in the experiment.
 }
 \description{
 These generic functions access and set the individual slot in
-\code{\linkS4class{edgeSet}}.
+\code{\linkS4class{deSet}}.
 }
 \examples{
 library(splines)
 # import data
 data(endotoxin)
 ind <- endotoxin$ind
-time <- endotoxin$time
-endoexpr <- endotoxin$endoexpr
+time <- endotoxin$t
 class <- endotoxin$class
+endoexpr <- endotoxin$endoexpr
 cov <- data.frame(individual = ind, time = time, class = class)
 
 # create ExpressionSet object
@@ -49,19 +49,17 @@ mNull <- ~ns(time, df=4, intercept = FALSE)
 mFull <- ~ns(time, df=4, intercept = FALSE) +
 ns(time, df=4, intercept = FALSE):class + class
 
-# create edgeSet object
-edge_obj <- edgeSet(exp_set, full.model = mFull, null.model = mNull,
+# create deSet object
+de_obj <- deSet(exp_set, full.model = mFull, null.model = mNull,
 individual = ind)
 
 # extract out the individuals factor
-ind_exp <- individual(edge_obj)
+ind_exp <- individual(de_obj)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\linkS4class{edgeSet}}
+\code{\linkS4class{deSet}}
 }
-\keyword{individual,}
-\keyword{individual<-}
 

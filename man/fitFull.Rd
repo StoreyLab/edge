@@ -3,51 +3,50 @@
 \docType{methods}
 \name{fitFull}
 \alias{fitFull}
-\alias{fitFull,edgeFit-method}
+\alias{fitFull,deFit-method}
 \title{Fitted data from the full model}
 \usage{
 fitFull(object)
 
-\S4method{fitFull}{edgeFit}(object)
+\S4method{fitFull}{deFit}(object)
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeFit}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deFit}}}
 }
 \value{
 \code{fitFull} returns a matrix of fitted values from full model.
 }
 \description{
-Access the fitted data from the full model in an
-\code{\linkS4class{edgeFit}} object.
+Access the fitted data from the full model in a
+\code{\linkS4class{deFit}} object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
-# run edgeFit to get model fits
-edge_fit <- edgeFit(edge_obj)
+# run fit_models to get model fits
+de_fit <- fit_models(de_obj)
 
 # extract fitted values for full model
-fitted_full <- fitFull(edge_fit)
+fitted_full <- fitFull(de_fit)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\link{edgeFit}}
+\code{\link{fit_models}}
 }
-\keyword{fitFull}
 

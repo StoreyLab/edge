@@ -3,7 +3,7 @@ library(edge)
 context("Double ks-test: Uniform p-values")
 
 pvals <- matrix(nrow = 5, ncol = 2)
-nexp <- 5
+nexp <- 1
 ngenes <- 3000
 nobs <- 24
 for (i in 1:nexp) {
@@ -12,15 +12,15 @@ for (i in 1:nexp) {
   dat_noise <- matrix(rnorm(ngenes*nobs), ncol = nobs)
   cov <- data.frame(grp = c(rep(1, nobs/2), rep(0, nobs/2)))
   
-  # make edgeSet object -------------------------------------------------------
-  edge_obj <- edgeModel(dat_noise, cov = cov, full.model = ~1 + grp,
-                        null.model = ~1)
+  # make deSet object -------------------------------------------------------
+  de_obj <- build_models(dat_noise, cov = cov, full.model = ~1 + grp,
+                          null.model = ~1)
   
   # run statistical tests and store p-values ----------------------------------
-  edge_lrt <- lrt(edge_obj)
-  edge_odp <- odp(edge_obj, bs.its = 100, n.mods=50)
-  pvals[i,] <- cbind(ks.test(edge_lrt@qvalueObj$pvalues, "punif")$p.value,
-                     ks.test(edge_odp@qvalueObj$pvalues, "punif")$p.value)
+  de_lrt <- lrt(de_obj)
+  de_odp <- odp(de_obj, bs.its = 100, n.mods=50)
+  pvals[i,] <- cbind(ks.test(de_lrt@qvalueObj$pvalues, "punif")$p.value,
+                     ks.test(de_odp@qvalueObj$pvalues, "punif")$p.value)
 }
 
 lrt_dks <- ks.test(pvals[, 1], "punif")$p

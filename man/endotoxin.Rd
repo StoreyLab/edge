@@ -4,18 +4,20 @@
 \name{endotoxin}
 \alias{endotoxin}
 \title{Gene expression dataset from Calvano et al. (2005) Nature}
-\format{A list called \code{endotoxin} containing:
-\itemize{
+\format{\itemize{
   \item endoexpr: A 500 rows by 46 columns data frame containing expression
   values.
   \item class: A vector of length 46 containing information about which
   individuals were given endotoxin
   \item ind: A vector of length 46 providing indexing measurements for each
-  \item individual: in the experiment.
+  individual in the experiment.
   \item time: A vector of length 46 indicating time measurements.
 }}
 \usage{
-data(endotoxin)
+endotoxin
+}
+\value{
+endotoxin dataset
 }
 \description{
 The data provide gene expression measurements in an endotoxin study where
@@ -32,14 +34,10 @@ library(splines)
 # import data
 data(endotoxin)
 ind <- endotoxin$ind
+class <- endotoxin$class
 time <- endotoxin$time
 endoexpr <- endotoxin$endoexpr
-class <- endotoxin$class
 cov <- data.frame(individual = ind, time = time, class = class)
-
-# create ExpressionSet object
-pDat <- as(cov, "AnnotatedDataFrame")
-exp_set <- ExpressionSet(assayData = endoexpr, phenoData = pDat)
 
 # formulate null and full models in experiement
 # note: interaction term is a way of taking into account group effects
@@ -47,16 +45,16 @@ mNull <- ~ns(time, df=4, intercept = FALSE)
 mFull <- ~ns(time, df=4, intercept = FALSE) +
 ns(time, df=4, intercept = FALSE):class + class
 
-# create edgeSet object
-edge_obj <- edgeSet(exp_set, full.model = mFull, null.model = mNull,
-individual = ind)
+# create deSet object
+de_obj <- build_models(endoexpr, cov = cov, full.model = mFull,
+null.model = mNull, ind = ind)
 
 # Perform ODP/lrt statistic to determine significant genes in study
-edge_odp <- odp(edge_obj, bs.its = 10)
-edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its = 10)
+de_odp <- odp(de_obj, bs.its = 10)
+de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 10)
 
 # summarize significance results
-summary(edge_odp)
+summary(de_odp)
 }
 \references{
 Calvano, S. E., Xiao, W., Richards, D. R., Felciano, R. M., Baker, H.

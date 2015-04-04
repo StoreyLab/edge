@@ -1,15 +1,15 @@
-dea: Differential Expression Analysis
+edge: Extraction of Differential Expression Analysis
 ====
 
 Introduction
 ------
-The dea package implements methods for carrying out differential 
+The edge package implements methods for carrying out differential 
 expression analyses of genome-wide gene expression studies. Significance 
 testing using the optimal discovery procedure and generalized likelihood 
 ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
 designs. Special functions are available to facilitate the analysis of 
 common study designs, including time course experiments. Other packages 
-such as [snm](http://www.bioconductor.org/packages/release/bioc/html/snm.html), [sva](http://www.bioconductor.org/packages/release/bioc/html/sva.html), and [qvalue](https://github.com/jdstorey/qvalue) are integrated in dea to provide a wide range 
+such as [snm](http://www.bioconductor.org/packages/release/bioc/html/snm.html), [sva](http://www.bioconductor.org/packages/release/bioc/html/sva.html), and [qvalue](https://github.com/jdstorey/qvalue) are integrated in edge to provide a wide range 
 of tools for gene expression analysis.
 
 
@@ -20,12 +20,12 @@ To install, open R and type:
     install.packages("devtools")
     library("devtools")
     install_github("jdstorey/qvalue", build_vignettes = TRUE)
-    install_github("jdstorey/dea", build_vignettes = TRUE)
+    install_github("jdstorey/edge", build_vignettes = TRUE)
     
-Instructions on using dea can be viewed by typing:
+Instructions on using edge can be viewed by typing:
 
-    library("dea")
-    browseVignettes("dea")
+    library("edge")
+    browseVignettes("edge")
 
 ### Main functions
 * `build_models`
@@ -42,7 +42,7 @@ Instructions on using dea can be viewed by typing:
 
 To get started, first load the kidney dataset included in the package: 
 ```R
-library(dea)
+library(edge)
 data(kidney)
 names(kidney)
 ```
@@ -55,9 +55,9 @@ sex <- kidney$sex
 
 Once the data has been loaded, the user has two options to create the experimental models: `build_models` or `build_study`. If the experiment models are unknown to the user, `build_study` can be used to create the models:
 ```R
-dea_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse")
-full_model <- fullModel(dea_obj)
-null_model <- nullModel(dea_obj)
+edge_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse")
+full_model <- fullModel(edge_obj)
+null_model <- nullModel(edge_obj)
 ```
 
 The variable `sampling` describes the type of experiment performed, `adj.var` is the adjustment variable and `tme` is the time variable in the study. If the experiment is more complex then type `?build_study` for additional arguments.  
@@ -68,32 +68,32 @@ library(splines)
 cov <- data.frame(sex = sex, age = age) 
 null_model <- ~sex 
 full_model <- ~sex + ns(age, df=4)
-dea_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, full.model = full_model)
+edge_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, full.model = full_model)
 ```
 
 The `cov` is a data frame of covariates, the `null.model` is the null model and the `full.model` is the alternative model. The input `cov` is a data frame with the column names the same as the variables in the alternative and null models. Once the models have been generated, it is often useful to normalize the gene expression matrix using `apply_snm` and/or adjust for unmodelled variables using `apply_sva`.
 ```R
-dea_norm <- apply_snm(dea_obj)
-dea_sva <- apply_sva(dea_norm)
+edge_norm <- apply_snm(edge_obj)
+edge_sva <- apply_sva(edge_norm)
 
 ```
 
-The `odp` or `lrt` function can be used on `dea_sva` to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
+The `odp` or `lrt` function can be used on `edge_sva` to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
 ```R
 # optimal discovery procedure
-dea_odp <- odp(dea_sva, bs.its = 30, verbose=FALSE)
+edge_odp <- odp(edge_sva, bs.its = 30, verbose=FALSE)
 # likelihood ratio test
-dea_lrt <- lrt(dea_sva)
+edge_lrt <- lrt(edge_sva)
 ```
 
 To access the proportional of null p-values estimate, p-values, q-values and local false discovery rates for each gene, use the function `qvalueObj`:
 ```R
-qval_obj <- qvalueObj(dea_odp)
+qval_obj <- qvalueObj(edge_odp)
 qvals <- qval_obj$qvalues
 pvals <- qval_obj$pvalues
 lfdr <- qval_obj$lfdr
 pi0 <- qval_obj$pi0
 ```
 
-See the vignette for more detailed explainations of the dea package.
+See the vignette for more detailed explainations of the edge package.
 

@@ -3,21 +3,21 @@
 \docType{methods}
 \name{qvalueObj}
 \alias{qvalueObj}
-\alias{qvalueObj,edgeSet-method}
+\alias{qvalueObj,deSet-method}
 \alias{qvalueObj<-}
-\alias{qvalueObj<-,edgeSet-method}
+\alias{qvalueObj<-,deSet-method}
 \title{Access/set qvalue slot}
 \usage{
 qvalueObj(object)
 
 qvalueObj(object) <- value
 
-\S4method{qvalueObj}{edgeSet}(object)
+\S4method{qvalueObj}{deSet}(object)
 
-\S4method{qvalueObj}{edgeSet}(object) <- value
+\S4method{qvalueObj}{deSet}(object) <- value
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
 \item{value}{S3 \code{object}: \code{\link{qvalue}} object}
 }
@@ -26,44 +26,42 @@ qvalueObj(object) <- value
 }
 \description{
 These generic functions access and set the \code{qvalue} object in the
-\code{\linkS4class{edgeSet}} object.
+\code{\linkS4class{deSet}} object.
 }
 \examples{
 # import data
 library(splines)
 library(qvalue)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
 # run the odp method
-edge_odp <- odp(edge_obj, bs.its = 20)
+de_odp <- odp(de_obj, bs.its = 20)
 
 # extract out significance results
-qval_obj <- qvalueObj(edge_odp)
+qval_obj <- qvalueObj(de_odp)
 
-# run qvalue and assign it to edgeSet slot
+# run qvalue and assign it to deSet slot
 pvals <- qval_obj$pvalues
 qval_new <- qvalue(pvals, pfdr = TRUE, fdr.level = 0.1)
-qvalueObj(edge_odp) <- qval_new
+qvalueObj(de_odp) <- qval_new
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
 \code{\link{lrt}}, \code{\link{odp}} and
-\code{\linkS4class{edgeSet}}
+\code{\linkS4class{deSet}}
 }
-\keyword{qvalueObj,}
-\keyword{qvalueObj<-}
 

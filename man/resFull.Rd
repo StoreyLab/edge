@@ -3,51 +3,50 @@
 \docType{methods}
 \name{resFull}
 \alias{resFull}
-\alias{resFull,edgeFit-method}
+\alias{resFull,deFit-method}
 \title{Residuals of full model fit}
 \usage{
 resFull(object)
 
-\S4method{resFull}{edgeFit}(object)
+\S4method{resFull}{deFit}(object)
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeFit}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deFit}}}
 }
 \value{
 \code{resFull} returns a matrix of residuals from full model.
 }
 \description{
-Access the fitted full model residuals in an \code{\linkS4class{edgeFit}}
+Access the fitted full model residuals in an \code{\linkS4class{deFit}}
 object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
-# run edgeFit to get model fits
-edge_fit <- edgeFit(edge_obj)
+# run fit_models to get model fits
+de_fit <- fit_models(de_obj)
 
 # extract out the full residuals from the model fit
-res_full <- resFull(edge_fit)
+res_full <- resFull(de_fit)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\link{edgeFit}}
+\code{\link{fit_models}}
 }
-\keyword{resFull}
 

@@ -3,8 +3,8 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
   # lrt Null statistic
   #
   # Args:
-  #   object: class edgeSet
-  #   obs.fit: class edgeFit
+  #   object: class deSet
+  #   obs.fit: class deFit
   #   df: list- d.o.f of null and full models and residuals
   #   bs.its: numeric- number of iterations, default is 100
   #   verbose: string- if TRUE, print iteration number 
@@ -12,9 +12,9 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
   # Returns:
   #   matrix- null statistic 
   n.probes <- nrow(obs.fit@res.full)
+  nf <- mod.df(object@full.matrix)
   null.stat <- matrix(nrow = n.probes,
                       ncol = bs.its)
-  nf <-  mod.df(object@full.matrix)
   sType <- obs.fit@stat.type
   for (i in 1:bs.its) {
     if (verbose) {
@@ -23,11 +23,11 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
     }
     exprs(object) <- null(obs.fit = obs.fit, nf = nf,
                           ind = object@individual)
-    null.fit <- edgeFit(object, 
-                        stat.type = sType)
+    null.fit <- fit_models(object, 
+                           stat.type = sType)
     if (sType == "lrt") {
-      null.stat[, i]  <- lrtStat(resNull = null.fit@res.null, 
-                                 resFull = null.fit@res.full)
+      null.stat[, i]  <-  lrtStat(resNull = null.fit@res.null, 
+                                  resFull = null.fit@res.full)
     }
     else {
       null.stat[, i]  <- odpStat(n.res = null.fit@res.null, 
@@ -88,7 +88,6 @@ null <- function(obs.fit, nf, ind) {
   }
   return(null.dat)
 }
-
 mod.df <- function(x) {
   # Degree of freedom
   #
@@ -102,7 +101,7 @@ mod.df <- function(x) {
 }
 
 createSet <- function(object, nMod=NULL, fMod=NULL, ind=NULL, grp=factor(NA)) {
-  # Create edgeSet
+  # Create deSet
   #  require(splines)
   object@null.model <- nMod
   object@full.model <- fMod

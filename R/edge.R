@@ -22,11 +22,7 @@
 #' @useDynLib edge odpScoreCluster kldistance
 NULL
 
-#' @name endotoxin
 #' @title Gene expression dataset from Calvano et al. (2005) Nature
-#' 
-#' @usage
-#' data(endotoxin)
 #' 
 #' @description
 #' The data provide gene expression measurements in an endotoxin study where 
@@ -35,14 +31,13 @@ NULL
 #' before infusion and at times 2, 4, 6, 9, 24 hours.  
 #' 
 #' @format
-#' A list called \code{endotoxin} containing:
 #' \itemize{
 #'   \item endoexpr: A 500 rows by 46 columns data frame containing expression 
 #'   values.
 #'   \item class: A vector of length 46 containing information about which 
 #'   individuals were given endotoxin
 #'   \item ind: A vector of length 46 providing indexing measurements for each 
-#'   \item individual: in the experiment.
+#'   individual in the experiment.
 #'   \item time: A vector of length 46 indicating time measurements.
 #' }
 #' 
@@ -65,36 +60,32 @@ NULL
 #' # import data
 #' data(endotoxin)
 #' ind <- endotoxin$ind
+#' class <- endotoxin$class
 #' time <- endotoxin$time
 #' endoexpr <- endotoxin$endoexpr
-#' class <- endotoxin$class
 #' cov <- data.frame(individual = ind, time = time, class = class)
-#' 
-#' # create ExpressionSet object
-#' pDat <- as(cov, "AnnotatedDataFrame")
-#' exp_set <- ExpressionSet(assayData = endoexpr, phenoData = pDat)
-#' 
+#'
 #' # formulate null and full models in experiement
 #' # note: interaction term is a way of taking into account group effects
 #' mNull <- ~ns(time, df=4, intercept = FALSE)
 #' mFull <- ~ns(time, df=4, intercept = FALSE) + 
 #' ns(time, df=4, intercept = FALSE):class + class
 #' 
-#' # create edgeSet object
-#' edge_obj <- edgeSet(exp_set, full.model = mFull, null.model = mNull, 
-#' individual = ind)
+#' # create deSet object
+#' de_obj <- build_models(endoexpr, cov = cov, full.model = mFull, 
+#' null.model = mNull, ind = ind)
 #' 
 #' # Perform ODP/lrt statistic to determine significant genes in study
-#' edge_odp <- odp(edge_obj, bs.its = 10)
-#' edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its = 10)
+#' de_odp <- odp(de_obj, bs.its = 10)
+#' de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 10)
 #' 
 #' # summarize significance results
-#' summary(edge_odp)
+#' summary(de_odp)
+#' @return endotoxin dataset
 #' @docType data
 #' @keywords datasets
-NULL
+"endotoxin"
 
-#' @name kidney
 #' @title Gene expression dataset from Rodwell et al. (2004)
 #' 
 #' @usage
@@ -107,7 +98,6 @@ NULL
 #' recorded.
 #' 
 #' @format 
-#' A list called \code{kidney} containing:
 #' \itemize{
 #'   \item kidcov: A 133 rows by 6 columns data frame detailing the study 
 #'   design.
@@ -133,28 +123,25 @@ NULL
 #' @examples
 #' # import data
 #' data(kidney)
-#' 
-#' #interested in cortex samples 
 #' sex <- kidney$sex
 #' age <- kidney$age
 #' kidexpr <- kidney$kidexpr
 #' 
 #' # create model
-#' edge_obj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age, 
+#' de_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, 
 #' sampling = "timecourse", basis.df = 4)
 #' 
 #' # use the ODP/lrt method to determine significant genes
-#' edge_odp <- odp(edge_obj, bs.its=10)
-#' edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its = 10)
+#' de_odp <- odp(de_obj, bs.its=10)
+#' de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 10)
 #' 
 #' # summarize significance results
-#' summary(edge_odp)
-#' 
+#' summary(de_odp)
+#' @return kidney dataset
 #' @docType data
 #' @keywords datasets
-NULL
+"kidney"
 
-#' @name gibson
 #' @title Gene expression dataset from Idaghdour et al. (2008)
 #' 
 #' @usage
@@ -167,7 +154,6 @@ NULL
 #' (AGADIR).
 #' 
 #' @format
-#' A list called \code{gibson} containing:
 #' \itemize{
 #'   \item batch: Batches in experiment.
 #'   \item location: Location of Moroccan Amazigh groups.
@@ -178,7 +164,7 @@ NULL
 #' @note
 #' These data are a random subset of 500 genes from the total number of genes 
 #' in the original data set. To download the full data set, go to 
-#' \url{http://genomine.org/edge/}.
+#' \url{http://genomine.org/de/}.
 #' 
 #' @references
 #' Idaghdour Y, Storey JD, Jadallah S, and Gibson G. (2008) A genome-wide gene 
@@ -188,27 +174,28 @@ NULL
 #' @examples
 #' # import
 #' data(gibson)
+#' batch <- gibson$batch
+#' gender <- gibson$gender
+#' location <- gibson$location
+#' gibexpr <- gibson$gibexpr
+#' cov <- data.frame(Batch = batch, Gender = gender, 
+#' Location = location)
 #' 
-#' # create an ExpressionSet
-#' covar <- data.frame(Batch = gibson$batch, Gender = gibson$gender, 
-#' Location = gibson$location)
-#' pDat <- as(covar, "AnnotatedDataFrame")
-#' expSet <- ExpressionSet(assayData = gibson$gibexpr, phenoData = pDat)
-#' 
-#' # create edgeSet for experiment- static experiment
+#' # create deSet for experiment- static experiment
 #' mNull <- ~Gender + Batch
 #' mFull <- ~Gender + Batch + Location
 #' 
-#' # create edgeSet object
-#' edge_obj <- edgeSet(expSet, full.model = mFull, null.model = mNull)
+#' # create deSet object
+#' de_obj <- build_models(gibexpr, cov = cov, full.model = mFull, 
+#' null.model = mNull)
 #' 
 #' # Perform ODP/lrt statistic to determine significant genes in study
-#' edge_odp <- odp(edge_obj, bs.its = 10)
-#' edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its = 10)
+#' de_odp <- odp(de_obj, bs.its = 10)
+#' de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 10)
 #' 
 #' # summarize significance results
-#' summary(edge_odp) 
-#' 
+#' summary(de_odp) 
+#' @return gibson dataset
 #' @docType data
 #' @keywords datasets
-NULL
+"gibson"

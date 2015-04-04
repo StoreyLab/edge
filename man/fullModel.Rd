@@ -3,60 +3,58 @@
 \docType{methods}
 \name{fullModel}
 \alias{fullModel}
-\alias{fullModel,edgeSet-method}
+\alias{fullModel,deSet-method}
 \alias{fullModel<-}
-\alias{fullModel<-,edgeSet-method}
+\alias{fullModel<-,deSet-method}
 \title{Full model equation}
 \usage{
 fullModel(object)
 
 fullModel(object) <- value
 
-\S4method{fullModel}{edgeSet}(object)
+\S4method{fullModel}{deSet}(object)
 
-\S4method{fullModel}{edgeSet}(object) <- value
+\S4method{fullModel}{deSet}(object) <- value
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
 \item{value}{\code{formula}: The experiment design for the full model.}
 }
 \value{
-\code{fullModel} returns the formula for the full model.
+the formula for the full model.
 }
 \description{
 These generic functions access and set the full model for
-\code{\linkS4class{edgeSet}} object.
+\code{\linkS4class{deSet}} object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
 # extract out the full model equation
-mod_full <- fullModel(edge_obj)
+mod_full <- fullModel(de_obj)
 
 # change the full model in the experiment
-fullModel(edge_obj) <- ~sex + ns(age, df = 2)
+fullModel(de_obj) <- ~sex + ns(age, df = 2)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\linkS4class{edgeSet}}
+\code{\linkS4class{deSet}}
 }
-\keyword{fullModel,}
-\keyword{fullModel<-}
 

@@ -1,6 +1,6 @@
 #' @rdname individual
 setReplaceMethod("individual", 
-                 signature = signature(object = "edgeSet"), 
+                 signature = signature(object = "deSet"), 
                  function(object, value) {
                    object@individual <- value
                    validObject(object)
@@ -8,7 +8,7 @@ setReplaceMethod("individual",
                  })
 #' @rdname qvalueObj
 setReplaceMethod("qvalueObj",
-                 signature = signature(object = "edgeSet"), 
+                 signature = signature(object = "deSet"), 
                  function(object, value) {
                    object@qvalueObj <- value
                    validObject(object)
@@ -16,7 +16,7 @@ setReplaceMethod("qvalueObj",
                  })
 #' @rdname fullModel
 setReplaceMethod("fullModel", 
-                 signature = signature(object = "edgeSet"), 
+                 signature = signature(object = "deSet"), 
                  function(object, value) {
                    object@full.model <- value
                    fullMatrix(object) <- model.matrix(object = value, data = object)
@@ -25,7 +25,7 @@ setReplaceMethod("fullModel",
                  })
 #' @rdname nullModel
 setReplaceMethod("nullModel", 
-                 signature = signature(object = "edgeSet"), 
+                 signature = signature(object = "deSet"), 
                  function(object, value) {
                    object@null.model <- value
                    nullMatrix(object) <- model.matrix(object = value, data = object)
@@ -34,7 +34,7 @@ setReplaceMethod("nullModel",
                  })
 #' @rdname fullMatrix
 setReplaceMethod("fullMatrix",
-                 signature = signature(object = "edgeSet"), 
+                 signature = signature(object = "deSet"), 
                  function(object, value) {
                    object@full.matrix <- value
                    validObject(object)
@@ -42,7 +42,7 @@ setReplaceMethod("fullMatrix",
                  })
 #' @rdname nullMatrix
 setReplaceMethod("nullMatrix", 
-                 signature = signature(object = "edgeSet"), 
+                 signature = signature(object = "deSet"), 
                  function(object, value) {
                    object@null.matrix <- value
                    validObject(object)

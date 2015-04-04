@@ -1,6 +1,6 @@
-setAs("ExpressionSet", "edgeSet", function(from, to) updateOldExpSet(from, "edgeSet"))
+setAs("ExpressionSet", "deSet", function(from, to) updateOldExpSet(from, "deSet"))
 
-updateOldExpSet <- function(from, toClass, ...) {  # to edgeSet
+updateOldExpSet <- function(from, toClass, ...) {  # to deSet
   # new object
   object <- new(toClass,
                 assayData = from@assayData,
@@ -12,14 +12,14 @@ updateOldExpSet <- function(from, toClass, ...) {  # to edgeSet
   validObject(object)
   object
 }
-#' @rdname edgeSet
-setMethod("edgeSet", 
+#' @rdname deSet
+setMethod("deSet", 
           signature = signature(object = "ExpressionSet"),
           function(object,
                    full.model,
                    null.model,
                    individual = NULL) {
-            edgeObj <- as(object, "edgeSet")
+            deObj <- as(object, "deSet")
             # Input checks
             if (!is.null(individual)) {
               if (length(individual) != ncol(exprs(object))) {
@@ -29,7 +29,7 @@ setMethod("edgeSet",
             if (missing(full.model) || missing(null.model)) {
               stop("provide both full and null models")
             } 
-            createSet(edgeObj,
+            createSet(deObj,
                       nMod = null.model, 
                       fMod= full.model, 
                       ind = individual)

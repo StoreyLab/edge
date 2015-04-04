@@ -3,7 +3,7 @@ odp.score <- function(s.dat.cl, mu, sigma, null, m, n, cluster) {
   # Determines ODP score
   #
   # Args:
-  #   s.dat.cl: Matrix of fitted data by full mode
+  #   s.dat.cl: Matrix of fitted data by full model
   #   mu: Vector means of clusters
   #   sigma: Vector of sd of clusters
   #   null: Boolean whether NULL model or not

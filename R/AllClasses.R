@@ -1,11 +1,11 @@
 # Allows to set qvalue to S4 slot
 setOldClass("qvalue")
 
-edgeSetCheck <- function(object) {
-  # Performs checks on an edgeSet object
+deSetCheck <- function(object) {
+  # Performs checks on an deSet object
   # 
   # Args:
-  #   object: edgeSet object
+  #   object: deSet object
   #
   # Returns:
   #   TRUE/FALSE
@@ -40,7 +40,7 @@ edgeSetCheck <- function(object) {
     msg <- paste("full model matrix is near singular.")
     errors <- c(errors, msg)
   }
-  # Dimensionality test- this may be impossible to make in edgeSet
+  # Dimensionality test- this may be impossible to make in deSet
   dataDim <- dim(exprs(object))
   if (dataDim[2] != nrow(xx1)) {
     msg <- paste( "dimension mismatch between full model and assayData.")
@@ -64,11 +64,11 @@ edgeSetCheck <- function(object) {
   }
 }
 
-edgeFitCheck <- function(object) {
-  # Performs checks on an edgeFit object
+deFitCheck <- function(object) {
+  # Performs checks on an deFit object
   # 
   # Args:
-  #   object: edgeFit object
+  #   object: deFit object
   #
   # Returns:
   #   TRUE/FALSE
@@ -103,92 +103,81 @@ edgeFitCheck <- function(object) {
   }
 }
 
-#' edgeSet class
+#' deSet class
 #'
-#' Object inherits slots from an \code{ExpressionSet} object and has 
-#' additional slots for analysis steps. 
+#' The deSet class was designed in order to complement the 
+#' \code{\link{ExpressionSet}} class. While the \code{ExpressionSet} class 
+#' contains information about the experiment, the deSet class 
+#' contains both experimental information and additional information relevant 
+#' to differential expression analysis.
 #'
-#' The edgeSet object is the input for the main functions in the package edge. 
+#' The deSet object is required for the following functions:
+#' 
+#'  @slot null.model \code{formula}: contains the adjustment variables in the 
+#'  experiment.
+#'  @slot full.model \code{formula}: contains the adjustment variables and the 
+#'  biological variables of interest.
+#'  @slot null.matrix \code{matrix}: the null model as a matrix.
+#'  @slot full.matrix \code{matrix}: the full model as a matrix.
+#'  @slot individual \code{factor}: containing information on individuals 
+#'  sampled in the experiment.
+#'  @slot qvalueObj S3 class \code{qvalue}: containing qvalue object. 
+#'  See \code{\link{qvalue}} for additional details.
+#'  
+#' @section Methods:
+#'  \describe{
+#'  \item{\code{as(ExpressionSet, "deSet")}}{Coerce objects of ExpressionSet 
+#'  to deSet}
+#'  \item{\code{lrt(deSet, ...)}}{Likelihood ratio test}
+#'  \item{\code{odp(deSet, ...)}}{Optimal discovery procedure}
+#'  \item{\code{kl_clust(deSet, ...)}}{Clustering parameters for modular 
+#'  optimal discovery procedure (mODP) method}
+#'  \item{\code{fit_models(deSet, ...)}}{Linear regression for genes based on
+#'              null and full models}
+#'  \item{\code{apply_qvalue(deSet, ...)}}{Implements qvalue function on 
+#'  deSet object}
+#'  \item{\code{apply_snm(deSet, ...)}}{Implement surpervised normalization of
+#'   microarrays on gene expression matrix on deSet object.}
+#'  \item{\code{apply_sva(deSet, ...)}}{Estimate surrogate variables and adds 
+#'  them to null/full models in a deSet object}
+#'  \item{\code{fullMatrix(deSet)}}{Access and set full matrix from 
+#'  deSet object}
+#'  \item{\code{nullMatrix(deSet)}}{Access and set null matrix from 
+#'  deSet object}
+#'  \item{\code{fullModel(deSet)}}{Access and set full model from 
+#'  deSet object}
+#'  \item{\code{nullModel(deSet)}}{Access and set null model from 
+#'  deSet object}
+#'  \item{\code{individual(deSet)}}{Set individual slot from deSet object}
+#'  \item{\code{qvalueObj(deSet)}}{Access qvalue object from deSet object. 
+#'  See \code{\link{qvalue}}.}
+#'  \item{\code{validObject(deSet)}}{Check validity of deSet object.}    
+#'  }
+#'  
+#' @note 
 #' The format for the model inputs are
 #' \itemize{
 #'  \item full.model: adjustment variables + biological variables 
 #'  \item null.model: adjustment variables
 #' }
-#' The \code{full.matrix} and \code{null.matrix} are created by the function
-#' \code{\link{edgeSet}}, and the qvalueObj is the slot of interest determined 
-#' by either \code{odp} or \code{lrt} function.  
-#' 
-#'  @slot null.model \code{formula} containing null model.
-#'  @slot full.model \code{formula} containing full model.
-#'  @slot null.matrix \code{matrix} containing null model data.
-#'  @slot full.matrix \code{matrix} containing full model data.
-#'  @slot individual \code{factor} containing information on individuals 
-#'  in experiment.
-#'  @slot qvalueObj S3 class \code{qvalue}: containing qvalue object. 
-#'  See \code{\link{qvalue}}
-#'  
-#' @section Methods:
-#'  \describe{
-#'  \item{\code{as(exprSet, "edgeSet")}}{Coerce objects of ExpressionSet to
-#'    edgeSet}
-#'  \item{\code{lrt(edgeSet, ...)}}{Likelihood ratio test on edgeSet object}
-#'  \item{\code{odp(edgeSet, ...)}}{Optimal discovery procedure on edgeSet 
-#'  object}
-#'  \item{\code{klClust(edgeSet, ...)}}{Clustering parameters for modular 
-#'  optimal discovery procedure (mODP) method}
-#'  \item{\code{edgeFit(edgeSet, ...)}}{Linear regression for genes based on
-#'              null and full models}
-#'  \item{\code{edgeQvalue(edgeSet, ...)}}{Implements qvalue function on 
-#'  edgeSet object}
-#'  \item{\code{edgeSVA(edgeSet, ...)}}{Implement surpervised normalization of
-#'   microarrays on gene expression matrix on edgeSet object.}
-#'  \item{\code{edgeSNM(edgeSet, ...)}}{Estimate surrogate variables and adds 
-#'  them to null/full models from edgeSet object}
-#'  \item{\code{fullMatrix(edgeSet)}}{Access and set full matrix from 
-#'  edgeSet object}
-#'  \item{\code{nullMatrix(edgeSet)}}{Access and set null matrix from 
-#'  edgeSet object}
-#'  \item{\code{fullModel(edgeSet)}}{Access and set full model from 
-#'  edgeSet object}
-#'  \item{\code{nullModel(edgeSet)}}{Access and set null model from 
-#'  edgeSet object}
-#'  \item{\code{models(edgeSet)}}{Access null and full models from 
-#'  edgeSet object}
-#'  \item{\code{individual(edgeSet)}}{Set individual slot from edgeSet object}
-#'  \item{\code{dfModel(edgeSet)}}{Access the degree of freedom for null and 
-#'  full models from edgeSet object}
-#'  \item{\code{qvalueObj(edgeSet)}}{Access qvalue object from edgeSet object. 
-#'  See \code{\link{qvalue}}.}
-#'  \item{\code{validObject(edgeSet)}}{Check validity of edgeSet object.}    
-#'  }
-#'  
-#' @note 
-#' To create an edgeSet object, it is recommended to use the 
-#' \code{\link{edgeSet}} function where the input is an ExpressionSet object, 
-#' full and null models and optionally an individual variable. The edgeSet 
-#' function generates the full and null matrices. Once the edgeSet object is 
-#' created, the user can either use the \code{lrt} or \code{odp} method to 
-#' determine the qvalueObj slot in the edgeSet object. 
+#' The deSet object is created by either using \code{\link{deSet}}, 
+#' \code{\link{build_models}}, or \code{\link{build_study}} functions. 
+#' The qvalueObj is the slot of interest and is determined by either 
+#' using the \code{odp} or the \code{lrt} function.
 #' 
 #' @author
 #' John Storey, Jeffrey Leek, Andrew Bass
 #' 
 #' @seealso 
-#' \code{\link{edgeSet}}
-#' 
-#' @keywords
-#' edgeSet-class
-#'
-#' @rdname 
-#' edgeSet-class
+#' \code{\link{deSet}}
 #' @inheritParams ExpressionSet
-#' @exportClass edgeSet
-setClass("edgeSet", slots=c(null.model = "formula", 
-                            full.model = "formula",
-                            null.matrix = "matrix",
-                            full.matrix = "matrix",
-                            individual = "factor", 
-                            qvalueObj = "qvalue"),
+#' @exportClass deSet
+setClass("deSet", slots=c(null.model = "formula", 
+                          full.model = "formula",
+                          null.matrix = "matrix",
+                          full.matrix = "matrix",
+                          individual = "factor", 
+                          qvalueObj = "qvalue"),
          prototype=prototype(null.model = formula(NULL),
                              full.model = formula(NULL),
                              null.matrix = matrix(),
@@ -196,72 +185,57 @@ setClass("edgeSet", slots=c(null.model = "formula",
                              individual = as.factor(NULL),
                              qvalueObj = structure(list(), 
                                                     class = "qvalue")),
-         validity = edgeSetCheck,
+         validity = deSetCheck,
          contains = c("ExpressionSet"))
 
-#' edgeFit class
+#' deFit class
 #'
-#' Object returned from \code{edgeFit-methods} function containing information 
-#' on the model fits for the experiment. 
-#'
-#' Object contains output from fitting a linear model to each gene for both the
-#' full and null models. The stat.type caneither be "odp" or "lrt" depending on
-#' which statistic is of interest to generate the p-values.
+#' Object returned from \code{\link{fit_models}} function containing information 
+#' regarding the model fits for the experiment. A least-squares algorithm 
+#' is fit to both the full and null models of the experiment. 
 #'
 #' @section Slots: 
 #'  \describe{
-#'    \item{\code{fit.full}:}{Matrix of class \code{"matrix"}, containing 
-#'    fitted values for full model.}
-#'    \item{\code{fit.null}:}{Matrix of class \code{"matrix"}, containing 
-#'    fitted values for null model.}
-#'    \item{\code{res.full}:}{Matrix of class \code{"matrix"}, containing 
-#'    residuals for full model.}
-#'    \item{\code{res.null}:}{Matrix of class \code{"matrix"}, containing 
-#'    residuals for null model.}
-#'    \item{\code{dH.full}:}{Vector of class \code{"vector"}, containing 
-#'    diagonal elements in projection matrix for the full model.}
-#'    \item{\code{beta.coef}:}{Matrix of class \code{"matrix"}, 
-#'    containing linear fitted coefficients for full model.}
-#'    \item{\code{stat.type}:}{String of class \code{"string"}, 
-#'    containing information on the statistic of interest. Currently, the only 
-#'    options are lrt and odp.}
+#'    \item{\code{fit.full}:}{Matrix containing fitted values for full model.}
+#'    \item{\code{fit.null}:}{Matrix containing fitted values for null model.}
+#'    \item{\code{res.full}:}{Matrix containing residuals for full model.}
+#'    \item{\code{res.null}:}{Matrix containing residuals for null model.}
+#'    \item{\code{dH.full}:}{Vector containing diagonal elements in projection 
+#'    matrix for the full model.}
+#'    \item{\code{beta.coef}:}{Matrix containing linear fitted coefficients 
+#'    for full model.}
+#'    \item{\code{stat.type}:}{String containing information on the statistic 
+#'    of interest. Currently, the only options are ``lrt'' and ``odp''.}
 #'  }
 #'  
 #' @section Methods:
 #'  \describe{
-#'  \item{\code{modelFits(edgeFit, ...)}}{Fitted models of edgeFit object}
-#'  \item{\code{fitNull(edgeFit)}}{Fitted data from null model}
-#'  \item{\code{fitFull(edgeFit)}}{Fitted data from full model}
-#'  \item{\code{resNull(edgeFit)}}{Null residuals from null model}
-#'  \item{\code{resFull(edgeFit)}}{Full residuals from full model}
-#'  \item{\code{betaCoef(edgeFit)}}{Beta coefficients in linear model}
-#'  \item{\code{sType(edgeFit)}}{Statistic type for model fitting utilized 
+#'  \item{\code{fitNull(deFit)}}{Access fitted data from null model}
+#'  \item{\code{fitFull(deFit)}}{Access fitted data from full model}
+#'  \item{\code{resNull(deFit)}}{Access null residuals from null model}
+#'  \item{\code{resFull(deFit)}}{Access full residuals from full model}
+#'  \item{\code{betaCoef(deFit)}}{Access beta coefficients in linear model}
+#'  \item{\code{sType(deFit)}}{Access statistic type for model fitting utilized 
 #'  in function}
 #'  }
 #' 
 #' @note 
-#' The edgeFit object can be the inputs for the \code{lrt}, \code{odp} 
-#' and \code{klClust} function but the object is automatically generated if not
-#' specified. 
+#' The deFit object can be used as additional inputs for the \code{lrt}, 
+#' \code{odp} and \code{kl_clust} function but the object is automatically 
+#' generated if not specified. 
 #' 
 #' @author 
 #' John Storey, Jeffrey Leek, Andrew Bass
 #' 
 #' @seealso 
-#' \code{\link{edgeFit}}
+#' \code{\link{build_models}}
 #' 
-#' @keywords 
-#' edgeFit-class
-#' 
-#' @rdname 
-#' edgeFit-class 
-#' 
-#' @exportClass edgeFit
-setClass("edgeFit", slots=c(fit.full = "matrix", 
-                            fit.null = "matrix", 
-                            res.full = "matrix", 
-                            res.null = "matrix",
-                            dH.full = "vector",
-                            beta.coef = "matrix",
-                            stat.type = "character"),
-         validity = edgeFitCheck)
+#' @exportClass deFit
+setClass("deFit", slots=c(fit.full = "matrix", 
+                          fit.null = "matrix", 
+                          res.full = "matrix", 
+                          res.null = "matrix",
+                          dH.full = "vector",
+                          beta.coef = "matrix",
+                          stat.type = "character"),
+         validity = deFitCheck)

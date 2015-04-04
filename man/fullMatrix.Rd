@@ -3,58 +3,56 @@
 \docType{methods}
 \name{fullMatrix}
 \alias{fullMatrix}
-\alias{fullMatrix,edgeSet-method}
+\alias{fullMatrix,deSet-method}
 \alias{fullMatrix<-}
-\alias{fullMatrix<-,edgeSet-method}
+\alias{fullMatrix<-,deSet-method}
 \title{Matrix representation of full model}
 \usage{
 fullMatrix(object)
 
 fullMatrix(object) <- value
 
-\S4method{fullMatrix}{edgeSet}(object)
+\S4method{fullMatrix}{deSet}(object)
 
-\S4method{fullMatrix}{edgeSet}(object) <- value
+\S4method{fullMatrix}{deSet}(object) <- value
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
 \item{value}{\code{matrix}: full model matrix where the columns are the
-covariates amd rows are observations}
+covariates and rows are observations}
 }
 \value{
 \code{fullMatrix} returns the value of the full model matrix.
 }
 \description{
 These generic functions access and set the full matrix for
-\code{\linkS4class{edgeSet}} object.
+\code{\linkS4class{deSet}} object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
 # extract the full model equation as a matrix
-mat_full <- fullMatrix(edge_obj)
+mat_full <- fullMatrix(de_obj)
 }
 \author{
 Andrew Bass, John Storey
 }
 \seealso{
-\code{\linkS4class{edgeSet}}, \code{\link{fullModel}}
+\code{\linkS4class{deSet}}, \code{\link{fullModel}}
 }
-\keyword{fullMatrix,}
-\keyword{fullMatrix<-}
 

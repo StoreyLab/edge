@@ -4,8 +4,7 @@
 \name{gibson}
 \alias{gibson}
 \title{Gene expression dataset from Idaghdour et al. (2008)}
-\format{A list called \code{gibson} containing:
-\itemize{
+\format{\itemize{
   \item batch: Batches in experiment.
   \item location: Location of Moroccan Amazigh groups.
   \item gender: Gender of individuals.
@@ -13,6 +12,9 @@
 }}
 \usage{
 data(gibson)
+}
+\value{
+gibson dataset
 }
 \description{
 The data provide gene expression measurements in peripheral blood leukocyte
@@ -23,31 +25,32 @@ desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban
 \note{
 These data are a random subset of 500 genes from the total number of genes
 in the original data set. To download the full data set, go to
-\url{http://genomine.org/edge/}.
+\url{http://genomine.org/de/}.
 }
 \examples{
 # import
 data(gibson)
+batch <- gibson$batch
+gender <- gibson$gender
+location <- gibson$location
+gibexpr <- gibson$gibexpr
+cov <- data.frame(Batch = batch, Gender = gender,
+Location = location)
 
-# create an ExpressionSet
-covar <- data.frame(Batch = gibson$batch, Gender = gibson$gender,
-Location = gibson$location)
-pDat <- as(covar, "AnnotatedDataFrame")
-expSet <- ExpressionSet(assayData = gibson$gibexpr, phenoData = pDat)
-
-# create edgeSet for experiment- static experiment
+# create deSet for experiment- static experiment
 mNull <- ~Gender + Batch
 mFull <- ~Gender + Batch + Location
 
-# create edgeSet object
-edge_obj <- edgeSet(expSet, full.model = mFull, null.model = mNull)
+# create deSet object
+de_obj <- build_models(gibexpr, cov = cov, full.model = mFull,
+null.model = mNull)
 
 # Perform ODP/lrt statistic to determine significant genes in study
-edge_odp <- odp(edge_obj, bs.its = 10)
-edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its = 10)
+de_odp <- odp(de_obj, bs.its = 10)
+de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 10)
 
 # summarize significance results
-summary(edge_odp)
+summary(de_odp)
 }
 \references{
 Idaghdour Y, Storey JD, Jadallah S, and Gibson G. (2008) A genome-wide gene

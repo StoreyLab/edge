@@ -3,21 +3,21 @@
 \docType{methods}
 \name{sType}
 \alias{sType}
-\alias{sType,edgeFit-method}
+\alias{sType,deFit-method}
 \title{Statistical method used in analysis}
 \usage{
 sType(object)
 
-\S4method{sType}{edgeFit}(object)
+\S4method{sType}{deFit}(object)
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeFit}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deFit}}}
 }
 \value{
 \code{sType} returns the statistic type- either "odp" or "lrt".
 }
 \description{
-Access the statistic type in an \code{\linkS4class{edgeFit}} object. Can
+Access the statistic type in a \code{\linkS4class{deFit}} object. Can
 either be the optimal discovery procedure (odp) or the likelihood ratio
 test (lrt).
 }
@@ -25,31 +25,31 @@ test (lrt).
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
-# run edgeFit to get model fits
-edge_fit <- edgeFit(edge_obj)
+# run fit_models to get model fits
+de_fit <- fit_models(de_obj)
 
 # extract the statistic type of model fits
-stat_type <- sType(edge_fit)
+stat_type <- sType(de_fit)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\link{edgeFit}}, \code{\linkS4class{edgeFit}} and
-\code{\linkS4class{edgeSet}}
+\code{\link{fit_models}}, \code{\linkS4class{deFit}} and
+\code{\linkS4class{deSet}}
 }
 \keyword{sType}
 

@@ -3,21 +3,21 @@
 \docType{methods}
 \name{nullMatrix}
 \alias{nullMatrix}
-\alias{nullMatrix,edgeSet-method}
+\alias{nullMatrix,deSet-method}
 \alias{nullMatrix<-}
-\alias{nullMatrix<-,edgeSet-method}
+\alias{nullMatrix<-,deSet-method}
 \title{Matrix representation of null model}
 \usage{
 nullMatrix(object)
 
 nullMatrix(object) <- value
 
-\S4method{nullMatrix}{edgeSet}(object)
+\S4method{nullMatrix}{deSet}(object)
 
-\S4method{nullMatrix}{edgeSet}(object) <- value
+\S4method{nullMatrix}{deSet}(object) <- value
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
 \item{value}{\code{matrix}: null model matrix where columns are covariates
 and rows are observations}
@@ -27,35 +27,33 @@ and rows are observations}
 }
 \description{
 These generic functions access and set the null matrix for
-\code{\linkS4class{edgeSet}} object.
+\code{\linkS4class{deSet}} object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
 # extract the null model as a matrix
-mat_null <- nullMatrix(edge_obj)
+mat_null <- nullMatrix(de_obj)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\linkS4class{edgeSet}}, \code{\link{fullModel}} and
+\code{\linkS4class{deSet}}, \code{\link{fullModel}} and
 \code{\link{fullModel}}
 }
-\keyword{nullMatrix,}
-\keyword{nullMatrix<-}
 

@@ -3,51 +3,50 @@
 \docType{methods}
 \name{fitNull}
 \alias{fitNull}
-\alias{fitNull,edgeFit-method}
+\alias{fitNull,deFit-method}
 \title{Fitted data from the null model}
 \usage{
 fitNull(object)
 
-\S4method{fitNull}{edgeFit}(object)
+\S4method{fitNull}{deFit}(object)
 }
 \arguments{
-\item{object}{\code{\linkS4class{edgeFit}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deFit}}}
 }
 \value{
 \code{fitNull} returns a matrix of fitted values from null model.
 }
 \description{
 Access the fitted data from the null model in an
-\code{\linkS4class{edgeFit}} object.
+\code{\linkS4class{deFit}} object.
 }
 \examples{
 # import data
 library(splines)
 data(kidney)
-sex <- kidney$sex
 age <- kidney$age
-cov <- data.frame(sex = sex, age = age)
+sex <- kidney$sex
 kidexpr <- kidney$kidexpr
+cov <- data.frame(sex = sex, age = age)
 
 # create models
 null_model <- ~sex
 full_model <- ~sex + ns(age, df = 4)
 
-# create edgeSet object from data
-edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model,
+# create deSet object from data
+de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model,
 full.model = full_model)
 
-# run edgeFit to get model fits
-edge_fit <- edgeFit(edge_obj)
+# run fit_models to get model fits
+de_fit <- fit_models(de_obj)
 
 # extract fitted values from null model
-fitted_null <- fitNull(edge_fit)
+fitted_null <- fitNull(de_fit)
 }
 \author{
 John Storey, Andrew Bass
 }
 \seealso{
-\code{\link{edgeFit}}
+\code{\link{fit_models}}
 }
-\keyword{fitNull}
 

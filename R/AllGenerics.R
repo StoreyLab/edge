@@ -4,83 +4,79 @@
 #' null models to determine p-values (either from a F-distribution or from 
 #' simulated null test statistics). If the null distribution is calculated 
 #' using "bootstrap" then residuals from the alternative model are resampled 
-#' and added to the null model to simulate a distribution where there is no 
-#' differential expression. Otherwise, the default input is "normal" and the 
-#' assumption is that the dataset follows an F-distribution. Note that
-#' if "normal" is chosen then the sum of squares should be statistically 
-#' independent and genes should be normally distributed with the same 
-#' variance. The \code{qvalue} function is used to retrieve the \code{qvalue} 
-#' object. See \code{\link{qvalue}} for more information.
+#' and added to the null model residuals to simulate a distribution where 
+#' there is no differential expression. Otherwise, the default input is 
+#' "normal" and the assumption is that the dataset follows an F-distribution. 
 #'
-#' @param object \code{\linkS4class{edgeSet}}
-#' @param obj.edgeFit edgeFit object- S4 class
-#' @param nullDistn character- either "normal" or "bootstrap", If "normal",
-#' use p-values from ANOVA else if "bootstrap" p-values will
-#' be determined from function \code{\link{empPvals}}.
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
+#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}
+#' @param nullDistn \code{character}: either "normal" or "bootstrap", If "normal" 
+#' then the p-values are calculated using an F-test. If "bootstrap" then 
+#' p-values will be determined from the function \code{\link{empPvals}}.
 #' Default is "normal".
-#' @param bs.its numeric- number of null statistics generated (only applicable
+#' @param bs.its \code{integer}: number of null statistics generated (only applicable
 #' for "bootstrap" method. Default is 100.)
-#' @param seed numeric- set the seed value.
-#' @param verbose boolean- print iterations for bootstrap method. Default is 
-#' TRUE.
-#' @param ... Additional arguments for \code{qvalue} and \code{empPvals} 
+#' @param seed \code{integer}: set the seed value. Default is NULL.
+#' @param verbose \code{boolean}: print iterations for bootstrap method. 
+#' Default is TRUE.
+#' @param ... Additional arguments for \code{\link{apply_qvalue}} and 
+#' \code{\link{empPvals}} 
 #' function.
 #'
-#' @note Fits a linear regression to each gene from function
-#' \code{\link{edgeFit}} and then performs an ANOVA F-test on the null and full
-#' model fits. If nullDistn "bootstrap" is chosen then empirical p-values will 
+#' @note 
+#' Fits the full and null models to each gene using the function
+#' \code{\link{fit_models}} and then performs an ANOVA F-test. If \code{nullDistn} 
+#' "bootstrap" is chosen then empirical p-values will 
 #' be determined from the \code{\link{qvalue}} package (see 
-#' \code{\link{empPvals}}). To retrieve linear regression results, see 
-#' \code{\link{edgeFit}}.
+#' \code{\link{empPvals}}). 
 #'
 #' @author John Storey, Andrew Bass
 #'
-#' @return \code{lrt} returns a \code{\linkS4class{edgeSet}} object with slot 
-#' qvalueObj as a \code{\link{qvalue}} object.
+#' @return \code{lrt} returns a \code{\linkS4class{deSet}} object
 #'
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #'
 #' # lrt method
-#' edge_lrt <- lrt(edge_obj, nullDistn = "normal")
+#' de_lrt <- lrt(de_obj, nullDistn = "normal")
 #'
 #' # to generate p-values from bootstrap
-#' edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its=30)
+#' de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 30)
 #'
-#' # input an edgeFit object but not necessary
-#' edge_fit <- edgeFit(edge_obj, stat.type = "lrt")
-#' edge_lrt <- lrt(edge_obj, obj.edgeFit = edge_fit)
+#' # input an deFit object but not necessary
+#' de_fit <- fit_models(de_obj, stat.type = "lrt")
+#' de_lrt <- lrt(de_obj, de.fit = de_fit)
+#' summary(de_lrt)
 #'
 #' @references
 #' Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance 
 #' analysis of time course microarray experiments. Proceedings of the National 
 #' Academy of Sciences, 102: 12837-12842.
 #'
-#' @seealso \code{\link{edgeSet}}, \code{\link{odp}}, \code{\link{edgeFit}}
+#' @seealso \code{\link{deSet}}, \code{\link{odp}}, \code{\link{build_models}}
 #'
-#' @keywords lrt
-#' @exportMethod lrt
-setGeneric("lrt", function(object, obj.edgeFit,
-                           nullDistn=c("normal","bootstrap"), bs.its=100,
-                           seed=NULL, verbose=TRUE, ...)
+#' @export
+setGeneric("lrt", function(object, de.fit,
+                           nullDistn = c("normal","bootstrap"), bs.its = 100,
+                           seed = NULL, verbose = TRUE, ...)
   standardGeneric("lrt"))
 
 
-#' Performs optimal discovery procedure (ODP) on an edgeSet object
+#' The optimal discovery procedure (ODP) 
 #'
 #' \code{odp} performs the optimal discovery procedure, which is a new 
 #' approach for optimally performing many hypothesis tests in a 
@@ -92,17 +88,19 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' each fixed number of expected false positive results- which is related to
 #' false discovery rates.
 #'
-#' @param object \code{\linkS4class{edgeSet}}
-#' @param obj.edgeFit edgeFit object.
-#' @param odp.parms list- clustering parameters.
-#' @param bs.its numeric- number of null statistics generated. Default
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
+#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}} object.
+#' @param odp.parms \code{list}: parameters for each cluster. See 
+#' \code{\link{kl_clust}}.
+#' @param bs.its \code{numeric}: number of null bootstrap iterations. Default
 #' is 100.
-#' @param n.mods numeric- number of clusters.
-#' @param seed numeric- set the seed value.
-#' @param verbose boolean- print iterations for bootstrap method. Default is 
-#' TRUE.
-#' @param ... Additional arguments for \code{klClust}, \code{qvalue} and 
-#' \code{empPvals} (latter two from \code{qvalue} package).
+#' @param n.mods \code{integer}: number of clusters used in 
+#' \code{\link{kl_clust}}.
+#' @param seed \code{integer}: set the seed value.
+#' @param verbose \code{boolean}: print iterations for bootstrap method. 
+#' Default is TRUE.
+#' @param ... Additional arguments for \code{\link{qvalue}} and 
+#' \code{\link{empPvals}}.
 #'
 #'
 #' @details The full ODP estimator computationally grows quadratically with 
@@ -111,37 +109,39 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #' has been shown to provide results that are very similar. mODP utilizes a 
 #' k-means clustering algorithm where genes are assigned to a cluster based on 
 #' the Kullback-Leiber distance. Each gene is assigned an module-average 
-#' parameter to calculate the ODP score and it reduces the quadratic time to 
-#' linear (See Woo, Leek and Storey 2010).
+#' parameter to calculate the ODP score and it reduces the computations time 
+#' to linear (See Woo, Leek and Storey 2010). If the number of clusters is equal 
+#' to the number of genes then the original ODP is implemented. Depending on 
+#' the number of hypothesis tests, this can take some time.
 #'
-#' @return \code{odp} returns an \code{\linkS4class{edgeSet}} object with slot 
-#' qvalueObj as a \code{\link{qvalue}} object.
+#' @return \code{odp} returns a \code{\linkS4class{deSet}} object
 #'
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
-#' full.model = full_model)
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, 
+#' null.model = null_model, full.model = full_model)
 #'
 #' # odp method
-#' edge_odp <- odp(edge_obj, bs.its = 30)
+#' de_odp <- odp(de_obj, bs.its = 30)
 #'
-#' # input an edgeFit object or ODP parameters... not necessary
-#' edge_fit <- edgeFit(edge_obj, stat.type = "odp")
-#' edge_clust <- klClust(edge_obj, n.mods = 10)
-#' edge_odp <- odp(edge_obj, obj.edgeFit = edge_fit, odp.parms = edge_clust, 
+#' # input a deFit object or ODP parameters ... not necessary
+#' de_fit <- fit_models(de_obj, stat.type = "odp")
+#' de_clust <- kl_clust(de_obj, n.mods = 10)
+#' de_odp <- odp(de_obj, de.fit = de_fit, odp.parms = de_clust, 
 #' bs.its = 30)
+#' summary(de_odp)
 #'
 #' @references
 #' Storey JD. (2007) The optimal discovery procedure: A new approach to 
@@ -157,26 +157,23 @@ setGeneric("lrt", function(object, obj.edgeFit,
 #'
 #' @author John Storey, Jeffrey Leek, Andrew Bass
 #'
-#' @seealso \code{\link{klClust}}, \code{\link{edgeSet}} and 
-#' \code{\link{edgeFit}}
+#' @seealso \code{\link{kl_clust}}, \code{\link{build_models}} and 
+#' \code{\linkS4class{deSet}}
 #'
-#' @keywords odp
-#' @exportMethod odp
-setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
-                           n.mods=50, seed=NULL, verbose=TRUE, ...)
+#' @export
+setGeneric("odp", function(object, de.fit, odp.parms = NULL, bs.its = 100,
+                           n.mods = 50, seed = NULL, verbose = TRUE, ...)
   standardGeneric("odp"))
 
 
 #' Clustering (mODP) method 
 #'
-#' \code{klClust} is an implementation of mODP that assigns genes to modules 
+#' \code{kl_clust} is an implementation of mODP that assigns genes to modules 
 #' based off of the Kullback-Leibler distance.
 #'
-#' @param object \code{\linkS4class{edgeSet}}
-#' @param obj.edgeFit edgeFit object.
-#' @param n.mods numeric- number of clusters.
-#' @param \dots additional parameters
-#'
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
+#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}
+#' @param n.mods \code{integer}: number of clusters.
 #'
 #' @details mODP utilizes a k-means clustering algorithm where genes are 
 #' assigned to a cluster based on the Kullback-Leiber distance. Each gene is 
@@ -186,45 +183,48 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #' feasible.
 #'
 #' @note The results are generally insensitive to the number of modules after a
-#' certain threshold of about n.mods>=50.
-#'
+#' certain threshold of about n.mods>=50. It is recommended that users 
+#' experiments with the number of clusters. If the number of clusters is equal 
+#' to the number of genes then the original ODP is implemented. Depending on 
+#' the number of hypothesis tests, this can take some time.
+#' 
 #' @return
-#' \code{klClust} returns a list:
+#' \code{kl_clust} returns a list:
 #' \itemize{
-#'   \item {mu.full: mean of clusters from full model}
-#'   \item {mu.null: mean of clusters from null model}
-#'   \item {sig.full: sd of clusters from full model}
-#'   \item {sig.null: sd of clusters from null model}
+#'   \item {mu.full: cluster means from full model}
+#'   \item {mu.null: cluster means from null model}
+#'   \item {sig.full: cluster standard deviations from full model}
+#'   \item {sig.null: cluster standard deviations from null model}
 #'   \item {n.per.mod: total members in each cluster}
-#'   \item {clustMembers: members for each gene}
+#'   \item {clustMembers: cluster membership for each gene}
 #' }
 #'
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #'
-#' # ODP method
-#' edge_clust <- klClust(edge_obj)
+#' # mODP method
+#' de_clust <- kl_clust(de_obj)
 #'
-#' # Change the number of clusters
-#' edge_clust <- klClust(edge_obj, n.mods = 10)
+#' # change the number of clusters
+#' de_clust <- kl_clust(de_obj, n.mods = 10)
 #'
-#' # Input an edgeFit object or ODP parameters... not necessary
-#' edge_fit <- edgeFit(edge_obj, stat.type = "odp")
-#' edge_clust <- klClust(edge_obj, obj.edgeFit = edge_fit)
+#' # input a deFit object 
+#' de_fit <- fit_models(de_obj, stat.type = "odp")
+#' de_clust <- kl_clust(de_obj, de.fit = de_fit)
 #'
 #' @references
 #' Storey JD. (2007) The optimal discovery procedure: A new approach to 
@@ -240,58 +240,57 @@ setGeneric("odp", function(object, obj.edgeFit, odp.parms=NULL, bs.its=100,
 #'
 #' @author John Storey, Jeffrey Leek
 #'
-#' @seealso \code{\link{odp}}, \code{\link{edgeSet}} and \code{\link{edgeFit}}
+#' @seealso \code{\link{odp}}, \code{\link{lrt}} and 
+#' \code{\link{fit_models}}
 #'
-#' @keywords klClust
-#' @exportMethod klClust
-setGeneric("klClust", function(object, obj.edgeFit = NULL, n.mods = 50, ...)
-  standardGeneric("klClust"))
+#' @exportMethod kl_clust
+setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
+  standardGeneric("kl_clust"))
 
-#' Least squares model fit for full and null models
+#' Implementation of least squares for full and null models
 #'
-#' \code{edgeFit} fits a linear model to each gene by least squares. Model fits can be either 
-#' statistic type odp (optimal discovery procedure) or lrt 
+#' \code{fit_models} fits a linear model to each gene by least squares. Model fits 
+#' can be either statistic type "odp" (optimal discovery procedure) or "lrt" 
 #' (likelihood ratio test).
 #'
-#' @param object \code{\linkS4class{edgeSet}} object.
-#' @param stat.type character- type of statistic to be used. Either "lrt" or 
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
+#' @param stat.type \code{character}: type of statistic to be used. Either "lrt" or 
 #' "odp". Default is "lrt".
 #'
-#' @details If individual factors exists from \code{edgeSet} object, they are 
+#' @details If individual factors exists from \code{deSet} object, they are 
 #' adjusted from the data to remove the effects from repeated individuals. If 
 #' "odp" method is implemented then the null model is removed from the full 
-#' model (see Storey 2007). The statistic of interest for \code{lrt}, 
-#' \code{odp} and \code{klClust} are the elements of the projection matrix, 
-#' the fitted expression data, the regression coefficients and the residuals 
-#' of the expression data for both the null and full models.
+#' model (see Storey 2007). 
 #'
-#' @note \code{edgeFit} does not have to be called by the user to use
-#' \code{odp}, \code{klClust} or \code{lrt} as it is an optional input and is
-#' implemented in the methods. edgeFit object can be created
-#' by the user if a different statistical implementation is required.
+#' @note \code{fit_models} does not have to be called by the user to use
+#' \code{\link{odp}}, \code{\link{lrt}} or \code{\link{kl_clust}} as it is an 
+#' optional input and is implemented in the methods. The 
+#' \code{\linkS4class{deFit}} object can be created by the user if a different 
+#' statistical implementation is required.
 #'
-#' @return \code{edgeFit} returns an \code{\linkS4class{edgeFit}} object.
+#' @return \code{fit_models} returns an \code{\linkS4class{deFit}} object.
 #'
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #'
 #' # retrieve statistics from linear regression for each gene
-#' ef_lrt <- edgeFit(edge_obj, stat.type = "lrt") # lrt method
-#' ef_odp <- edgeFit(edge_obj, stat.type = "odp") # odp method
+#' fit_lrt <- fit_models(de_obj, stat.type = "lrt") # lrt method
+#' fit_odp <- fit_models(de_obj, stat.type = "odp") # odp method
+#' summary(fit_odp)
 #'
 #' @references
 #' Storey JD. (2007) The optimal discovery procedure: A new approach to 
@@ -306,143 +305,146 @@ setGeneric("klClust", function(object, obj.edgeFit = NULL, n.mods = 50, ...)
 #' analysis of time course microarray experiments. Proceedings of the National 
 #' Academy of Sciences, 102: 12837-12842.
 #'
-#' @seealso \code{\linkS4class{edgeFit}}, \code{\link{odp}} and
+#' @seealso \code{\linkS4class{deFit}}, \code{\link{odp}} and
 #' \code{\link{lrt}}
 #'
 #' @author John Storey
-#' @keywords edgeFit
-#' @exportMethod edgeFit
-setGeneric("edgeFit",
-           function(object, stat.type=c("lrt", "odp")) {
-             standardGeneric("edgeFit")
+#' @exportMethod fit_models
+setGeneric("fit_models",
+           function(object, stat.type = c("lrt", "odp")) {
+             standardGeneric("fit_models")
            })
 
-#' Creates object of class edgeSet
+#' Create an object of class deSet
 #'
-#' Creates an edgeSet object that extends ExpressionSet.
+#' Creates a deSet object that extends the \code{\link{ExpressionSet}} object.
 #'
-#' @param object \code{\link{ExpressionSet}} object
-#' @param full.model formula- full model for experiment data.
-#' @param null.model formula- null model for experiment data.
-#' @param individual factor- information on individuals in experiment.
+#' @param object \code{S4 object}: \code{\link{ExpressionSet}}
+#' @param full.model \code{formula}: full model containing the both the 
+#' adjustment and the biological variables for the experiment.
+#' @param null.model \code{formula}: null model containing the adjustment 
+#' variables for the experiment.
+#' @param individual \code{factor}: information on repeated samples in 
+#' experiment. 
 #'
 #' @note It is essential that the null and full models have the same variables
 #' as the ExpressionSet phenoType column names.
 #'
-#' @return \code{edgeSet} returns an \code{\linkS4class{edgeSet}} object.
+#' @return \code{deSet} returns an \code{\linkS4class{deSet}} object.
 #'
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age) 
+#' pDat <- as(cov, "AnnotatedDataFrame")
+#' exp_set <- ExpressionSet(assayData = kidexpr, phenoData = pDat)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- deSet(exp_set, null.model = null_model, 
 #' full.model = full_model)
 #'
-#' # Optionally add individuals to experiment for kidney data not applicable
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
-#' full.model = full_model, ind = factor(1:72))
-#'
-#' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and 
+#' # optionally add individuals to experiment, in this case there are 36 
+#' # individuals that were sampled twice
+#' indSamples <- as.factor(rep(1:36, each = 2))
+#' de_obj <- deSet(exp_set, null.model = null_model, 
+#' full.model = full_model, ind = indSamples)
+#' summary(de_obj)
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{odp}} and 
 #' \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
-#' @keywords edgeSet
 #'
-#' @exportMethod edgeSet
-setGeneric("edgeSet", function(object, full.model, null.model, 
-                               individual=NULL) standardGeneric("edgeSet"))
+#' @export
+setGeneric("deSet", function(object, full.model, null.model, 
+                             individual=NULL) standardGeneric("deSet"))
 
-#' Estimate the q-values for a given set of p-values in an edgeSet object
+#' Estimate the q-values for a given set of p-values in an deSet object
 #'
-#' Runs \code{qvalue} on edgeSet object based on p-values determined from 
-#' \code{lrt} or \code{odp}
+#' Runs \code{\link{qvalue}} on a deSet object 
 #'
-#' @param object \code{\linkS4class{edgeSet}} object
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param ... Additional arguments for \code{\link{qvalue}}
 #'
-#' @return \code{edgeQvalue} returns an \code{\linkS4class{edgeSet}} object.
+#' @return \code{\linkS4class{deSet}} object.
 #'
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #'
-#' # Run lrt (or odp) and edgeQvalue
-#' edge_lrt <- lrt(edge_obj)
-#' edge_lrt <- edgeQvalue(edge_lrt, fdr.level = 0.05, 
+#' # Run lrt (or odp) and apply_qvalue
+#' de_lrt <- lrt(de_obj)
+#' de_lrt <- apply_qvalue(de_lrt, fdr.level = 0.05, 
 #' pi0.method = "bootstrap", adj=1.2)
-#'
+#' summary(de_lrt)
 #'
 #' @references
 #' Storey JD and Tibshirani R. (2003) Statistical significance for 
 #' genome-wide studies. Proceedings of the National Academy of Sciences, 100: 9440-9445
 #'
-#' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and 
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{odp}} and 
 #' \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
 #'
-#' @keywords edgeQvalue
-#' @exportMethod edgeQvalue
-setGeneric("edgeQvalue", function(object, ...)
-  standardGeneric("edgeQvalue"))
+#' @export
+setGeneric("apply_qvalue", function(object, ...)
+  standardGeneric("apply_qvalue"))
 
 #' Estimate surrogate variables 
 #'
-#' Runs \code{sva} on edgeSet object based on the null and full models in 
-#' \code{\linkS4class{edgeSet}}. See \code{\link{sva}} for additional details.
+#' Runs \code{sva} on a deSet object based on the null and full models in 
+#' \code{\linkS4class{deSet}}. See \code{\link{sva}} for additional details.
 #'
-#' @param object \code{\linkS4class{edgeSet}} object
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}} 
 #' @param ... Additional arguments for \code{\link{sva}}
 #'
-#' @return \code{edgeSVA} returns an \code{\linkS4class{edgeSet}} object.
+#' @return \code{\linkS4class{deSet}} object
 #' 
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
 #' # run surrogate variable analysis
-#' edge_sva <- edgeSVA(edge_obj)
+#' de_sva <- apply_sva(de_obj)
 #' 
 #' # run odp/lrt with surrogate variables added
-#' edge_odp <- odp(edge_sva, bs.its = 30)
-#' summary(edge_odp)
-#' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and 
+#' de_odp <- odp(de_sva, bs.its = 30)
+#' summary(de_odp)
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{odp}} and 
 #' \code{\link{lrt}}
 #'
 #' @references
@@ -451,23 +453,21 @@ setGeneric("edgeQvalue", function(object, ...)
 #' doi:10.1371/journal.pgen.0030161
 #'
 #' @author John Storey, Jeffrey Leek, Andrew Bass
-#' @import sva
-#' @keywords edgeSVA
-#' @exportMethod edgeSVA
-setGeneric("edgeSVA", function(object, ...)
-  standardGeneric("edgeSVA"))
+#' @export
+setGeneric("apply_sva", function(object, ...)
+  standardGeneric("apply_sva"))
 
 #' Supervised normalization of data in edge
 #'
-#' Runs \code{snm} on edgeSet object based on the null and full models in 
-#' \code{\linkS4class{edgeSet}}. See \code{\link{snm}} for additional details 
+#' Runs \code{snm} on a deSet object based on the null and full models in 
+#' \code{\linkS4class{deSet}}. See \code{\link{snm}} for additional details 
 #' on the algorithm.
 #'
-#' @param object \code{\linkS4class{edgeSet}} object
-#' @param int.var data frame- intensity-dependent effects.
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
+#' @param int.var \code{data frame}: intensity-dependent effects.
 #' @param ... Additional arguments for \code{\link{snm}}
 #'
-#' @return \code{edgeSNM} returns an \code{\linkS4class{edgeSet}} object.
+#' @return \code{apply_snm} returns an \code{\linkS4class{deSet}} object.
 #'
 #' @references
 #' Mechan BH, Nelson PS, Storey JD. Supervised normalization of microarrays. 
@@ -475,91 +475,85 @@ setGeneric("edgeSVA", function(object, ...)
 #'
 #' @examples
 #' # simulate data
-#' require(snm)
+#' library(snm)
 #' singleChannel <- sim.singleChannel(12345)
 #' data <- singleChannel$raw.data
 #' 
-#' # create edgeSet object using edgeModel (can use ExpressionSet see manual)
+#' # create deSet object using build_models (can use ExpressionSet see manual)
 #' cov <- data.frame(grp = singleChannel$bio.var[,2])
 #' full_model <- ~grp
 #' null_model <- ~1
-#' # Create edgeSet object using edgeModel
-#' edge_obj <- edgeModel(data = data, full.model = full_model, 
-#' null.model = null_model, cov = cov)
+#' 
+#' # create deSet object using build_models
+#' de_obj <- build_models(data = data, cov = cov, full.model = full_model, 
+#' null.model = null_model)
 #'
-#' # Run SNM using intensity-dependent adjustment variable
-#' edge_snm <- edgeSNM(edge_obj, int.var = singleChannel$int.var, 
+#' # run snm using intensity-dependent adjustment variable
+#' de_snm <- apply_snm(de_obj, int.var = singleChannel$int.var, 
 #' verbose = FALSE, num.iter = 1)
 #'
-#' @seealso \code{\linkS4class{edgeSet}}, \code{\link{odp}} and 
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{odp}} and 
 #' \code{\link{lrt}}
 #'
 #' @author John Storey, Andrew Bass
-#' @keywords edgeSNM
-#' @exportMethod edgeSNM
-setGeneric("edgeSNM", function(object, int.var, ...) standardGeneric("edgeSNM"))
+#' @export
+setGeneric("apply_snm", function(object, int.var, ...) 
+  standardGeneric("apply_snm"))
 
 #' Full model equation 
 #' 
 #' These generic functions access and set the full model for 
-#' \code{\linkS4class{edgeSet}} object.
+#' \code{\linkS4class{deSet}} object.
 #'
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param value \code{formula}: The experiment design for the full model.
-#' 
-#' @usage fullModel(object)
 #' 
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
 #' # extract out the full model equation
-#' mod_full <- fullModel(edge_obj)
+#' mod_full <- fullModel(de_obj)
 #' 
 #' # change the full model in the experiment 
-#' fullModel(edge_obj) <- ~sex + ns(age, df = 2)
+#' fullModel(de_obj) <- ~sex + ns(age, df = 2)
 #' 
 #' 
-#' @return \code{fullModel} returns the formula for the full model.
+#' @return the formula for the full model.
 #'    
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso \code{\linkS4class{edgeSet}}
+#' @seealso \code{\linkS4class{deSet}}
 #' 
-#' @keywords fullModel, fullModel<-
-#' 
-#' 
-#' @exportMethod fullModel
+#' @export
 setGeneric("fullModel", function(object) standardGeneric("fullModel"))
 
 #' @rdname fullModel
-#' @exportMethod fullModel<-
+#' @export
 setGeneric("fullModel<-", function(object, value) {
   standardGeneric("fullModel<-") 
 })
 
-#' Null model equation from edgeSet object
+#' Null model equation from deSet object
 #'
 #' These generic functions access and set the null model for 
-#' \code{\linkS4class{edgeSet}} object.
+#' \code{\linkS4class{deSet}} object.
 #'
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param value \code{formula}: The experiment design for the null model.
-#' 
-#' @usage nullModel(object)
 #' 
 #' @return \code{nullModel} returns the formula for the null model.
 #'
@@ -567,28 +561,28 @@ setGeneric("fullModel<-", function(object, value) {
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
 #' # extract the null model equation
-#' mod_null <- nullModel(edge_obj)
+#' mod_null <- nullModel(de_obj)
 #' 
 #' # change null model in experiment but must update full model
-#' nullModel(edge_obj) <- ~1
-#' fullModel(edge_obj) <- ~1 + ns(age, df=4)
+#' nullModel(de_obj) <- ~1
+#' fullModel(de_obj) <- ~1 + ns(age, df=4)
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso \code{\linkS4class{edgeSet}}
+#' @seealso \code{\linkS4class{deSet}}
 #' 
 #' @keywords nullModel, nullModel<-
 #' 
@@ -596,7 +590,7 @@ setGeneric("fullModel<-", function(object, value) {
 setGeneric("nullModel", function(object) standardGeneric("nullModel"))
 
 #' @rdname nullModel 
-#' @exportMethod nullModel<-
+#' @export
 setGeneric("nullModel<-", function(object, value) {
   standardGeneric("nullModel<-") 
 })
@@ -604,13 +598,11 @@ setGeneric("nullModel<-", function(object, value) {
 #' Matrix representation of null model
 #'
 #' These generic functions access and set the null matrix for 
-#' \code{\linkS4class{edgeSet}} object.
+#' \code{\linkS4class{deSet}} object.
 #'
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param value \code{matrix}: null model matrix where columns are covariates 
 #' and rows are observations
-#' 
-#' @usage nullMatrix(object)
 #' 
 #' @return \code{nullMatrix} returns the value of the null model matrix.
 #'
@@ -618,35 +610,32 @@ setGeneric("nullModel<-", function(object, value) {
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
 #' # extract the null model as a matrix
-#' mat_null <- nullMatrix(edge_obj)
+#' mat_null <- nullMatrix(de_obj)
 #'
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso \code{\linkS4class{edgeSet}}, \code{\link{fullModel}} and 
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{fullModel}} and 
 #' \code{\link{fullModel}}
 #' 
-#' @keywords nullMatrix, nullMatrix<-
-#'   
-#' 
-#' @exportMethod nullMatrix
+#' @export
 setGeneric("nullMatrix", function(object) standardGeneric("nullMatrix"))
 
 #' @rdname nullMatrix
-#' @exportMethod nullMatrix<-
+#' @export
 setGeneric("nullMatrix<-", function(object, value) {
   standardGeneric("nullMatrix<-") 
 })
@@ -654,13 +643,11 @@ setGeneric("nullMatrix<-", function(object, value) {
 #' Matrix representation of full model
 #'
 #' These generic functions access and set the full matrix for 
-#' \code{\linkS4class{edgeSet}} object.
+#' \code{\linkS4class{deSet}} object.
 #'
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param value \code{matrix}: full model matrix where the columns are the 
-#' covariates amd rows are observations
-#' 
-#' @usage fullMatrix(object)
+#' covariates and rows are observations
 #' 
 #' @return \code{fullMatrix} returns the value of the full model matrix.
 #'
@@ -668,33 +655,30 @@ setGeneric("nullMatrix<-", function(object, value) {
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
 #' # extract the full model equation as a matrix
-#' mat_full <- fullMatrix(edge_obj)
+#' mat_full <- fullMatrix(de_obj)
 #' @author Andrew Bass, John Storey
 #' 
-#' @seealso \code{\linkS4class{edgeSet}}, \code{\link{fullModel}}
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{fullModel}}
 #' 
-#' @keywords fullMatrix, fullMatrix<-
-#' 
-#' 
-#' @exportMethod fullMatrix
+#' @export
 setGeneric("fullMatrix", function(object) standardGeneric("fullMatrix"))
 
 #' @rdname fullMatrix
-#' @exportMethod fullMatrix<-
+#' @export
 setGeneric("fullMatrix<-", function(object, value) {
   standardGeneric("fullMatrix<-") 
 })
@@ -703,11 +687,9 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' Access/set qvalue slot
 #'
 #' These generic functions access and set the \code{qvalue} object in the
-#' \code{\linkS4class{edgeSet}} object.
-#'
-#' @usage qvalueObj(object)
+#' \code{\linkS4class{deSet}} object.
 #' 
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param value S3 \code{object}: \code{\link{qvalue}} object
 #' 
 #' @return  \code{qvalueObj} returns a \code{\link{qvalue}} object.
@@ -717,43 +699,40 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' library(splines)
 #' library(qvalue)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
 #' # run the odp method
-#' edge_odp <- odp(edge_obj, bs.its = 20)
+#' de_odp <- odp(de_obj, bs.its = 20)
 #' 
 #' # extract out significance results
-#' qval_obj <- qvalueObj(edge_odp)
+#' qval_obj <- qvalueObj(de_odp)
 #' 
-#' # run qvalue and assign it to edgeSet slot
+#' # run qvalue and assign it to deSet slot
 #' pvals <- qval_obj$pvalues
 #' qval_new <- qvalue(pvals, pfdr = TRUE, fdr.level = 0.1)
-#' qvalueObj(edge_odp) <- qval_new
+#' qvalueObj(de_odp) <- qval_new
 #'  
 #' @author John Storey, Andrew Bass
 #' 
 #' @seealso \code{\link{lrt}}, \code{\link{odp}} and 
-#' \code{\linkS4class{edgeSet}}
+#' \code{\linkS4class{deSet}}
 #' 
-#' @keywords qvalueObj, qvalueObj<-
-#'  
-#' 
-#' @exportMethod qvalueObj                
+#' @export                
 setGeneric("qvalueObj", function(object) standardGeneric("qvalueObj"))
 
 #' @rdname qvalueObj
-#' @exportMethod qvalueObj<-
+#' @export
 setGeneric("qvalueObj<-", function(object, value) {
   standardGeneric("qvalueObj<-") 
 })                      
@@ -761,11 +740,9 @@ setGeneric("qvalueObj<-", function(object, value) {
 #' Individuals sampled in experiment
 #'
 #' These generic functions access and set the individual slot in 
-#' \code{\linkS4class{edgeSet}}.
-#'
-#' @usage individual(object)
+#' \code{\linkS4class{deSet}}.
 #' 
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{\linkS4class{deSet}}
 #' @param value \code{factor}: individual identifier for each observation
 #' 
 #' @return \code{individual} returns information regarding individuals 
@@ -776,9 +753,9 @@ setGeneric("qvalueObj<-", function(object, value) {
 #' # import data
 #' data(endotoxin)
 #' ind <- endotoxin$ind
-#' time <- endotoxin$time
-#' endoexpr <- endotoxin$endoexpr
+#' time <- endotoxin$t
 #' class <- endotoxin$class
+#' endoexpr <- endotoxin$endoexpr
 #' cov <- data.frame(individual = ind, time = time, class = class)
 #' 
 #' # create ExpressionSet object
@@ -791,110 +768,102 @@ setGeneric("qvalueObj<-", function(object, value) {
 #' mFull <- ~ns(time, df=4, intercept = FALSE) + 
 #' ns(time, df=4, intercept = FALSE):class + class
 #' 
-#' # create edgeSet object
-#' edge_obj <- edgeSet(exp_set, full.model = mFull, null.model = mNull, 
+#' # create deSet object
+#' de_obj <- deSet(exp_set, full.model = mFull, null.model = mNull, 
 #' individual = ind)
 #' 
 #' # extract out the individuals factor
-#' ind_exp <- individual(edge_obj)
+#' ind_exp <- individual(de_obj)
 #' 
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso \code{\linkS4class{edgeSet}}
+#' @seealso \code{\linkS4class{deSet}}
 #' 
-#' @keywords individual, individual<-
-#' 
-#' @exportMethod individual
+#' @export
 setGeneric("individual", function(object) standardGeneric("individual"))
 
 #' @rdname individual
-#' @exportMethod individual<-
+#' @export
 setGeneric("individual<-", function(object, value) {
   standardGeneric("individual<-") 
 })  
 
 #' Regression coefficients from full model fit
 #'
-#' Access the full model fitted coefficients of an 
-#' \code{\linkS4class{edgeFit}} object.
+#' Access the full model fitted coefficients of a
+#' \code{\linkS4class{deFit}} object.
 #'
-#' @param object \code{\linkS4class{edgeFit}}
+#' @param object \code{S4 object}: \code{\linkS4class{deFit}}
 #' 
 #' @return \code{betaCoef} returns the regression coefficients.
 #'
 #' @author John Storey, Andrew Bass 
 #' 
-#' @seealso \code{\link{edgeFit}}
+#' @seealso \code{\link{fit_models}}
 #' 
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
-#' # run edgeFit to get model fits
-#' edge_fit <- edgeFit(edge_obj)
+#' # run fit_models to get model fits
+#' de_fit <- fit_models(de_obj)
 #' 
 #' # extract beta coefficients
-#' beta <- betaCoef(edge_fit)
+#' beta <- betaCoef(de_fit)
 #' 
-#' 
-#' 
-#' @keywords betaCoef
-#' 
-#' @exportMethod betaCoef
+#' @export
 setGeneric("betaCoef", function(object) standardGeneric("betaCoef"))
 
 #' Statistical method used in analysis
 #'
-#' Access the statistic type in an \code{\linkS4class{edgeFit}} object. Can 
+#' Access the statistic type in a \code{\linkS4class{deFit}} object. Can 
 #' either be the optimal discovery procedure (odp) or the likelihood ratio 
 #' test (lrt).
 #'
-#' @param object \code{\linkS4class{edgeFit}}
-#' 
-#' @usage sType(object)
+#' @param object \code{S4 object}: \code{\linkS4class{deFit}}
 #' 
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
-#' # run edgeFit to get model fits
-#' edge_fit <- edgeFit(edge_obj)
+#' # run fit_models to get model fits
+#' de_fit <- fit_models(de_obj)
 #' 
 #' # extract the statistic type of model fits
-#' stat_type <- sType(edge_fit)
+#' stat_type <- sType(de_fit)
 #' 
 #' @return \code{sType} returns the statistic type- either "odp" or "lrt".
 #'
 #' @author John Storey, Andrew Bass 
 #' 
-#' @seealso \code{\link{edgeFit}}, \code{\linkS4class{edgeFit}} and 
-#' \code{\linkS4class{edgeSet}}
+#' @seealso \code{\link{fit_models}}, \code{\linkS4class{deFit}} and 
+#' \code{\linkS4class{deSet}}
 #' 
 #' @keywords sType
 #' 
@@ -903,10 +872,10 @@ setGeneric("sType", function(object) standardGeneric("sType"))
 
 #' Fitted data from the full model 
 #'
-#' Access the fitted data from the full model in an 
-#' \code{\linkS4class{edgeFit}} object.
+#' Access the fitted data from the full model in a 
+#' \code{\linkS4class{deFit}} object.
 #'
-#' @param object \code{\linkS4class{edgeFit}}
+#' @param object \code{S4 object}: \code{\linkS4class{deFit}}
 #'  
 #' @usage fitFull(object)
 #' 
@@ -916,40 +885,38 @@ setGeneric("sType", function(object) standardGeneric("sType"))
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
-#' # run edgeFit to get model fits
-#' edge_fit <- edgeFit(edge_obj)
+#' # run fit_models to get model fits
+#' de_fit <- fit_models(de_obj)
 #' 
 #' # extract fitted values for full model
-#' fitted_full <- fitFull(edge_fit)
+#' fitted_full <- fitFull(de_fit)
 #'
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso \code{\link{edgeFit}}
+#' @seealso \code{\link{fit_models}}
 #' 
-#' @keywords fitFull
-#' 
-#' @exportMethod fitFull
+#' @export
 setGeneric("fitFull", function(object) standardGeneric("fitFull"))
 
 #' Fitted data from the null model
 #'
 #' Access the fitted data from the null model in an 
-#' \code{\linkS4class{edgeFit}} object.
+#' \code{\linkS4class{deFit}} object.
 #'
-#' @param object \code{\linkS4class{edgeFit}}
+#' @param object \code{S4 object}: \code{\linkS4class{deFit}}
 #' 
 #' @usage fitNull(object)
 #' 
@@ -959,40 +926,38 @@ setGeneric("fitFull", function(object) standardGeneric("fitFull"))
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
-#' # run edgeFit to get model fits
-#' edge_fit <- edgeFit(edge_obj)
+#' # run fit_models to get model fits
+#' de_fit <- fit_models(de_obj)
 #' 
 #' # extract fitted values from null model
-#' fitted_null <- fitNull(edge_fit) 
+#' fitted_null <- fitNull(de_fit) 
 #'
 #' @author  John Storey, Andrew Bass
 #' 
-#' @seealso \code{\link{edgeFit}}
+#' @seealso \code{\link{fit_models}}
 #' 
-#' @keywords fitNull
-#' 
-#' @exportMethod fitNull  
+#' @export
 setGeneric("fitNull", function(object) standardGeneric("fitNull"))
 
 #' Residuals of full model fit
 #'
-#' Access the fitted full model residuals in an \code{\linkS4class{edgeFit}} 
+#' Access the fitted full model residuals in an \code{\linkS4class{deFit}} 
 #' object.
 #'
-#' @param object \code{\linkS4class{edgeFit}}
+#' @param object \code{S4 object}: \code{\linkS4class{deFit}}
 #' 
 #' @usage resFull(object)
 #' 
@@ -1002,40 +967,38 @@ setGeneric("fitNull", function(object) standardGeneric("fitNull"))
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
-#' 
-#' # run edgeFit to get model fits
-#' edge_fit <- edgeFit(edge_obj)
+#'
+#' # run fit_models to get model fits
+#' de_fit <- fit_models(de_obj)
 #' 
 #' # extract out the full residuals from the model fit
-#' res_full <- resFull(edge_fit)
+#' res_full <- resFull(de_fit)
 #'
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso \code{\link{edgeFit}}
+#' @seealso \code{\link{fit_models}}
 #' 
-#' @keywords resFull
-#' 
-#' @exportMethod resFull
+#' @export
 setGeneric("resFull", function(object) standardGeneric("resFull"))
 
 #' Residuals of null model fit
 #'
-#' Access the fitted null model residuals in an \code{\linkS4class{edgeFit}} 
+#' Access the fitted null model residuals in an \code{\linkS4class{deFit}} 
 #' object.
 #'
-#' @param object \code{\linkS4class{edgeFit}}
+#' @param object \code{S4 object}: \code{\linkS4class{deFit}}
 #' 
 #' @usage resNull(object)
 #' 
@@ -1045,104 +1008,105 @@ setGeneric("resFull", function(object) standardGeneric("resFull"))
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
-#' # run edgeFit to get model fits
-#' edge_fit <- edgeFit(edge_obj)
+#' # run fit_models to get model fits
+#' de_fit <- fit_models(de_obj)
 #' 
 #' # extract out the null residuals from the model fits
-#' res_null <- resNull(edge_fit)
+#' res_null <- resNull(de_fit)
 #' @author John Storey, Andrew Bass
 #' 
-#' @seealso  \code{\link{edgeFit}}
+#' @seealso  \code{\link{fit_models}}
 #' 
-#' @keywords  resNull
-#' 
-#' @exportMethod resNull 
+#' @export 
 setGeneric("resNull", function(object) standardGeneric("resNull"))
 
-#' Summary for edge objects
+#' Summary of deFit and deSet
 #'
-#' Summary of edgeFit and edgeSet objects
+#' Summary of deFit and deSet objects
 #' 
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param \dots additional parameters
 #' 
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
 #' # get summary
-#' summary(edge_obj)
+#' summary(de_obj)
 #' 
 #' # run odp and summarize
-#' edge_odp <- odp(edge_obj, bs.its= 20)
-#' summary(edge_odp)
+#' de_odp <- odp(de_obj, bs.its= 20)
+#' summary(de_odp)
 #' @author John Storey, Andrew Bass
 #' 
 #' @return
-#' Summary of edgeSet object
+#' Summary of deSet object
 #' 
 #' @keywords summary
 #'
 #' @export summary
 setGeneric("summary")
 
-#' Efficient printing of edge object
+#' Show function for deFit and deSet
 #'
-#' Printing method
+#' Show function for deFit and deSet objects
 #' 
-#' @param object \code{\linkS4class{edgeSet}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param \dots additional parameters
 #' 
-#' @return
-#' show returns an invisible NULL.
 #' @examples
 #' # import data
 #' library(splines)
 #' data(kidney)
-#' sex <- kidney$sex
 #' age <- kidney$age
-#' cov <- data.frame(sex = sex, age = age)
+#' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
+#' cov <- data.frame(sex = sex, age = age)
 #' 
 #' # create models 
 #' null_model <- ~sex
 #' full_model <- ~sex + ns(age, df = 4)
 #' 
-#' # create edgeSet object from data
-#' edge_obj <- edgeModel(data = kidexpr, cov = cov, null.model = null_model, 
+#' # create deSet object from data
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, 
 #' full.model = full_model)
 #' 
-#' # show method
-#' edge_obj
+#' # get summary
+#' summary(de_obj)
 #' 
+#' # run odp and summarize
+#' de_odp <- odp(de_obj, bs.its= 20)
+#' de_odp
 #' @author John Storey, Andrew Bass
 #' 
-#' @keywords show
-#' @export show
+#' @return
+#' Nothing of interest
+#' 
+#' @export
 setGeneric("show")

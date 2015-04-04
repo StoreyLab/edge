@@ -4,8 +4,7 @@
 \name{kidney}
 \alias{kidney}
 \title{Gene expression dataset from Rodwell et al. (2004)}
-\format{A list called \code{kidney} containing:
-\itemize{
+\format{\itemize{
   \item kidcov: A 133 rows by 6 columns data frame detailing the study
   design.
   \item kidexpr: A 500 rows by 133 columns matrix of gene expression values,
@@ -18,6 +17,9 @@
 }}
 \usage{
 data(kidney)
+}
+\value{
+kidney dataset
 }
 \description{
 Gene expression measurements from kidney samples were obtained from 72
@@ -34,22 +36,20 @@ probe-sets in the original data set. To download the full data set, go to
 \examples{
 # import data
 data(kidney)
-
-#interested in cortex samples
 sex <- kidney$sex
 age <- kidney$age
 kidexpr <- kidney$kidexpr
 
 # create model
-edge_obj <- edgeStudy(data = kidexpr, adj.var = sex, tme = age,
+de_obj <- build_study(data = kidexpr, adj.var = sex, tme = age,
 sampling = "timecourse", basis.df = 4)
 
 # use the ODP/lrt method to determine significant genes
-edge_odp <- odp(edge_obj, bs.its=10)
-edge_lrt <- lrt(edge_obj, nullDistn = "bootstrap", bs.its = 10)
+de_odp <- odp(de_obj, bs.its=10)
+de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 10)
 
 # summarize significance results
-summary(edge_odp)
+summary(de_odp)
 }
 \references{
 Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance
