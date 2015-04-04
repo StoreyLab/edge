@@ -1,40 +1,42 @@
-Package: edge
-Type: Package
-Title: Extraction of Differential Gene Expression
-Date: 2015-03-26
-Version: 0.99.2
-Authors@R: c(
-    person("John D.", "Storey", email = "jstorey@princeton.edu", role = c("aut", "cre")),
-    person("Jeffrey T.", "Leek", email = "jleek@jhsph.edu ", role = c("aut")),
-    person("Andrew J.", "Bass", email = "ajbass@princeton.edu", role = c("aut"))
-    )
-Maintainer: John D. Storey <jstorey@princeton.edu>
-biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
-    Regression, GeneExpression
-Description: The edge package implements methods for carrying out differential 
-    expression analyses of genome-wide gene expression studies. Significance 
-    testing using the optimal discovery procedure and generalized likelihood 
-    ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
-    designs. Special functions are available to facilitate the analysis of 
-    common study designs, including time course experiments. Other packages 
-    such as snm, sva, and qvalue are integrated in edge to provide a wide range 
-    of tools for gene expression analysis.
-VignetteBuilder: knitr
-Imports:
-    methods,
-    splines,
-    sva,
-    snm,
-    qvalue(>= 1.99.0),
-    MASS
-Suggests:
-    testthat,
-    knitr,
-    ggplot2,
-    reshape2
-Depends:
-    R(>= 3.1.0),
-    Biobase
-URL: https://github.com/jdstorey/edge
-LazyData: true
-License: LGPL
+ Package: edge
+ Type: Package
+ Title: Extraction of Differential Gene Expression
+ Date: 2015-03-26
+ Version: 0.99.1
+ Authors@R: c(
+     person("John D.", "Storey", email = "jstorey@princeton.edu", role = c("aut", "cre", "cph")),
+     person("Jeffrey T.", "Leek", email = "jleek@jhsph.edu ", role = c("aut")),
+     person("Andrew J.", "Bass", email = "ajbass@princeton.edu", role = c("aut"))
+     )
+ Maintainer: John D. Storey <jstorey@princeton.edu>
+ biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
+     Regression, GeneExpression
+ Description: The edge package implements methods for carrying out differential 
+     expression analyses of genome-wide gene expression studies. Significance 
+     testing using the optimal discovery procedure and generalized likelihood 
+     ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
+     designs. Special functions are available to facilitate the analysis of 
+     common study designs, including time course experiments. Other packages 
+     such as snm, sva, and qvalue are integrated in edge to provide a wide range 
+     of tools for gene expression analysis.
+ VignetteBuilder: knitr
+ Imports:
+     methods,
+     splines,
+     sva,
+     snm,
+     qvalue(>= 1.99.0),
+     MASS
+ Suggests:
+     testthat,
+     knitr,
+     ggplot2,
+     reshape2
+ Depends:
+     R(>= 3.1.0),
+     Biobase
+ URL: https://github.com/jdstorey/edge
+ LazyData: true
+ License: GPL
+ Copyright: 2005-2015 John D. Storey
+ 
