@@ -33,7 +33,7 @@ Suggests:
     ggplot2,
     reshape2
 Depends:
-    R(>= 3.1.0),
+    R(>= 3.2.0),
     Biobase
 URL: https://github.com/jdstorey/edge
 LazyData: true
