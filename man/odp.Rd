@@ -5,7 +5,7 @@
 \alias{odp}
 \alias{odp,deSet,deFit-method}
 \alias{odp,deSet,missing-method}
-\title{The optimal discovery procedure (ODP)}
+\title{The optimal discovery procedure}
 \usage{
 odp(object, de.fit, odp.parms = NULL, bs.its = 100, n.mods = 50,
   seed = NULL, verbose = TRUE, ...)
@@ -19,7 +19,7 @@ odp(object, de.fit, odp.parms = NULL, bs.its = 100, n.mods = 50,
 \arguments{
 \item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
-\item{de.fit}{\code{S4 object}: \code{\linkS4class{deFit}} object.}
+\item{de.fit}{\code{S4 object}: \code{\linkS4class{deFit}}. Optional.}
 
 \item{odp.parms}{\code{list}: parameters for each cluster. See
 \code{\link{kl_clust}}.}
@@ -28,9 +28,9 @@ odp(object, de.fit, odp.parms = NULL, bs.its = 100, n.mods = 50,
 is 100.}
 
 \item{n.mods}{\code{integer}: number of clusters used in
-\code{\link{kl_clust}}.}
+\code{\link{kl_clust}}. Default is 50.}
 
-\item{seed}{\code{integer}: set the seed value.}
+\item{seed}{\code{integer}: set the seed value. Default is NULL.}
 
 \item{verbose}{\code{boolean}: print iterations for bootstrap method.
 Default is TRUE.}
@@ -39,20 +39,16 @@ Default is TRUE.}
 \code{\link{empPvals}}.}
 }
 \value{
-\code{odp} returns a \code{\linkS4class{deSet}} object
+\code{\linkS4class{deSet}} object
 }
 \description{
 \code{odp} performs the optimal discovery procedure, which is a new
 approach for optimally performing many hypothesis tests in a
 high-dimensional study. When testing whether a feature is significant, the
 optimal discovery procedure uses information across all features when
-testing for significance. \cr
+testing for significance.
 }
 \details{
-It guarentees to maximize the number of expected true positive results for
-each fixed number of expected false positive results- which is related to
-false discovery rates.
-
 The full ODP estimator computationally grows quadratically with
 respect to the number of genes. This becomes computationally infeasible at
 a certain point. Therefore, an alternative method called mODP is used which
@@ -89,6 +85,8 @@ de_fit <- fit_models(de_obj, stat.type = "odp")
 de_clust <- kl_clust(de_obj, n.mods = 10)
 de_odp <- odp(de_obj, de.fit = de_fit, odp.parms = de_clust,
 bs.its = 30)
+
+# summarize object
 summary(de_odp)
 }
 \author{

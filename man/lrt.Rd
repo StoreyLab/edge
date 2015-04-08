@@ -17,17 +17,19 @@ lrt(object, de.fit, nullDistn = c("normal", "bootstrap"), bs.its = 100,
   "bootstrap"), bs.its = 100, seed = NULL, verbose = TRUE, ...)
 }
 \arguments{
-\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}.}
 
-\item{de.fit}{\code{S4 object}: \code{\linkS4class{deFit}}}
+\item{de.fit}{\code{S4 object}: \code{\linkS4class{deFit}}. Optional.}
 
-\item{nullDistn}{\code{character}: either "normal" or "bootstrap", If "normal"
-then the p-values are calculated using an F-test. If "bootstrap" then
-p-values will be determined from the function \code{\link{empPvals}}.
-Default is "normal".}
+\item{nullDistn}{\code{character}: either "normal" or "bootstrap", If
+"normal" then the p-values are calculated using the F distribution. If
+"bootstrap" then a bootstrap algorithm is implemented to simulate
+statistics from the null distribution. In the "bootstrap" case, empirical
+p-values are calculated using the observed and null statistics (see
+\code{\link{empPvals}}). Default is "normal".}
 
-\item{bs.its}{\code{integer}: number of null statistics generated (only applicable
-for "bootstrap" method. Default is 100.)}
+\item{bs.its}{\code{integer}: number of null statistics generated (only
+applicable for "bootstrap" method). Default is 100.}
 
 \item{seed}{\code{integer}: set the seed value. Default is NULL.}
 
@@ -35,27 +37,22 @@ for "bootstrap" method. Default is 100.)}
 Default is TRUE.}
 
 \item{...}{Additional arguments for \code{\link{apply_qvalue}} and
-\code{\link{empPvals}}
-function.}
+\code{\link{empPvals}} function.}
 }
 \value{
-\code{lrt} returns a \code{\linkS4class{deSet}} object
+\code{\linkS4class{deSet}} object
 }
 \description{
 \code{lrt} performs a generalized likelihood ratio test using the full and
-null models to determine p-values (either from a F-distribution or from
-simulated null test statistics). If the null distribution is calculated
-using "bootstrap" then residuals from the alternative model are resampled
-and added to the null model residuals to simulate a distribution where
-there is no differential expression. Otherwise, the default input is
-"normal" and the assumption is that the dataset follows an F-distribution.
+null models.
 }
-\note{
-Fits the full and null models to each gene using the function
-\code{\link{fit_models}} and then performs an ANOVA F-test. If \code{nullDistn}
-"bootstrap" is chosen then empirical p-values will
-be determined from the \code{\link{qvalue}} package (see
-\code{\link{empPvals}}).
+\details{
+\code{lrt} fits the full and null models to each gene using the function
+\code{\link{fit_models}} and then performs a likelihood ratio test. The
+user has the option to calculate p-values from either the F distribution or
+through a bootstrap algorithm. If \code{nullDistn} is "bootstrap"
+then empirical p-values will be determined from the \code{\link{qvalue}}
+package (see \code{\link{empPvals}}).
 }
 \examples{
 # import data
@@ -80,9 +77,11 @@ de_lrt <- lrt(de_obj, nullDistn = "normal")
 # to generate p-values from bootstrap
 de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 30)
 
-# input an deFit object but not necessary
+# input a deFit object directly
 de_fit <- fit_models(de_obj, stat.type = "lrt")
 de_lrt <- lrt(de_obj, de.fit = de_fit)
+
+# summarize object
 summary(de_lrt)
 }
 \author{
@@ -94,6 +93,7 @@ analysis of time course microarray experiments. Proceedings of the National
 Academy of Sciences, 102: 12837-12842.
 }
 \seealso{
-\code{\link{deSet}}, \code{\link{odp}}, \code{\link{build_models}}
+\code{\linkS4class{deSet}}, \code{\link{build_models}},
+\code{\link{odp}}
 }
 

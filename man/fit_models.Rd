@@ -4,30 +4,28 @@
 \name{fit_models}
 \alias{fit_models}
 \alias{fit_models,deSet-method}
-\title{Implementation of least squares for full and null models}
+\title{Linear regression of the null and full models}
 \usage{
 fit_models(object, stat.type = c("lrt", "odp"))
 
 \S4method{fit_models}{deSet}(object, stat.type = c("lrt", "odp"))
 }
 \arguments{
-\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}.}
 
-\item{stat.type}{\code{character}: type of statistic to be used. Either "lrt" or
-"odp". Default is "lrt".}
+\item{stat.type}{\code{character}: type of statistic to be used. Either
+"lrt" or "odp". Default is "lrt".}
 }
 \value{
-\code{fit_models} returns an \code{\linkS4class{deFit}} object.
+\code{\linkS4class{deFit}} object
 }
 \description{
-\code{fit_models} fits a linear model to each gene by least squares. Model fits
-can be either statistic type "odp" (optimal discovery procedure) or "lrt"
-(likelihood ratio test).
+\code{fit_models} fits a linear model to each gene by least squares. Model
+fits can be either statistic type "odp" (optimal discovery procedure) or
+"lrt" (likelihood ratio test).
 }
 \details{
-If individual factors exists from \code{deSet} object, they are
-adjusted from the data to remove the effects from repeated individuals. If
-"odp" method is implemented then the null model is removed from the full
+If "odp" method is implemented then the null model is removed from the full
 model (see Storey 2007).
 }
 \note{
@@ -57,6 +55,8 @@ full.model = full_model)
 # retrieve statistics from linear regression for each gene
 fit_lrt <- fit_models(de_obj, stat.type = "lrt") # lrt method
 fit_odp <- fit_models(de_obj, stat.type = "odp") # odp method
+
+# summarize object
 summary(fit_odp)
 }
 \author{

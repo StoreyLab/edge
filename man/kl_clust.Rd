@@ -5,7 +5,7 @@
 \alias{kl_clust}
 \alias{kl_clust,deSet,deFit-method}
 \alias{kl_clust,deSet,missing-method}
-\title{Clustering (mODP) method}
+\title{Modular optimal discovery procedure (mODP)}
 \usage{
 kl_clust(object, de.fit = NULL, n.mods = 50)
 
@@ -14,21 +14,21 @@ kl_clust(object, de.fit = NULL, n.mods = 50)
 \S4method{kl_clust}{deSet,deFit}(object, de.fit = NULL, n.mods = 50)
 }
 \arguments{
-\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
+\item{object}{\code{S4 object}: \code{\linkS4class{deSet}}.}
 
-\item{de.fit}{\code{S4 object}: \code{\linkS4class{deFit}}}
+\item{de.fit}{\code{S4 object}: \code{\linkS4class{deFit}}.}
 
 \item{n.mods}{\code{integer}: number of clusters.}
 }
 \value{
-\code{kl_clust} returns a list:
+A list with the following slots:
 \itemize{
-  \item {mu.full: cluster means from full model}
-  \item {mu.null: cluster means from null model}
-  \item {sig.full: cluster standard deviations from full model}
-  \item {sig.null: cluster standard deviations from null model}
-  \item {n.per.mod: total members in each cluster}
-  \item {clustMembers: cluster membership for each gene}
+  \item {mu.full: cluster means from full model.}
+  \item {mu.null: cluster means from null model.}
+  \item {sig.full: cluster standard deviations from full model.}
+  \item {sig.null: cluster standard deviations from null model.}
+  \item {n.per.mod: total members in each cluster.}
+  \item {clustMembers: cluster membership for each gene.}
 }
 }
 \description{
@@ -46,7 +46,7 @@ feasible.
 \note{
 The results are generally insensitive to the number of modules after a
 certain threshold of about n.mods>=50. It is recommended that users
-experiments with the number of clusters. If the number of clusters is equal
+experiment with the number of clusters. If the number of clusters is equal
 to the number of genes then the original ODP is implemented. Depending on
 the number of hypothesis tests, this can take some time.
 }
