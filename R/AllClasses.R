@@ -108,7 +108,6 @@ deFitCheck <- function(object) {
 #' is from which individual in the experiment.
 #' @slot qvalueObj \code{S3 object}: containing \code{qvalue} object. 
 #' See \code{\link{qvalue}} for additional details.
-#' @slot ExpressionSet See \code{\link{ExpressionSet}} for slot information.
 #'  
 #' @section Methods:
 #'  \describe{
@@ -139,9 +138,12 @@ deFitCheck <- function(object) {
 #'  \item{\code{validObject(deSet)}}{Check validity of \code{deSet} object.}    
 #'  }
 #' 
+#' @note
+#' See \code{\link{ExpressionSet}} for slot information.
+#' 
 #' @author
 #' John Storey, Jeffrey Leek, Andrew Bass
-#' 
+#' @inheritParams ExpressionSet
 #' @exportClass deSet
 setClass("deSet", slots=c(null.model = "formula", 
                           full.model = "formula",
