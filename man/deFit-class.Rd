@@ -3,49 +3,43 @@
 \docType{class}
 \name{deFit-class}
 \alias{deFit-class}
-\title{deFit class}
+\title{The differential expression class for the model fits}
 \description{
-Object returned from \code{\link{fit_models}} function containing information
-regarding the model fits for the experiment. A least-squares algorithm
-is fit to both the full and null models of the experiment.
-}
-\note{
-The deFit object can be used as additional inputs for the \code{lrt},
-\code{odp} and \code{kl_clust} function but the object is automatically
-generated if not specified.
+Object returned from \code{\link{fit_models}} containing information
+regarding the model fits for the experiment.
 }
 \section{Slots}{
 
- \describe{
-   \item{\code{fit.full}:}{Matrix containing fitted values for full model.}
-   \item{\code{fit.null}:}{Matrix containing fitted values for null model.}
-   \item{\code{res.full}:}{Matrix containing residuals for full model.}
-   \item{\code{res.null}:}{Matrix containing residuals for null model.}
-   \item{\code{dH.full}:}{Vector containing diagonal elements in projection
-   matrix for the full model.}
-   \item{\code{beta.coef}:}{Matrix containing linear fitted coefficients
-   for full model.}
-   \item{\code{stat.type}:}{String containing information on the statistic
-   of interest. Currently, the only options are ``lrt'' and ``odp''.}
- }
-}
+\describe{
+\item{\code{fit.full}}{\code{matrix}: containing fitted values for the full model.}
 
+\item{\code{fit.null}}{\code{matrix}: containing fitted values for the null model.}
+
+\item{\code{res.full}}{\code{matrix}: the residuals of the full model.}
+
+\item{\code{res.null}}{\code{matrix}: the residuals of the null model.}
+
+\item{\code{dH.full}}{\code{vector}: contains diagonal elements in the projection
+matrix for the full model.}
+
+\item{\code{beta.coef}}{\code{matrix}: fitted coefficients for the full model.}
+
+\item{\code{stat.type}}{\code{string}: information on the statistic of interest.
+Currently, the only options are ``lrt'' and ``odp''.}
+}}
 \section{Methods}{
 
  \describe{
- \item{\code{fitNull(deFit)}}{Access fitted data from null model}
- \item{\code{fitFull(deFit)}}{Access fitted data from full model}
- \item{\code{resNull(deFit)}}{Access null residuals from null model}
- \item{\code{resFull(deFit)}}{Access full residuals from full model}
- \item{\code{betaCoef(deFit)}}{Access beta coefficients in linear model}
- \item{\code{sType(deFit)}}{Access statistic type for model fitting utilized
- in function}
+ \item{\code{fitNull(deFit)}}{Access fitted data from null model.}
+ \item{\code{fitFull(deFit)}}{Access fitted data from full model.}
+ \item{\code{resNull(deFit)}}{Access residuals from null model fit.}
+ \item{\code{resFull(deFit)}}{Access residuals from full model fit.}
+ \item{\code{betaCoef(deFit)}}{Access beta coefficients in linear model.}
+ \item{\code{sType(deFit)}}{Access statistic type of model fitting utilized
+ in function.}
  }
 }
 \author{
 John Storey, Jeffrey Leek, Andrew Bass
-}
-\seealso{
-\code{\link{build_models}}
 }
 
