@@ -32,7 +32,7 @@ is from which individual in the experiment.}
 See \code{\link{qvalue}} for additional details.}
 }}
 \note{
-See \code{\link{ExpressionSet}} for slot information.
+See \code{\link{ExpressionSet}} for additional slot information.
 }
 \section{Methods}{
 
