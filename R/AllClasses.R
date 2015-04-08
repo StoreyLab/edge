@@ -2,13 +2,6 @@
 setOldClass("qvalue")
 
 deSetCheck <- function(object) {
-  # Performs checks on an deSet object
-  # 
-  # Args:
-  #   object: deSet object
-  #
-  # Returns:
-  #   TRUE/FALSE
   errors <- character()
   epsilon <- 10e-8
   # Allow easy conversion for an ExpressionSet using function 'as'
@@ -65,13 +58,6 @@ deSetCheck <- function(object) {
 }
 
 deFitCheck <- function(object) {
-  # Performs checks on an deFit object
-  # 
-  # Args:
-  #   object: deFit object
-  #
-  # Returns:
-  #   TRUE/FALSE
   errors <- character()
   # Dimensionality test
   if (!(    (ncol(object@fit.full)==ncol(object@fit.null)
@@ -103,74 +89,59 @@ deFitCheck <- function(object) {
   }
 }
 
-#' deSet class
+#' The differential expression class (deSet)
 #'
-#' The deSet class was designed in order to complement the 
+#' The \code{deSet} class is designed in order to complement the 
 #' \code{\link{ExpressionSet}} class. While the \code{ExpressionSet} class 
-#' contains information about the experiment, the deSet class 
+#' contains information about the experiment, the \code{deSet} class 
 #' contains both experimental information and additional information relevant 
-#' to differential expression analysis.
-#'
-#' The deSet object is required for the following functions:
+#' for differential expression analysis.
 #' 
-#'  @slot null.model \code{formula}: contains the adjustment variables in the 
-#'  experiment.
-#'  @slot full.model \code{formula}: contains the adjustment variables and the 
-#'  biological variables of interest.
-#'  @slot null.matrix \code{matrix}: the null model as a matrix.
-#'  @slot full.matrix \code{matrix}: the full model as a matrix.
-#'  @slot individual \code{factor}: containing information on individuals 
-#'  sampled in the experiment.
-#'  @slot qvalueObj S3 class \code{qvalue}: containing qvalue object. 
-#'  See \code{\link{qvalue}} for additional details.
+#' @slot null.model \code{formula}: contains the adjustment variables in the 
+#' experiment. The null model is used for comparison when fitting the 
+#' full model.
+#' @slot full.model \code{formula}: contains the adjustment variables and the 
+#' biological variables of interest.
+#' @slot null.matrix \code{matrix}: the null model as a matrix.
+#' @slot full.matrix \code{matrix}: the full model as a matrix.
+#' @slot individual \code{factor}: contains information on which sample 
+#' is from which individual in the experiment.
+#' @slot qvalueObj \code{S3 object}: containing \code{qvalue} object. 
+#' See \code{\link{qvalue}} for additional details.
+#' @slot ExpressionSet See \code{\link{ExpressionSet}} for slot information.
 #'  
 #' @section Methods:
 #'  \describe{
-#'  \item{\code{as(ExpressionSet, "deSet")}}{Coerce objects of ExpressionSet 
-#'  to deSet}
-#'  \item{\code{lrt(deSet, ...)}}{Likelihood ratio test}
-#'  \item{\code{odp(deSet, ...)}}{Optimal discovery procedure}
-#'  \item{\code{kl_clust(deSet, ...)}}{Clustering parameters for modular 
-#'  optimal discovery procedure (mODP) method}
-#'  \item{\code{fit_models(deSet, ...)}}{Linear regression for genes based on
-#'              null and full models}
-#'  \item{\code{apply_qvalue(deSet, ...)}}{Implements qvalue function on 
-#'  deSet object}
-#'  \item{\code{apply_snm(deSet, ...)}}{Implement surpervised normalization of
-#'   microarrays on gene expression matrix on deSet object.}
-#'  \item{\code{apply_sva(deSet, ...)}}{Estimate surrogate variables and adds 
-#'  them to null/full models in a deSet object}
-#'  \item{\code{fullMatrix(deSet)}}{Access and set full matrix from 
-#'  deSet object}
-#'  \item{\code{nullMatrix(deSet)}}{Access and set null matrix from 
-#'  deSet object}
-#'  \item{\code{fullModel(deSet)}}{Access and set full model from 
-#'  deSet object}
-#'  \item{\code{nullModel(deSet)}}{Access and set null model from 
-#'  deSet object}
-#'  \item{\code{individual(deSet)}}{Set individual slot from deSet object}
-#'  \item{\code{qvalueObj(deSet)}}{Access qvalue object from deSet object. 
+#'  \item{\code{as(ExpressionSet, "deSet")}}{Coerce objects of 
+#'  \code{ExpressionSet} to \code{deSet}.}
+#'  \item{\code{lrt(deSet, ...)}}{Performs a generalized likelihood ratio test 
+#'  using the full and null models.}
+#'  \item{\code{odp(deSet, ...)}}{Performs the optimal discovery procedure, 
+#'  which is a new approach for optimally performing many hypothesis tests in 
+#'  a high-dimensional study.}
+#'  \item{\code{kl_clust(deSet, ...)}}{An implementation of mODP that assigns 
+#'  genes to modules based off of the Kullback-Leibler distance.}
+#'  \item{\code{fit_models(deSet, ...)}}{Fits a linear model to each gene by 
+#'  method of least squares.}
+#'  \item{\code{apply_qvalue(deSet, ...)}}{Applies \code{\link{qvalue}} 
+#'  function.}
+#'  \item{\code{apply_snm(deSet, ...)}}{Applies surpervised normalization of
+#'   microarrays (\code{\link{snm}}) on gene expression data.}
+#'  \item{\code{apply_sva(deSet, ...)}}{Applies surrogate variable analysis 
+#'  (\code{\link{sva}}).}
+#'  \item{\code{fullMatrix(deSet)}}{Access and set full matrix.}
+#'  \item{\code{nullMatrix(deSet)}}{Access and set null matrix.}
+#'  \item{\code{fullModel(deSet)}}{Access and set full model.}
+#'  \item{\code{nullModel(deSet)}}{Access and set null model.}
+#'  \item{\code{individual(deSet)}}{Access and set individual slot.}
+#'  \item{\code{qvalueObj(deSet)}}{Access \code{qvalue} object. 
 #'  See \code{\link{qvalue}}.}
-#'  \item{\code{validObject(deSet)}}{Check validity of deSet object.}    
+#'  \item{\code{validObject(deSet)}}{Check validity of \code{deSet} object.}    
 #'  }
-#'  
-#' @note 
-#' The format for the model inputs are
-#' \itemize{
-#'  \item full.model: adjustment variables + biological variables 
-#'  \item null.model: adjustment variables
-#' }
-#' The deSet object is created by either using \code{\link{deSet}}, 
-#' \code{\link{build_models}}, or \code{\link{build_study}} functions. 
-#' The qvalueObj is the slot of interest and is determined by either 
-#' using the \code{odp} or the \code{lrt} function.
 #' 
 #' @author
 #' John Storey, Jeffrey Leek, Andrew Bass
 #' 
-#' @seealso 
-#' \code{\link{deSet}}
-#' @inheritParams ExpressionSet
 #' @exportClass deSet
 setClass("deSet", slots=c(null.model = "formula", 
                           full.model = "formula",
@@ -188,47 +159,34 @@ setClass("deSet", slots=c(null.model = "formula",
          validity = deSetCheck,
          contains = c("ExpressionSet"))
 
-#' deFit class
+#' The differential expression class for the model fits
 #'
-#' Object returned from \code{\link{fit_models}} function containing information 
-#' regarding the model fits for the experiment. A least-squares algorithm 
-#' is fit to both the full and null models of the experiment. 
+#' Object returned from \code{\link{fit_models}} containing information 
+#' regarding the model fits for the experiment.
 #'
-#' @section Slots: 
-#'  \describe{
-#'    \item{\code{fit.full}:}{Matrix containing fitted values for full model.}
-#'    \item{\code{fit.null}:}{Matrix containing fitted values for null model.}
-#'    \item{\code{res.full}:}{Matrix containing residuals for full model.}
-#'    \item{\code{res.null}:}{Matrix containing residuals for null model.}
-#'    \item{\code{dH.full}:}{Vector containing diagonal elements in projection 
-#'    matrix for the full model.}
-#'    \item{\code{beta.coef}:}{Matrix containing linear fitted coefficients 
-#'    for full model.}
-#'    \item{\code{stat.type}:}{String containing information on the statistic 
-#'    of interest. Currently, the only options are ``lrt'' and ``odp''.}
-#'  }
+#' @slot fit.full \code{matrix}: containing fitted values for the full model.
+#' @slot fit.null \code{matrix}: containing fitted values for the null model.
+#' @slot res.full \code{matrix}: the residuals of the full model.
+#' @slot res.null \code{matrix}: the residuals of the null model.
+#' @slot dH.full \code{vector}: contains diagonal elements in the projection 
+#' matrix for the full model.
+#' @slot beta.coef \code{matrix}: fitted coefficients for the full model.
+#' @slot stat.type \code{string}: information on the statistic of interest. 
+#' Currently, the only options are ``lrt'' and ``odp''.
 #'  
 #' @section Methods:
 #'  \describe{
-#'  \item{\code{fitNull(deFit)}}{Access fitted data from null model}
-#'  \item{\code{fitFull(deFit)}}{Access fitted data from full model}
-#'  \item{\code{resNull(deFit)}}{Access null residuals from null model}
-#'  \item{\code{resFull(deFit)}}{Access full residuals from full model}
-#'  \item{\code{betaCoef(deFit)}}{Access beta coefficients in linear model}
-#'  \item{\code{sType(deFit)}}{Access statistic type for model fitting utilized 
-#'  in function}
+#'  \item{\code{fitNull(deFit)}}{Access fitted data from null model.}
+#'  \item{\code{fitFull(deFit)}}{Access fitted data from full model.}
+#'  \item{\code{resNull(deFit)}}{Access residuals from null model fit.}
+#'  \item{\code{resFull(deFit)}}{Access residuals from full model fit.}
+#'  \item{\code{betaCoef(deFit)}}{Access beta coefficients in linear model.}
+#'  \item{\code{sType(deFit)}}{Access statistic type of model fitting utilized 
+#'  in function.}
 #'  }
-#' 
-#' @note 
-#' The deFit object can be used as additional inputs for the \code{lrt}, 
-#' \code{odp} and \code{kl_clust} function but the object is automatically 
-#' generated if not specified. 
 #' 
 #' @author 
 #' John Storey, Jeffrey Leek, Andrew Bass
-#' 
-#' @seealso 
-#' \code{\link{build_models}}
 #' 
 #' @exportClass deFit
 setClass("deFit", slots=c(fit.full = "matrix", 
