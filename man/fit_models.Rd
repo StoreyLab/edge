@@ -20,9 +20,9 @@ fit_models(object, stat.type = c("lrt", "odp"))
 \code{\linkS4class{deFit}} object
 }
 \description{
-\code{fit_models} fits a linear model to each gene by least squares. Model
-fits can be either statistic type "odp" (optimal discovery procedure) or
-"lrt" (likelihood ratio test).
+\code{fit_models} fits a linear model to each gene by using the least
+squares method. Model fits can be either statistic type "odp" (optimal
+discovery procedure) or "lrt" (likelihood ratio test).
 }
 \details{
 If "odp" method is implemented then the null model is removed from the full

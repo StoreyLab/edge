@@ -30,9 +30,10 @@ is from which individual in the experiment.}
 
 \item{\code{qvalueObj}}{\code{S3 object}: containing \code{qvalue} object.
 See \code{\link{qvalue}} for additional details.}
-
-\item{\code{ExpressionSet}}{See \code{\link{ExpressionSet}} for slot information.}
 }}
+\note{
+See \code{\link{ExpressionSet}} for slot information.
+}
 \section{Methods}{
 
  \describe{
