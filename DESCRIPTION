@@ -2,7 +2,7 @@ Package: edge
 Type: Package
 Title: Extraction of Differential Gene Expression
 Date: 2015-03-26
-Version: 0.99.1
+Version: 0.99.3
 Authors@R: c(
     person("John D.", "Storey", email = "jstorey@princeton.edu", role = c("aut", "cre", "cph")),
     person("Jeffrey T.", "Leek", email = "jleek@jhsph.edu ", role = c("aut")),
@@ -10,7 +10,7 @@ Authors@R: c(
     )
 Maintainer: John D. Storey <jstorey@princeton.edu>
 biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
-    Regression, GeneExpression
+    Regression, GeneExpression, DataImport
 Description: The edge package implements methods for carrying out differential 
     expression analyses of genome-wide gene expression studies. Significance 
     testing using the optimal discovery procedure and generalized likelihood 
