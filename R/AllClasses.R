@@ -139,7 +139,7 @@ deFitCheck <- function(object) {
 #'  }
 #' 
 #' @note
-#' See \code{\link{ExpressionSet}} for slot information.
+#' See \code{\link{ExpressionSet}} for additional slot information.
 #' 
 #' @author
 #' John Storey, Jeffrey Leek, Andrew Bass
