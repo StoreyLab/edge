@@ -1,16 +1,5 @@
 bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100, 
                       verbose = TRUE) {
-  # lrt Null statistic
-  #
-  # Args:
-  #   object: class deSet
-  #   obs.fit: class deFit
-  #   df: list- d.o.f of null and full models and residuals
-  #   bs.its: numeric- number of iterations, default is 100
-  #   verbose: string- if TRUE, print iteration number 
-  #
-  # Returns:
-  #   matrix- null statistic 
   n.probes <- nrow(obs.fit@res.full)
   nf <- mod.df(object@full.matrix)
   null.stat <- matrix(nrow = n.probes,
@@ -37,15 +26,6 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
   return(null.stat)
 }    
 rescale <- function(x, sig) {
-  # rescale residuals
-  # 
-  # Args:
-  #   x: matrix- residuals
-  #   sig: vector- sd
-  #
-  # Returns:
-  #   matrix- rescaled residuals for ODP
-  
   means <- rowMeans(x)
   n <- ncol(x)
   rowsds <- sqrt((rowMeans(x ^ 2) - means ^ 2) * n / (n - 1))
@@ -53,16 +33,6 @@ rescale <- function(x, sig) {
   return(ret)
 }
 null <- function(obs.fit, nf, ind) {
-  # Calculates null data
-  #
-  # Args:
-  #   obs.fit: edgeFit class
-  #   df.mod: list- degree of freedom of bio/adj matrices
-  #   ind: factor- individuals 
-  # 
-  # Returns:
-  #   null.dat: matrix- simulated null data 
-  # Initializations  
   stat.var <- obs.fit@stat.type
   n <- ncol(obs.fit@res.full)
   if (sum(!is.na(ind[1])) > 0) {
@@ -89,13 +59,6 @@ null <- function(obs.fit, nf, ind) {
   return(null.dat)
 }
 mod.df <- function(x) {
-  # Degree of freedom
-  #
-  # Args:
-  #   x: matrix
-  #
-  # Returns:
-  #   df: numeric- degrees of freedom of x
   df <- try(sum(diag(x %*% solve(t(x) %*% x) %*% t(x))), silent=TRUE)
   return(df)
 }
@@ -117,14 +80,6 @@ createSet <- function(object, nMod=NULL, fMod=NULL, ind=NULL, grp=factor(NA)) {
 }
 
 rm.zero.cols <- function(x, eps = 10e-12) {
-  # Remove null columns
-  #
-  # Args:
-  #   x: matrix
-  #   eps: numeric- threshold
-  # 
-  # Results:
-  #   matrix- with zero columns removed
   return(x[, colSums(abs(x)) > eps])
 }
 

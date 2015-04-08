@@ -1,38 +1,35 @@
 #' Performs F-test (likelihood ratio test using Normal likelihood)
 #'
 #' \code{lrt} performs a generalized likelihood ratio test using the full and 
-#' null models to determine p-values (either from a F-distribution or from 
-#' simulated null test statistics). If the null distribution is calculated 
-#' using "bootstrap" then residuals from the alternative model are resampled 
-#' and added to the null model residuals to simulate a distribution where 
-#' there is no differential expression. Otherwise, the default input is 
-#' "normal" and the assumption is that the dataset follows an F-distribution. 
-#'
-#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
-#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}
-#' @param nullDistn \code{character}: either "normal" or "bootstrap", If "normal" 
-#' then the p-values are calculated using an F-test. If "bootstrap" then 
-#' p-values will be determined from the function \code{\link{empPvals}}.
-#' Default is "normal".
-#' @param bs.its \code{integer}: number of null statistics generated (only applicable
-#' for "bootstrap" method. Default is 100.)
+#' null models. 
+#' 
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}.
+#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}. Optional.
+#' @param nullDistn \code{character}: either "normal" or "bootstrap", If 
+#' "normal" then the p-values are calculated using the F distribution. If 
+#' "bootstrap" then a bootstrap algorithm is implemented to simulate 
+#' statistics from the null distribution. In the "bootstrap" case, empirical 
+#' p-values are calculated using the observed and null statistics (see 
+#' \code{\link{empPvals}}). Default is "normal".
+#' @param bs.its \code{integer}: number of null statistics generated (only 
+#' applicable for "bootstrap" method). Default is 100.
 #' @param seed \code{integer}: set the seed value. Default is NULL.
 #' @param verbose \code{boolean}: print iterations for bootstrap method. 
 #' Default is TRUE.
 #' @param ... Additional arguments for \code{\link{apply_qvalue}} and 
-#' \code{\link{empPvals}} 
-#' function.
+#' \code{\link{empPvals}} function.
 #'
-#' @note 
-#' Fits the full and null models to each gene using the function
-#' \code{\link{fit_models}} and then performs an ANOVA F-test. If \code{nullDistn} 
-#' "bootstrap" is chosen then empirical p-values will 
-#' be determined from the \code{\link{qvalue}} package (see 
-#' \code{\link{empPvals}}). 
+#' @details 
+#' \code{lrt} fits the full and null models to each gene using the function
+#' \code{\link{fit_models}} and then performs a likelihood ratio test. The 
+#' user has the option to calculate p-values from either the F distribution or 
+#' through a bootstrap algorithm. If \code{nullDistn} is "bootstrap"  
+#' then empirical p-values will be determined from the \code{\link{qvalue}} 
+#' package (see \code{\link{empPvals}}). 
 #'
 #' @author John Storey, Andrew Bass
 #'
-#' @return \code{lrt} returns a \code{\linkS4class{deSet}} object
+#' @return \code{\linkS4class{deSet}} object
 #'
 #' @examples
 #' # import data
@@ -57,9 +54,11 @@
 #' # to generate p-values from bootstrap
 #' de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 30)
 #'
-#' # input an deFit object but not necessary
+#' # input a deFit object directly
 #' de_fit <- fit_models(de_obj, stat.type = "lrt")
 #' de_lrt <- lrt(de_obj, de.fit = de_fit)
+#' 
+#' # summarize object
 #' summary(de_lrt)
 #'
 #' @references
@@ -67,43 +66,41 @@
 #' analysis of time course microarray experiments. Proceedings of the National 
 #' Academy of Sciences, 102: 12837-12842.
 #'
-#' @seealso \code{\link{deSet}}, \code{\link{odp}}, \code{\link{build_models}}
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{build_models}}, 
+#' \code{\link{odp}}
 #'
 #' @export
 setGeneric("lrt", function(object, de.fit,
                            nullDistn = c("normal","bootstrap"), bs.its = 100,
-                           seed = NULL, verbose = TRUE, ...)
+                           seed = NULL, verbose = TRUE, ...) 
   standardGeneric("lrt"))
 
 
-#' The optimal discovery procedure (ODP) 
+#' The optimal discovery procedure  
 #'
 #' \code{odp} performs the optimal discovery procedure, which is a new 
 #' approach for optimally performing many hypothesis tests in a 
 #' high-dimensional study. When testing whether a feature is significant, the 
 #' optimal discovery procedure uses information across all features when 
-#' testing for significance. \cr
-#' 
-#' It guarentees to maximize the number of expected true positive results for 
-#' each fixed number of expected false positive results- which is related to
-#' false discovery rates.
+#' testing for significance. 
 #'
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
-#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}} object.
+#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}. Optional.
 #' @param odp.parms \code{list}: parameters for each cluster. See 
 #' \code{\link{kl_clust}}.
 #' @param bs.its \code{numeric}: number of null bootstrap iterations. Default
 #' is 100.
 #' @param n.mods \code{integer}: number of clusters used in 
-#' \code{\link{kl_clust}}.
-#' @param seed \code{integer}: set the seed value.
+#' \code{\link{kl_clust}}. Default is 50.
+#' @param seed \code{integer}: set the seed value. Default is NULL.
 #' @param verbose \code{boolean}: print iterations for bootstrap method. 
 #' Default is TRUE.
 #' @param ... Additional arguments for \code{\link{qvalue}} and 
 #' \code{\link{empPvals}}.
 #'
 #'
-#' @details The full ODP estimator computationally grows quadratically with 
+#' @details 
+#' The full ODP estimator computationally grows quadratically with 
 #' respect to the number of genes. This becomes computationally infeasible at 
 #' a certain point. Therefore, an alternative method called mODP is used which
 #' has been shown to provide results that are very similar. mODP utilizes a 
@@ -114,7 +111,7 @@ setGeneric("lrt", function(object, de.fit,
 #' to the number of genes then the original ODP is implemented. Depending on 
 #' the number of hypothesis tests, this can take some time.
 #'
-#' @return \code{odp} returns a \code{\linkS4class{deSet}} object
+#' @return \code{\linkS4class{deSet}} object
 #'
 #' @examples
 #' # import data
@@ -141,6 +138,8 @@ setGeneric("lrt", function(object, de.fit,
 #' de_clust <- kl_clust(de_obj, n.mods = 10)
 #' de_odp <- odp(de_obj, de.fit = de_fit, odp.parms = de_clust, 
 #' bs.its = 30)
+#' 
+#' # summarize object
 #' summary(de_odp)
 #'
 #' @references
@@ -166,13 +165,13 @@ setGeneric("odp", function(object, de.fit, odp.parms = NULL, bs.its = 100,
   standardGeneric("odp"))
 
 
-#' Clustering (mODP) method 
+#' Modular optimal discovery procedure (mODP) 
 #'
 #' \code{kl_clust} is an implementation of mODP that assigns genes to modules 
 #' based off of the Kullback-Leibler distance.
 #'
-#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
-#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}.
+#' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}.
 #' @param n.mods \code{integer}: number of clusters.
 #'
 #' @details mODP utilizes a k-means clustering algorithm where genes are 
@@ -184,19 +183,19 @@ setGeneric("odp", function(object, de.fit, odp.parms = NULL, bs.its = 100,
 #'
 #' @note The results are generally insensitive to the number of modules after a
 #' certain threshold of about n.mods>=50. It is recommended that users 
-#' experiments with the number of clusters. If the number of clusters is equal 
+#' experiment with the number of clusters. If the number of clusters is equal 
 #' to the number of genes then the original ODP is implemented. Depending on 
 #' the number of hypothesis tests, this can take some time.
 #' 
 #' @return
-#' \code{kl_clust} returns a list:
+#' A list with the following slots:
 #' \itemize{
-#'   \item {mu.full: cluster means from full model}
-#'   \item {mu.null: cluster means from null model}
-#'   \item {sig.full: cluster standard deviations from full model}
-#'   \item {sig.null: cluster standard deviations from null model}
-#'   \item {n.per.mod: total members in each cluster}
-#'   \item {clustMembers: cluster membership for each gene}
+#'   \item {mu.full: cluster means from full model.}
+#'   \item {mu.null: cluster means from null model.}
+#'   \item {sig.full: cluster standard deviations from full model.}
+#'   \item {sig.null: cluster standard deviations from null model.}
+#'   \item {n.per.mod: total members in each cluster.}
+#'   \item {clustMembers: cluster membership for each gene.}
 #' }
 #'
 #' @examples
@@ -247,19 +246,18 @@ setGeneric("odp", function(object, de.fit, odp.parms = NULL, bs.its = 100,
 setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
   standardGeneric("kl_clust"))
 
-#' Implementation of least squares for full and null models
+#' Linear regression of the null and full models 
 #'
-#' \code{fit_models} fits a linear model to each gene by least squares. Model fits 
-#' can be either statistic type "odp" (optimal discovery procedure) or "lrt" 
-#' (likelihood ratio test).
+#' \code{fit_models} fits a linear model to each gene by using the least 
+#' squares method. Model fits can be either statistic type "odp" (optimal 
+#' discovery procedure) or "lrt" (likelihood ratio test).
 #'
-#' @param object \code{S4 object}: \code{\linkS4class{deSet}}
-#' @param stat.type \code{character}: type of statistic to be used. Either "lrt" or 
-#' "odp". Default is "lrt".
+#' @param object \code{S4 object}: \code{\linkS4class{deSet}}.
+#' @param stat.type \code{character}: type of statistic to be used. Either 
+#' "lrt" or "odp". Default is "lrt".
 #'
-#' @details If individual factors exists from \code{deSet} object, they are 
-#' adjusted from the data to remove the effects from repeated individuals. If 
-#' "odp" method is implemented then the null model is removed from the full 
+#' @details 
+#' If "odp" method is implemented then the null model is removed from the full 
 #' model (see Storey 2007). 
 #'
 #' @note \code{fit_models} does not have to be called by the user to use
@@ -268,7 +266,7 @@ setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
 #' \code{\linkS4class{deFit}} object can be created by the user if a different 
 #' statistical implementation is required.
 #'
-#' @return \code{fit_models} returns an \code{\linkS4class{deFit}} object.
+#' @return \code{\linkS4class{deFit}} object
 #'
 #' @examples
 #' # import data
@@ -290,6 +288,8 @@ setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
 #' # retrieve statistics from linear regression for each gene
 #' fit_lrt <- fit_models(de_obj, stat.type = "lrt") # lrt method
 #' fit_odp <- fit_models(de_obj, stat.type = "odp") # odp method
+#' 
+#' # summarize object
 #' summary(fit_odp)
 #'
 #' @references

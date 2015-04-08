@@ -1,16 +1,4 @@
 klmod <- function(de.fit, nf, n.mods = 50) {
-  # Clustering algorithm
-  #
-  # Args:
-  #   fitFull: fitted data for full model
-  #   resFull: residual data for full.model
-  #   n.mods: number of clusters
-  #   df: degree of freedom of null and full models
-  #
-  # Returns:
-  #   vector of cluster assignments for each gene
-  
-  # Initializations
   m <- nrow(de.fit@fit.full)
   n <- ncol(de.fit@fit.full)
   if (m <= n.mods) {
@@ -96,21 +84,7 @@ klmod <- function(de.fit, nf, n.mods = 50) {
   return(as.factor(mod.member))
 }
 
-# Clustering parameters
 mod.parms <- function(de.fit, nf, nn, clMembers) {
-  # Calculates parameters of interest from clusters
-  #
-  # Args:
-  #   object: edge object (S4 class)
-  #
-  # Returns:
-  #   list:
-  #     mu.full: mean of clusters from full model
-  #     mu.null: mean of clusters from null model
-  #     sig.full: sd of clusters from full model
-  #     sig.null: sd of clusters from null model
-  #     n.per.mod: total members in each cluster
-  #     clustMembers: members for each gene
   # Initlizations
   n <- ncol(de.fit@res.full)
   varFull <- rowSums(de.fit@res.full ^ 2) / (n - nf)
@@ -143,17 +117,6 @@ mod.parms <- function(de.fit, nf, nn, clMembers) {
 }
 
 kl <- function(temp.center.fitFull, temp.fitFull, center.var, sigma2, n) {
-  # Calculates kl distance
-  #
-  # Args:
-  #   temp.center.fitFull: Matrix of center locations for each cluster
-  #   temp.fitFull: Matrix of fitted data from full model
-  #   center.var: Vector of variances for cluster
-  #   sigma2: Vector of variances for each gene
-  #   n: Number of genes
-  #
-  # Returns:
-  #   kldd: A matrix of kl distances to each cluster for each gene
   # Initializations
   m <- length(sigma2)
   n.cluster <- length(center.var)
