@@ -31,7 +31,7 @@
 #' # create deSet object from data
 #' de_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, 
 #' sampling = "timecourse", basis.df = 4)
-#' @seealso \code{\linkS4class{deSet}}
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{build_models}}
 #' @author John Storey, Andy Bass 
 #' @export
 build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL, 
@@ -182,7 +182,7 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
 #' # create deSet object from data
 #' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null.model, 
 #' full.model = full.model)
-#' @seealso \code{\link{deSet}}
+#' @seealso \code{\linkS4class{deSet}}, \code{\link{build_study}}
 #' @author John Storey, Andy Bass 
 #' @export
 build_models <- function(data, cov, full.model = NULL, null.model = NULL, 

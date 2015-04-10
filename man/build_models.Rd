@@ -47,6 +47,6 @@ full.model = full.model)
 John Storey, Andy Bass
 }
 \seealso{
-\code{\link{deSet}}
+\code{\linkS4class{deSet}}, \code{\link{build_study}}
 }
 

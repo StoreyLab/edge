@@ -55,6 +55,6 @@ sampling = "timecourse", basis.df = 4)
 John Storey, Andy Bass
 }
 \seealso{
-\code{\linkS4class{deSet}}
+\code{\linkS4class{deSet}}, \code{\link{build_models}}
 }
 
