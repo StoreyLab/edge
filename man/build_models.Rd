@@ -2,38 +2,29 @@
 % Please edit documentation in R/form_models.R
 \name{build_models}
 \alias{build_models}
-\title{Generate full and null hypothesis in deSet object}
+\title{Generate a deSet object with full and null models}
 \usage{
 build_models(data, cov, full.model = NULL, null.model = NULL, ind = NULL)
 }
 \arguments{
 \item{data}{\code{matrix}: gene expression data.}
 
-\item{cov}{\code{data.frame}: biological covariates.}
+\item{cov}{\code{data.frame}: the covariates in the study.}
 
-\item{full.model}{\code{formula}: the adjustment and the biological variables of
-interest.}
+\item{full.model}{\code{formula}: the adjustment and the biological
+variables of interest.}
 
 \item{null.model}{\code{formula}: the adjustment variables.}
 
-\item{ind}{\code{factor}: individuals sampled in the study.}
+\item{ind}{\code{factor}: individuals sampled in the study. Default is
+NULL. Optional.}
 }
 \value{
-\code{build_models} returns an \code{\linkS4class{deSet}} object
-with the following slots assigned:
-\describe{
-   \item{\code{full.model:}}{full model equation}
-   \item{\code{null.model:}}{null model equation}
-   \item{\code{full.matrix:}}{full model in matrix form}
-   \item{\code{null.matirx:}}{null model in matrix form}
-   \item{\code{individual:}}{individuals in experiment (factor)}
-   \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData,
-   phenoData) created in function}
- }
+\code{\linkS4class{deSet}} object
 }
 \description{
-\code{build_models} is a function to create a deSet without an
-ExpressionSet. Full and null models are inputted by users.
+\code{build_models} creates a \code{\link{deSet}} object. The user inputs
+the full and null models.
 }
 \examples{
 # create ExpressionSet object from kidney dataset

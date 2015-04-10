@@ -2,7 +2,7 @@
 % Please edit documentation in R/form_models.R
 \name{build_study}
 \alias{build_study}
-\title{Creates an deSet object with appropriate models for users}
+\title{Formulates the experimental models}
 \usage{
 build_study(data, grp = NULL, adj.var = NULL, bio.var = NULL,
   tme = NULL, ind = NULL, sampling = c("static", "timecourse"),
@@ -19,8 +19,8 @@ build_study(data, grp = NULL, adj.var = NULL, bio.var = NULL,
 
 \item{tme}{\code{vector}: covariate of interest in time course study. Optional.}
 
-\item{ind}{\code{factor}: individual factor for repeated observations of the same
-individuals. Optional.}
+\item{ind}{\code{factor}: individual factor for repeated observations of
+the same individuals. Optional.}
 
 \item{sampling}{\code{string}: type of experiment. Either "static" or
 "timecourse". Default is "static".}
@@ -28,27 +28,16 @@ individuals. Optional.}
 \item{basis.df}{\code{numeric}: degree of freedom of the spline fit for time
 course study. Default is 2.}
 
-\item{basis.type}{\code{string}: either "ncs" or "ps" basis for time course study.
-Default is "ncs".}
+\item{basis.type}{\code{string}: either "ncs" or "ps" basis for time course
+study. Default is "ncs".}
 }
 \value{
-\code{build_study} returns an \code{\linkS4class{deSet}} object
-with the following slots assigned:
-  \describe{
-    \item{\code{full.model:}}{full model equation}
-   \item{\code{null.model:}}{null model equation}
-   \item{\code{full.matrix:}}{full model in matrix form}
-   \item{\code{null.matirx:}}{null model in matrix form}
-   \item{\code{individual:}}{individuals in experiment (factor)}
-   \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData,
-   phenoData) created in function}
- }
+\code{\linkS4class{deSet}} object
 }
 \description{
-\code{build_study} is a function to create a deSet object without an
-ExpressionSet. Alternative and null models are created based on the experiment
-type: Either "static" or "timecourse". For more details, refer to the user
-manual.
+\code{build_study} generates the full and null models for users unfamiliar
+with their experimental design. There are two types of experimental designs:
+static and time-course. For more details, refer to the user manual.
 }
 \examples{
 # create ExpressionSet object from kidney dataset
@@ -66,6 +55,6 @@ sampling = "timecourse", basis.df = 4)
 John Storey, Andy Bass
 }
 \seealso{
-\code{\link{deSet}}
+\code{\linkS4class{deSet}}
 }
 
