@@ -19,10 +19,10 @@ summary(object, ...)
 \item{\dots}{additional parameters}
 }
 \value{
-Summary of deSet object
+Summary of \code{\linkS4class{deSet}} object
 }
 \description{
-Summary of deFit and deSet objects
+Summary of \code{\linkS4class{deFit}} and \code{\linkS4class{deSet}} objects.
 }
 \examples{
 # import data

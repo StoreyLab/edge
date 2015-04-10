@@ -19,7 +19,7 @@ apply_sva(object, ...)
 \code{\linkS4class{deSet}} object
 }
 \description{
-Runs \code{sva} on a deSet object based on the null and full models in
+Runs \code{\link{sva}} on the null and full models in
 \code{\linkS4class{deSet}}. See \code{\link{sva}} for additional details.
 }
 \examples{

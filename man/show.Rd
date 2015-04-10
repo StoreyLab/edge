@@ -22,7 +22,8 @@ show(object)
 Nothing of interest
 }
 \description{
-Show function for deFit and deSet objects
+Show function for \code{\linkS4class{deFit}} and \code{\linkS4class{deSet}}
+objects.
 }
 \examples{
 # import data

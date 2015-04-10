@@ -19,7 +19,7 @@ qvalueObj(object) <- value
 \arguments{
 \item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
-\item{value}{S3 \code{object}: \code{\link{qvalue}} object}
+\item{value}{S3 \code{object}: \code{\link{qvalue}}}
 }
 \value{
 \code{qvalueObj} returns a \code{\link{qvalue}} object.

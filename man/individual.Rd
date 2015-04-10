@@ -19,7 +19,8 @@ individual(object) <- value
 \arguments{
 \item{object}{\code{\linkS4class{deSet}}}
 
-\item{value}{\code{factor}: individual identifier for each observation}
+\item{value}{\code{factor}: identifier for each observation. Important
+if the same individuals are sampled multiple times.}
 }
 \value{
 \code{individual} returns information regarding individuals

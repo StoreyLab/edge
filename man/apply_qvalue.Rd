@@ -4,7 +4,7 @@
 \name{apply_qvalue}
 \alias{apply_qvalue}
 \alias{apply_qvalue,deSet-method}
-\title{Estimate the q-values for a given set of p-values in an deSet object}
+\title{Estimate the q-values for a given set of p-values}
 \usage{
 apply_qvalue(object, ...)
 
@@ -16,10 +16,10 @@ apply_qvalue(object, ...)
 \item{...}{Additional arguments for \code{\link{qvalue}}}
 }
 \value{
-\code{\linkS4class{deSet}} object.
+\code{\linkS4class{deSet}} object
 }
 \description{
-Runs \code{\link{qvalue}} on a deSet object
+Runs \code{\link{qvalue}} on a \code{\linkS4class{deSet}} object.
 }
 \examples{
 # import data
@@ -49,7 +49,8 @@ John Storey, Andrew Bass
 }
 \references{
 Storey JD and Tibshirani R. (2003) Statistical significance for
-genome-wide studies. Proceedings of the National Academy of Sciences, 100: 9440-9445
+genome-wide studies. Proceedings of the National Academy of Sciences,
+100: 9440-9445
 }
 \seealso{
 \code{\linkS4class{deSet}}, \code{\link{odp}} and

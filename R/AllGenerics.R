@@ -315,9 +315,10 @@ setGeneric("fit_models",
              standardGeneric("fit_models")
            })
 
-#' Create an object of class deSet
+#' Create a deSet object from an ExpressionSet
 #'
-#' Creates a deSet object that extends the \code{\link{ExpressionSet}} object.
+#' Creates a \code{\linkS4class{deSet}} object that extends the 
+#' \code{\link{ExpressionSet}} object.
 #'
 #' @param object \code{S4 object}: \code{\link{ExpressionSet}}
 #' @param full.model \code{formula}: full model containing the both the 
@@ -330,7 +331,7 @@ setGeneric("fit_models",
 #' @note It is essential that the null and full models have the same variables
 #' as the ExpressionSet phenoType column names.
 #'
-#' @return \code{deSet} returns an \code{\linkS4class{deSet}} object.
+#' @return \code{\linkS4class{deSet}} object
 #'
 #' @examples
 #' # import data
@@ -366,14 +367,14 @@ setGeneric("fit_models",
 setGeneric("deSet", function(object, full.model, null.model, 
                              individual=NULL) standardGeneric("deSet"))
 
-#' Estimate the q-values for a given set of p-values in an deSet object
+#' Estimate the q-values for a given set of p-values
 #'
-#' Runs \code{\link{qvalue}} on a deSet object 
+#' Runs \code{\link{qvalue}} on a \code{\linkS4class{deSet}} object.
 #'
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param ... Additional arguments for \code{\link{qvalue}}
 #'
-#' @return \code{\linkS4class{deSet}} object.
+#' @return \code{\linkS4class{deSet}} object
 #'
 #' @examples
 #' # import data
@@ -400,7 +401,8 @@ setGeneric("deSet", function(object, full.model, null.model,
 #'
 #' @references
 #' Storey JD and Tibshirani R. (2003) Statistical significance for 
-#' genome-wide studies. Proceedings of the National Academy of Sciences, 100: 9440-9445
+#' genome-wide studies. Proceedings of the National Academy of Sciences, 
+#' 100: 9440-9445
 #'
 #' @seealso \code{\linkS4class{deSet}}, \code{\link{odp}} and 
 #' \code{\link{lrt}}
@@ -413,7 +415,7 @@ setGeneric("apply_qvalue", function(object, ...)
 
 #' Estimate surrogate variables 
 #'
-#' Runs \code{sva} on a deSet object based on the null and full models in 
+#' Runs \code{\link{sva}} on the null and full models in 
 #' \code{\linkS4class{deSet}}. See \code{\link{sva}} for additional details.
 #'
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}} 
@@ -690,7 +692,7 @@ setGeneric("fullMatrix<-", function(object, value) {
 #' \code{\linkS4class{deSet}} object.
 #' 
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
-#' @param value S3 \code{object}: \code{\link{qvalue}} object
+#' @param value S3 \code{object}: \code{\link{qvalue}}
 #' 
 #' @return  \code{qvalueObj} returns a \code{\link{qvalue}} object.
 #' 
@@ -743,7 +745,8 @@ setGeneric("qvalueObj<-", function(object, value) {
 #' \code{\linkS4class{deSet}}.
 #' 
 #' @param object \code{\linkS4class{deSet}}
-#' @param value \code{factor}: individual identifier for each observation
+#' @param value \code{factor}: identifier for each observation. Important 
+#' if the same individuals are sampled multiple times.
 #' 
 #' @return \code{individual} returns information regarding individuals 
 #' in the experiment.
@@ -1035,7 +1038,7 @@ setGeneric("resNull", function(object) standardGeneric("resNull"))
 
 #' Summary of deFit and deSet
 #'
-#' Summary of deFit and deSet objects
+#' Summary of \code{\linkS4class{deFit}} and \code{\linkS4class{deSet}} objects.
 #' 
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param \dots additional parameters
@@ -1066,7 +1069,7 @@ setGeneric("resNull", function(object) standardGeneric("resNull"))
 #' @author John Storey, Andrew Bass
 #' 
 #' @return
-#' Summary of deSet object
+#' Summary of \code{\linkS4class{deSet}} object
 #' 
 #' @keywords summary
 #'
@@ -1075,7 +1078,8 @@ setGeneric("summary")
 
 #' Show function for deFit and deSet
 #'
-#' Show function for deFit and deSet objects
+#' Show function for \code{\linkS4class{deFit}} and \code{\linkS4class{deSet}} 
+#' objects.
 #' 
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param \dots additional parameters

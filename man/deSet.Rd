@@ -4,7 +4,7 @@
 \name{deSet}
 \alias{deSet}
 \alias{deSet,ExpressionSet-method}
-\title{Create an object of class deSet}
+\title{Create a deSet object from an ExpressionSet}
 \usage{
 deSet(object, full.model, null.model, individual = NULL)
 
@@ -24,10 +24,11 @@ variables for the experiment.}
 experiment.}
 }
 \value{
-\code{deSet} returns an \code{\linkS4class{deSet}} object.
+\code{\linkS4class{deSet}} object
 }
 \description{
-Creates a deSet object that extends the \code{\link{ExpressionSet}} object.
+Creates a \code{\linkS4class{deSet}} object that extends the
+\code{\link{ExpressionSet}} object.
 }
 \note{
 It is essential that the null and full models have the same variables
