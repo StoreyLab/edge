@@ -1,35 +1,24 @@
-#' Creates an deSet object with appropriate models for users
+#' Formulates the experimental models
 #'
-#' \code{build_study} is a function to create a deSet object without an 
-#' ExpressionSet. Alternative and null models are created based on the experiment 
-#' type: Either "static" or "timecourse". For more details, refer to the user 
-#' manual.  
+#' \code{build_study} generates the full and null models for users unfamiliar 
+#' with their experimental design. There are two types of experimental designs: 
+#' static and time-course. For more details, refer to the user manual.  
 #' 
 #' @param data \code{matrix}: gene expression data.
 #' @param sampling \code{string}: type of experiment. Either "static" or 
 #' "timecourse". Default is "static".
 #' @param grp \code{vector}: groups or biological variable in experiment. Optional.
 #' @param tme \code{vector}: covariate of interest in time course study. Optional. 
-#' @param ind \code{factor}: individual factor for repeated observations of the same 
-#' individuals. Optional. 
+#' @param ind \code{factor}: individual factor for repeated observations of 
+#' the same individuals. Optional. 
 #' @param bio.var \code{matrix}: biological variables. Optional.
 #' @param basis.df \code{numeric}: degree of freedom of the spline fit for time 
 #' course study. Default is 2.
-#' @param basis.type \code{string}: either "ncs" or "ps" basis for time course study. 
-#' Default is "ncs".
+#' @param basis.type \code{string}: either "ncs" or "ps" basis for time course
+#'  study. Default is "ncs".
 #' @param adj.var \code{matrix}: adjustment variables. Optional.
 #'  
-#' @return \code{build_study} returns an \code{\linkS4class{deSet}} object 
-#' with the following slots assigned:
-#'   \describe{
-#'     \item{\code{full.model:}}{full model equation}
-#'    \item{\code{null.model:}}{null model equation}
-#'    \item{\code{full.matrix:}}{full model in matrix form}
-#'    \item{\code{null.matirx:}}{null model in matrix form}
-#'    \item{\code{individual:}}{individuals in experiment (factor)}
-#'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, 
-#'    phenoData) created in function}
-#'  }
+#' @return \code{\linkS4class{deSet}} object 
 #'  
 #' @examples 
 #' # create ExpressionSet object from kidney dataset 
@@ -42,7 +31,7 @@
 #' # create deSet object from data
 #' de_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, 
 #' sampling = "timecourse", basis.df = 4)
-#' @seealso \code{\link{deSet}}
+#' @seealso \code{\linkS4class{deSet}}
 #' @author John Storey, Andy Bass 
 #' @export
 build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL, 
@@ -162,29 +151,20 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
   return(edgeObj)  
 }
 
-#' Generate full and null hypothesis in deSet object
+#' Generate a deSet object with full and null models
 #'
-#' \code{build_models} is a function to create a deSet without an 
-#' ExpressionSet. Full and null models are inputted by users. 
+#' \code{build_models} creates a \code{\link{deSet}} object. The user inputs 
+#' the full and null models. 
 #' 
 #' @param data \code{matrix}: gene expression data.
-#' @param cov \code{data.frame}: biological covariates.
-#' @param full.model \code{formula}: the adjustment and the biological variables of 
-#' interest.
+#' @param cov \code{data.frame}: the covariates in the study.
+#' @param full.model \code{formula}: the adjustment and the biological 
+#' variables of interest.
 #' @param null.model \code{formula}: the adjustment variables. 
-#' @param ind \code{factor}: individuals sampled in the study.
+#' @param ind \code{factor}: individuals sampled in the study. Default is 
+#' NULL. Optional.
 #' 
-#' @return \code{build_models} returns an \code{\linkS4class{deSet}} object 
-#' with the following slots assigned:
-#' \describe{
-#'    \item{\code{full.model:}}{full model equation}
-#'    \item{\code{null.model:}}{null model equation}
-#'    \item{\code{full.matrix:}}{full model in matrix form}
-#'    \item{\code{null.matirx:}}{null model in matrix form}
-#'    \item{\code{individual:}}{individuals in experiment (factor)}
-#'    \item{\code{ExpressionSet:}}{inherits ExpressionSet object (assayData, 
-#'    phenoData) created in function}
-#'  }
+#' @return \code{\linkS4class{deSet}} object 
 #'  
 #' @examples 
 #' # create ExpressionSet object from kidney dataset
