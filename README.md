@@ -3,13 +3,13 @@ edge: Extraction of Differential Expression Analysis
 
 Introduction
 ------
-The edge package implements methods for carrying out differential 
-expression analyses of genome-wide gene expression studies. Significance 
-testing using the optimal discovery procedure and generalized likelihood 
-ratio tests (equivalent to F-tests and t-tests) are implemented for general study 
-designs. Special functions are available to facilitate the analysis of 
-common study designs, including time course experiments. Other packages 
-such as [snm](http://www.bioconductor.org/packages/release/bioc/html/snm.html), [sva](http://www.bioconductor.org/packages/release/bioc/html/sva.html), and [qvalue](https://github.com/jdstorey/qvalue) are integrated in edge to provide a wide range 
+The edge package implements methods for carrying out differential
+expression analyses of genome-wide gene expression studies. Significance
+testing using the optimal discovery procedure and generalized likelihood
+ratio tests (equivalent to F-tests and t-tests) are implemented for general study
+designs. Special functions are available to facilitate the analysis of
+common study designs, including time course experiments. Other packages
+such as [snm](http://www.bioconductor.org/packages/release/bioc/html/snm.html), [sva](http://www.bioconductor.org/packages/release/bioc/html/sva.html), and [qvalue](https://github.com/jdstorey/qvalue) are integrated in edge to provide a wide range
 of tools for gene expression analysis.
 
 
@@ -21,7 +21,7 @@ To install, open R and type:
     library("devtools")
     install_github("jdstorey/qvalue", build_vignettes = TRUE)
     install_github("jdstorey/edge", build_vignettes = TRUE)
-    
+
 Instructions on using edge can be viewed by typing:
 
     library("edge")
@@ -40,7 +40,7 @@ Instructions on using edge can be viewed by typing:
 
 ### Quick start guide
 
-To get started, first load the kidney dataset included in the package: 
+To get started, first load the kidney dataset included in the package:
 ```
 library(edge)
 data(kidney)
@@ -60,13 +60,13 @@ full_model <- fullModel(edge_obj)
 null_model <- nullModel(edge_obj)
 ```
 
-The variable `sampling` describes the type of experiment performed, `adj.var` is the adjustment variable and `tme` is the time variable in the study. If the experiment is more complex then type `?build_study` for additional arguments.  
+The variable `sampling` describes the type of experiment performed, `adj.var` is the adjustment variable and `tme` is the time variable in the study. If the experiment is more complex then type `?build_study` for additional arguments.
 
 If the alternative and null models are known to the user then `build_models` can be used to make a deSet object:
 ```
 library(splines)
-cov <- data.frame(sex = sex, age = age) 
-null_model <- ~sex 
+cov <- data.frame(sex = sex, age = age)
+null_model <- ~sex
 full_model <- ~sex + ns(age, df=4)
 edge_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, full.model = full_model)
 ```
