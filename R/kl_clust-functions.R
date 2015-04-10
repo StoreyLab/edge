@@ -8,51 +8,51 @@ klmod <- function(de.fit, nf, n.mods = 50) {
   sigma2 <- rowSums(de.fit@res.full ^ 2) / (n - nf)
   int.n.mods <- n.mods
   orig.n.mods <- n.mods
-  int.center <- sample(x = m, 
-                       size = n.mods, replace = FALSE)    
+  int.center <- sample(x = m,
+                       size = n.mods, replace = FALSE)
   center.fitFull <- de.fit@fit.full[int.center, ]
   center.var <- sigma2[int.center]
-  
+
   eps <- 0.1
   mod.member <- NULL
-  KL <- matrix(nrow = m, 
+  KL <- matrix(nrow = m,
                ncol = n.mods)
   itr <- 0
   KL.cutoff <- 1
-  
+
   pos.center.fitFull <- center.fitFull
   pos.center.var <- center.var
   while (KL.cutoff > eps) {
     itr <- itr + 1
     pre.center.fitFull <- pos.center.fitFull
     pre.center.var <- pos.center.var
-    
+
     temp.center.fitFull <- as.vector(t(center.fitFull))
     temp.fitFull <- as.vector(t(de.fit@fit.full))
-    
-    kldd <- t(matrix(kl(temp.center.fitFull, temp.fitFull, center.var, 
+
+    kldd <- t(matrix(kl(temp.center.fitFull, temp.fitFull, center.var,
                         sigma2, n=n), ncol=m))
-    mod.member = apply(kldd, 1, function(x) which.min(x))    
-    
-    # First of all, we check whether there is any cluster that does not 
-    # include any gene. For this case, we exclude this cluster from the 
-    # original clusters. Therefore, it reduces the number of clusters 
+    mod.member = apply(kldd, 1, function(x) which.min(x))
+
+    # First of all, we check whether there is any cluster that does not
+    # include any gene. For this case, we exclude this cluster from the
+    # original clusters. Therefore, it reduces the number of clusters
     notempty <- 1:n.mods %in% unique(mod.member)
     #    notempty <- sort(unique(mod.member))
     # all.equal(notempty, notempty2)
     center.fitFull <- center.fitFull[notempty, ]
     center.var <- center.var[notempty]
     KL <- KL[notempty, ]
-    
-    # Once the number of clusters were decided, we need to find new centers 
-    # for each cluster 
+
+    # Once the number of clusters were decided, we need to find new centers
+    # for each cluster
     if (any(!notempty)) {
       n.mods <- sum(!notempty)
     }
-    
-    # Average the mean and variance over genes included in each cluster 
+
+    # Average the mean and variance over genes included in each cluster
     l <- 1
-    for (i in 1:orig.n.mods) { 
+    for (i in 1:orig.n.mods) {
       ntmp <- sum(mod.member == i)
       if (ntmp == 0) {
         next
@@ -66,18 +66,18 @@ klmod <- function(de.fit, nf, n.mods = 50) {
         l <- l + 1
       }
     }
-    
+
     pos.center.fitFull <- center.fitFull
     pos.center.var <- center.var
     if (length(pos.center.var) != length(pre.center.var)) {
-      # if the n.mods is reduced 
+      # if the n.mods is reduced
       KL.cutoff <- 1
     } else {
       KL.cutoff <- NULL
       res2 <- rowSums((pos.center.fitFull - pre.center.fitFull) ^ 2)
       normconst <- 1 / pos.center.var + 1 / pre.center.var
       centerconst <- n * ((pos.center.var / pre.center.var + pre.center.var / pos.center.var) / 2 - 1)
-      KL.cutoff <- res2 / normconst + centerconst      
+      KL.cutoff <- res2 / normconst + centerconst
     }
     KL.cutoff <- max(KL.cutoff)
   }
@@ -91,7 +91,7 @@ mod.parms <- function(de.fit, nf, nn, clMembers) {
   varNull <- rowSums(de.fit@res.null ^ 2) / (n - nn)
   mod.membership <- clMembers
   n.mods <- length(unique(mod.membership))
-  
+
   mod.fitFull <- matrix(nrow = n.mods,
                         ncol = n)
   n.per.mod <- vector(length = n.mods)
@@ -105,14 +105,14 @@ mod.parms <- function(de.fit, nf, nn, clMembers) {
     } else {
       n.per.mod[i] <- sum(mod.membership == i)
       mod.fitFull[i, ] <- colMeans(de.fit@fit.full[mod.membership == i, ])
-    }			
+    }
     mod.varNull[i] <- mean(varNull[mod.membership == i])
     mod.varFull[i] <- mean(varFull[mod.membership == i])
   }
   mod.fitNull <- 0*mod.fitFull
   # Assign slots
-  return(list(mu.full = mod.fitFull, sig.full = sqrt(mod.varFull), 
-              mu.null = mod.fitNull, sig.null = sqrt(mod.varNull), 
+  return(list(mu.full = mod.fitFull, sig.full = sqrt(mod.varFull),
+              mu.null = mod.fitNull, sig.null = sqrt(mod.varNull),
               n.per.mod = n.per.mod, clustMembers = clMembers))
 }
 
@@ -121,7 +121,7 @@ kl <- function(temp.center.fitFull, temp.fitFull, center.var, sigma2, n) {
   m <- length(sigma2)
   n.cluster <- length(center.var)
   # C function to calculate kl distance
-  kldd <- .C("kldistance", 
+  kldd <- .C("kldistance",
              centerFit=as.double(temp.center.fitFull),
              centerVar=as.double(center.var),
              fit=as.double(temp.fitFull),
@@ -131,7 +131,7 @@ kl <- function(temp.center.fitFull, temp.fitFull, center.var, sigma2, n) {
              n=as.integer(n),
              kldd=double(m * n.cluster))$kldd
   return(kldd)
-}  
+}
 
 mod.df = function(x) {
   df = try(sum(diag(x%*%solve(t(x)%*%x)%*%t(x))), silent=TRUE)

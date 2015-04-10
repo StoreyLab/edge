@@ -13,7 +13,7 @@ R_CMethodDef cMethods[] = {
   {"odpScoreCluster", (DL_FUNC) &odpScoreCluster, 9, odpScoreCluster_t},
   {"kldistance", (DL_FUNC) &kldistance, 8, kldistance_t},
   {NULL, NULL, 0}
-   
+
 };
 
 void R_init_edge(DllInfo *info) {

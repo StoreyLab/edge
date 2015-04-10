@@ -1,4 +1,4 @@
-bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100, 
+bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
                       verbose = TRUE) {
   n.probes <- nrow(obs.fit@res.full)
   nf <- mod.df(object@full.matrix)
@@ -12,19 +12,19 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
     }
     exprs(object) <- null(obs.fit = obs.fit, nf = nf,
                           ind = object@individual)
-    null.fit <- fit_models(object, 
+    null.fit <- fit_models(object,
                            stat.type = sType)
     if (sType == "lrt") {
-      null.stat[, i]  <-  lrtStat(resNull = null.fit@res.null, 
+      null.stat[, i]  <-  lrtStat(resNull = null.fit@res.null,
                                   resFull = null.fit@res.full)
     }
     else {
-      null.stat[, i]  <- odpStat(n.res = null.fit@res.null, 
+      null.stat[, i]  <- odpStat(n.res = null.fit@res.null,
                                  clustParms = clustParms)
     }
   }
   return(null.stat)
-}    
+}
 rescale <- function(x, sig) {
   means <- rowMeans(x)
   n <- ncol(x)
@@ -42,7 +42,7 @@ null <- function(obs.fit, nf, ind) {
     ind <- NULL
     wts <- rep(1, n)
   }
-  wts <- wts * sqrt(1 - obs.fit@dH.full) 
+  wts <- wts * sqrt(1 - obs.fit@dH.full)
   res.full <- t(t(obs.fit@res.full) / wts)
   # Random mix columns of residuals from full model
   vv <- sample(1:n, replace = TRUE)
@@ -52,7 +52,7 @@ null <- function(obs.fit, nf, ind) {
     null.dat <- obs.fit@fit.null + bs.res
   } else {
     sig1 <- sqrt(rowSums(obs.fit@res.full ^ 2) / (n - nf))
-    bs.res <- rescale(x = bs.res, 
+    bs.res <- rescale(x = bs.res,
                       sig = sig1)
     null.dat <- obs.fit@fit.null + bs.res
   }
@@ -73,7 +73,7 @@ createSet <- function(object, nMod=NULL, fMod=NULL, ind=NULL, grp=factor(NA)) {
   colnames(mmf) <- NULL
   colnames(mmn) <- NULL
   object@null.matrix <- mmn
-  object@full.matrix <- mmf 
+  object@full.matrix <- mmf
   object@individual <- as.factor(ind)
   validObject(object)
   object

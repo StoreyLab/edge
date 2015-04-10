@@ -42,7 +42,7 @@ foo <- packageDescription("edge")
 
 \maketitle
 
-\Large 
+\Large
 \begin{center}
 
 First edition: October 2005
@@ -51,9 +51,9 @@ Most recent edition:  March 2015
 \end{center}
 \normalsize
 
-\ 
+\
 
-\ 
+\
 
 \noindent {\bf Note:}  \edge was first released in 2005 and described in the publication \cite{leek2005}.  It was an independently released R package by the John Storey Lab, which included multi-threading and a graphical user interface.  However, the current version is now available through Bioconductor as a standard R package.
 
@@ -64,13 +64,13 @@ Most recent edition:  March 2015
 
 %\clearpage
 \section{Introduction}
-The \edge package implements methods for carrying out differential 
-expression analyses of genome-wide gene expression studies. Significance 
-testing using the optimal discovery procedure and generalized likelihood 
-ratio test (equivalent to F-tests and t-tests) are implemented for general study 
-designs. Special functions are available to facilitate the analysis of 
-common study designs, including time course experiments. Specifically, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. Other packages 
-such as {\tt snm}, {\tt sva}, and {\tt qvalue} are integrated in \edge to provide a wide range 
+The \edge package implements methods for carrying out differential
+expression analyses of genome-wide gene expression studies. Significance
+testing using the optimal discovery procedure and generalized likelihood
+ratio test (equivalent to F-tests and t-tests) are implemented for general study
+designs. Special functions are available to facilitate the analysis of
+common study designs, including time course experiments. Specifically, \cite{storey:2005} developed a procedure that simplifies the modelling process for time course experiments. Other packages
+such as {\tt snm}, {\tt sva}, and {\tt qvalue} are integrated in \edge to provide a wide range
 of tools for gene expression analysis.
 
 \edge performs significance analysis by using a framework developed by \cite{storey:2007} called the optimal discovery procedure (ODP). Whereas standard methods employ statistics that are essentially designed for testing one gene at a time (e.g., t-statistics and F-statistics), the ODP-statistic uses information across all genes to test for differential expression. \cite{storey:etal:2007} shows that the ODP is a principled, often times more powerful, approach to multiple hypothesis testing compared to traditional methods. The improvements in power from using the optimal discovery procedure can be substantial; Figure~\ref{fig:Comparison} shows a comparison between \edge and five leading software packages based on the \cite{hedenfalk:2001} breast cancer expression study.
@@ -98,7 +98,7 @@ Discusses various ways of estimating the ODP statistic with applications to micr
 Previous implementations of the ODP are computationally infeasible for a large number of hypothesis tests. This paper introduces a computationally efficient implementation of ODP that this package is based on.
 
 \textbf{\bibentry{storey:2005}} \\
-A methodology for analyzing time course microarray data is introduced and applied to two time course studies on humans. 
+A methodology for analyzing time course microarray data is introduced and applied to two time course studies on humans.
 
 \section{Getting help}
 Hopefully, most questions relating to the package will be answered in this vignette but to get a more detailed account of how to use the functions simply type within R:
@@ -108,7 +108,7 @@ help(package="edge")
 \noindent If you identify bugs related to basic usage please contact the authors directly.  Otherwise, any questions or problems regarding \edge will most efficiently be addressed on the Bioconductor support site, \url{https://support.bioconductor.org/}.
 
 \section{Quick start guide}
-To get started, first load the {\tt kidney} dataset included in the package: 
+To get started, first load the {\tt kidney} dataset included in the package:
 <<qs_load_data>>=
 library(edge)
 data(kidney)
@@ -125,13 +125,13 @@ full_model <- fullModel(de_obj)
 null_model <- nullModel(de_obj)
 @
 
-The variable {\tt sampling} describes the type of experiment performed, {\tt adj.var} is the adjustment variable and {\tt time} is the time variable in the study. If the experiment is more complex then type {\tt ?build\_study} for additional arguments.  
+The variable {\tt sampling} describes the type of experiment performed, {\tt adj.var} is the adjustment variable and {\tt time} is the time variable in the study. If the experiment is more complex then type {\tt ?build\_study} for additional arguments.
 
 If the full and null models are known to the user then {\tt build\_models} can be used to make an {\tt deSet} object:
 <<qs_build_models, echo=TRUE, cache=TRUE>>=
 library(splines)
-cov <- data.frame(sex = sex, age = age) 
-null_model <- ~sex 
+cov <- data.frame(sex = sex, age = age)
+null_model <- ~sex
 full_model <- ~sex + ns(age, df=4)
 de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, full.model = full_model)
 @
@@ -172,7 +172,7 @@ batch <- gibson$batch
 gender <- gibson$gender
 location <- gibson$location
 @
-There are a few variables in the data set: {\tt batch}, {\tt gibexpr}, {\tt gender}, and {\tt location}. The three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. The biological variable is the {\tt location} variable, which contains information on where individuals are sampled: ``VILLAGE'', ``DESERT'' or ``AGADIR''. The {\tt gender} variable specifies whether the individual is a male or a female and there are two different {\tt batches} in the study. The {\tt gibexpr} variable contains the gene expression measurements. 
+There are a few variables in the data set: {\tt batch}, {\tt gibexpr}, {\tt gender}, and {\tt location}. The three covariates of interest are {\tt gender}, {\tt batch} and {\tt location}. The biological variable is the {\tt location} variable, which contains information on where individuals are sampled: ``VILLAGE'', ``DESERT'' or ``AGADIR''. The {\tt gender} variable specifies whether the individual is a male or a female and there are two different {\tt batches} in the study. The {\tt gibexpr} variable contains the gene expression measurements.
 
 As an example, the expression values of the first gene are shown in Figure~\ref{fig:gplot}. In the figure, it appears that the individuals from ``VILLAGE'' are more expressed when compared to other lifestyles. We should stop short of that observation because the data needs to be adjusted with the experimental models. Before that, the full and null model of the study needs to be carefully formulated which is discussed in the next section.
 
@@ -189,7 +189,7 @@ qplot(location, gibexpr[1,], geom="point", colour=gender:batch, xlab= "location"
 \label{fig:gplot}
 \end{figure}
 \subsection{Creating the full and null models}
-In order to find deferentially expressed genes, there first needs to be an full and null model for the study. There are two ways to input the experimental models in \edgeNS: {\tt build\_models} and {\tt build\_study}. {\tt build\_study} should be used by users unfamiliar with formulating the full and null models but are familiar with the covariates in the study: 
+In order to find deferentially expressed genes, there first needs to be an full and null model for the study. There are two ways to input the experimental models in \edgeNS: {\tt build\_models} and {\tt build\_study}. {\tt build\_study} should be used by users unfamiliar with formulating the full and null models but are familiar with the covariates in the study:
 <<gibson_build_study, dependson="gibson_import_data", cache=TRUE>>=
 de_obj <- build_study(data = gibexpr, adj.var = cbind(gender, batch), grp = location, sampling = "static")
 @
@@ -204,16 +204,16 @@ null_model <- ~Gender + Batch + Location
 de_obj <- build_models(data = gibexpr, cov = cov, full.model = null_model, null.model = null_model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the full and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt gender} and {\tt batch} covariates and the full model includes the {\tt location} variable. Therefore, we are interested in testing whether the full model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference between Moroccan Amazigh groups for this particular gene. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the full and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt gender} and {\tt batch} covariates and the full model includes the {\tt location} variable. Therefore, we are interested in testing whether the full model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference between Moroccan Amazigh groups for this particular gene.
 
-The variable {\tt de\_obj} is an {\tt deSet} object that stores all the relevant experimental data. The {\tt deSet} object is discussed further in the next section. 
+The variable {\tt de\_obj} is an {\tt deSet} object that stores all the relevant experimental data. The {\tt deSet} object is discussed further in the next section.
 
 \subsection{The {\tt deSet} object}
 Once either {\tt build\_models} or {\tt build\_study} is used, an {\tt deSet} object is created. To view the slots contained in the object:
 <<gibson_deSet_slotNames>>=
 slotNames(de_obj)
 @
-A description of each slot is listed below: 
+A description of each slot is listed below:
 \begin{itemize}
 \item {\tt full.model}: the full model of the experiment
 \item {\tt null.model}: the null model of the experiment
@@ -242,7 +242,7 @@ Next, we can extract the models in matrix form for computational analysis:
 full_matrix <- fullMatrix(de_obj)
 null_matrix <- nullMatrix(de_obj)
 @
-See {\tt ?deSet} for additional functions to access different slots of the {\tt deSet} object. 
+See {\tt ?deSet} for additional functions to access different slots of the {\tt deSet} object.
 
 \subsection{Fitting the data}
 
@@ -299,7 +299,7 @@ null_fitted <- fitNull(ef_obj)
 See {\tt ?deFit} for more details on accessing the slots in an {\tt deFit} object. The fitted values of the first gene are shown in Figure~\ref{fig:gplotFit}. The null model fit is the average expression value across the interaction of {\tt batch} and {\tt sex}. The full model fit seems to pick up some differences relative to the null model. Next, we have to test whether the observed differences between the model fits are significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the full model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the full model fits the data better than the null model. In order to conclude that it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the full model better fit the data when compared to the null model? For the fitted values of the first gene plotted in Figure~\ref{fig:gplotFit}, it seems that the full model fits the data better than the null model. In order to conclude that it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test.
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
@@ -362,11 +362,11 @@ Making significance decisions based on p-values in multiple hypothesis testings 
 qvalues[1]
 @
 
-So for this particular gene, the q-value is \Sexpr{qvalues[1]}. If we consider a false discovery rate cutoff of 0.1 then this gene is significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are significant so this particular gene is differentially expressed between locations. 
+So for this particular gene, the q-value is \Sexpr{qvalues[1]}. If we consider a false discovery rate cutoff of 0.1 then this gene is significant. Therefore, the observed differences observed in Figure~\ref{fig:gplotFit} are significant so this particular gene is differentially expressed between locations.
 
 To get a list of all the significant genes at a false discovery rate cutoff of 0.01:
 <<gibSig, dependson="qvalob2_gib">>=
-fdr.level <- 0.01 
+fdr.level <- 0.01
 sigGenes <- qvalues < fdr.level
 @
 
@@ -403,7 +403,7 @@ There are a few covariates in this data set: {\tt sex}, {\tt age}, {\tt tissue},
 As an example of a gene in the study, the expression values of the fifth gene are shown in Figure~\ref{fig:kplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study which is discussed in the next section.
 
 \subsection{Creating the full and null models}
-In order to find differentially expressed genes, the full and null model for the study need to be formulated. There are two ways to input the experimental models in \edgeNS: {\tt build\_models} and {\tt build\_study}. {\tt build\_study} should be used by users unfamiliar with formulating the full and null models but are familiar with the covariates in the study: 
+In order to find differentially expressed genes, the full and null model for the study need to be formulated. There are two ways to input the experimental models in \edgeNS: {\tt build\_models} and {\tt build\_study}. {\tt build\_study} should be used by users unfamiliar with formulating the full and null models but are familiar with the covariates in the study:
 <<kidney_build_study, dependson="kidney_variables", cache=TRUE>>=
 de_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse", basis.df = 4)
 @
@@ -415,7 +415,7 @@ fullModel(de_obj)
 nullModel(de_obj)
 @
 
-Notice that the difference between the full and null model is the  natural spline fit of the {\tt age} variable. If we look at Figure~\ref{fig:kplot}, it becomes evident that a spline curve can be used to approximate the fit of the data, and 4 degrees of freedom is chosen based on previous analysis of the expression patterns. See \cite{storey:2005} for a detailed discussion on modelling in time course studies. 
+Notice that the difference between the full and null model is the  natural spline fit of the {\tt age} variable. If we look at Figure~\ref{fig:kplot}, it becomes evident that a spline curve can be used to approximate the fit of the data, and 4 degrees of freedom is chosen based on previous analysis of the expression patterns. See \cite{storey:2005} for a detailed discussion on modelling in time course studies.
 
 Alternatively, if the user is familiar with their full and null models in the study then {\tt build\_models} can be used to input the models directly:
 <<kidney_build_models, dependson="import_data_kid">>=
@@ -426,9 +426,9 @@ null_model <- ~sex + ns(age, df=4)
 de_obj <- build_models(data = kidexpr, cov = cov, full.model = null_model, null.model = null_model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the full and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the full model includes the {\tt age} variable. Therefore, we are interested in testing whether the full model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in the gene as it ages in the cortex. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the full and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. The null model contains the {\tt sex} covariate and the full model includes the {\tt age} variable. Therefore, we are interested in testing whether the full model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in the gene as it ages in the cortex.
 
-The variable {\tt de\_obj} is an {\tt deSet} object that stores all the relevant experimental data. The {\tt deSet} object is discussed further in the next section. 
+The variable {\tt de\_obj} is an {\tt deSet} object that stores all the relevant experimental data. The {\tt deSet} object is discussed further in the next section.
 
 \subsection{The {\tt deSet} object}
 \label{subsec:deSet}
@@ -436,7 +436,7 @@ Once either {\tt build\_models} or {\tt build\_study} is used, an {\tt deSet} ob
 <<kidney_deSet_slotNames>>=
 slotNames(de_obj)
 @
-A description of each slot is listed below: 
+A description of each slot is listed below:
 \begin{itemize}
 \item {\tt full.model}: the full model of the experiment
 \item {\tt null.model}: the null model of the experiment
@@ -464,7 +464,7 @@ Next, we can extract the models in matrix form for computational analysis:
 full_matrix <- fullMatrix(de_obj)
 null_matrix <- nullMatrix(de_obj)
 @
-See {\tt ?deSet} for additional functions to access different slots of the {\tt deSet} object. 
+See {\tt ?deSet} for additional functions to access different slots of the {\tt deSet} object.
 
 \subsection{Fitting the data}
 
@@ -520,7 +520,7 @@ null_fitted <- fitNull(ef_obj)
 See {\tt ?deFit} for more details on accessing the slots in a {\tt deFit} object. The fitted values of the fifth gene is shown in Figure~\ref{fig:kplotFit}. The null model fit is the average expression. It appears that the full model fits the raw data better than the null model. Next, we have to test whether the observed differences between the model fits are significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the full model better fit the data when compared to the null model? For the fitted values of the fifth gene plotted in Figure~\ref{fig:kplotFit}, it seems that the full model fits the data better than the null model. In order to conclude it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the full model better fit the data when compared to the null model? For the fitted values of the fifth gene plotted in Figure~\ref{fig:kplotFit}, it seems that the full model fits the data better than the null model. In order to conclude it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test.
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
@@ -587,7 +587,7 @@ Making significance decisions based on p-values in multiple hypothesis testings 
 qvalues[5]
 @
 
-So for this particular gene, the q-value is \Sexpr{qvalues[5]}. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:kplotFit} are not significant so this particular gene is not differentially expressed as the kidney ages. 
+So for this particular gene, the q-value is \Sexpr{qvalues[5]}. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:kplotFit} are not significant so this particular gene is not differentially expressed as the kidney ages.
 
 To get a list of all the significant genes at a false discovery rate cutoff of 0.1:
 <<kidney_sigList, dependson="kidney_extract">>=
@@ -613,11 +613,11 @@ time <- endotoxin$time
 
 There are a few covariates in this data set: {\tt endoexpr}, {\tt class}, {\tt ind}, and {\tt time}. There are 8 individuals in the experiment ({\tt ind}) that were sampled at multiple time points ({\tt time}) that were either ``endotoxin'' or ``control'' ({\tt class}). The {\tt expr} variable contains the expression values of the experiment:
 
-To show an example gene, the expression values of the second gene are shown in Figure~\ref{fig:eplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study. 
+To show an example gene, the expression values of the second gene are shown in Figure~\ref{fig:eplot}. It is very difficult to find a trend for this particular gene. Instead, we need to adjust the data with the models in the study.
 \begin{figure}[t]
  \centering
 <<fig.height=4, fig.width=8, echo=FALSE, dependson="endotoxin_import_data">>=
-library(ggplot2) 
+library(ggplot2)
 
 qplot(time, endoexpr[2,], geom="point", colour=class, xlab= "time (hours)", ylab="expression")
 @
@@ -626,7 +626,7 @@ qplot(time, endoexpr[2,], geom="point", colour=class, xlab= "time (hours)", ylab
 \end{figure}
 
 \subsection{Creating the full and null models}
-In order to find differentially expressed genes, there first needs to be an full and null model for the study. There are two ways to input the experimental models in \edgeNS: {\tt build\_models} and {\tt build\_study}. {\tt build\_study} should be used by users unfamiliar with formulating the full and null models but are familiar with the covariates in the study: 
+In order to find differentially expressed genes, there first needs to be an full and null model for the study. There are two ways to input the experimental models in \edgeNS: {\tt build\_models} and {\tt build\_study}. {\tt build\_study} should be used by users unfamiliar with formulating the full and null models but are familiar with the covariates in the study:
 <<endotoxin_build_study, dependson="endotoxin_import_data", cache=TRUE>>=
 de_obj <- build_study(data = endoexpr, grp = class, tme = time, ind = ind, sampling = "timecourse")
 @
@@ -645,16 +645,16 @@ null_model <- ~grp + ns(tme, df = 2, intercept = FALSE) + (grp):ns(tme, df = 2, 
 de_obj <- build_models(data = endoexpr, cov = cov, full.model = null_model, null.model = null_model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the full and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the full model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene between the endotoxin and the control as time goes on. 
+The {\tt cov} argument is a data frame of all the relevant covariates, {\tt full.model} and {\tt null.model} are the full and null models of the experiment, respectively. Notice that the models must be formatted as a formula and contain the same variable names as in the {\tt cov} data frame. We are interested in testing whether the full model improves the model fit of a gene significantly when compared to the null model. If it does not, then we can conclude that there is no significant difference in this gene between the endotoxin and the control as time goes on.
 
-The variable {\tt de\_obj} is an {\tt deSet} object that stores all the relevant experimental data. The {\tt deSet} object is discussed further in the next section. 
+The variable {\tt de\_obj} is an {\tt deSet} object that stores all the relevant experimental data. The {\tt deSet} object is discussed further in the next section.
 
 \subsection{The {\tt deSet} object}
 Once either {\tt build\_models} or {\tt build\_study} is used, an {\tt deSet} object is created. To view the slots contained in the object:
 <<endotoxin_slotNames>>=
 slotNames(de_obj)
 @
-A description of each slot is listed below: 
+A description of each slot is listed below:
 \begin{itemize}
 \item {\tt full.model}: the full model of the experiment
 \item {\tt null.model}: the null model of the experiment
@@ -682,7 +682,7 @@ Next, we can extract the models in matrix form for computational analysis:
 full_matrix <- fullMatrix(de_obj)
 null_matrix <- nullMatrix(de_obj)
 @
-See {\tt ?deSet} for additional functions to access different slots of the {\tt deSet} object. 
+See {\tt ?deSet} for additional functions to access different slots of the {\tt deSet} object.
 
 \subsection{Fitting the data}
 The {\tt fit\_models} function is an implementation of least squares using the full and null models:
@@ -738,7 +738,7 @@ null_fitted <- fitNull(ef_obj)
 See {\tt ?deFit} for more details on accessing the slots in an {\tt deFit} object. The fitted values of the second gene is shown in Figure~\ref{fig:eplotFit}. The null model fit is the average expression. It appears that the full model fits a pattern that might be observed in the raw data. Next, we have to test whether the observed differences between the model fits are significant.
 
 \subsection{Significance analysis}
-Interpreting the models in a hypothesis test is very intuitive: Does the full model better fit the data when compared to the null model? For the fitted values of the second gene plotted in Figure~\ref{fig:eplotFit}, it seems that the full model fits the data better than the null model. In order to conclude it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test. 
+Interpreting the models in a hypothesis test is very intuitive: Does the full model better fit the data when compared to the null model? For the fitted values of the second gene plotted in Figure~\ref{fig:eplotFit}, it seems that the full model fits the data better than the null model. In order to conclude it is significant, we need to calculate the p-value. The user can use either the optimal discovery procedure or likelihood ratio test.
 
 \subsubsection{Likelihood ratio test}
 The {\tt lrt} function performs a likelihood ratio test to determine p-values:
@@ -798,7 +798,7 @@ Making significance decisions based on p-values in multiple hypothesis testings 
 qvalues[2]
 @
 
-So for this particular gene, the q-value is \Sexpr{qvalues[2]}. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:eplotFit} are not significant so this particular gene is not differentially expressed between {\tt class} as time varies. 
+So for this particular gene, the q-value is \Sexpr{qvalues[2]}. If we consider a false discovery rate cutoff of 0.1 then this gene is not significant. Therefore, the observed differences observed in Figure~\ref{fig:eplotFit} are not significant so this particular gene is not differentially expressed between {\tt class} as time varies.
 
 To get a list of all the significant genes at a false discovery rate cutoff of 0.1:
 <<endotoxin_sigList, dependson="endotoxin_extract">>=
@@ -958,5 +958,5 @@ pi0 <- qval_obj$pi0
 This software development has been supported in part by funding from the National Institutes of Health and the Office of Naval Research.
 
 \bibliographystyle{plainnat}
-\bibliography{edgerefs} 
+\bibliography{edgerefs}
 \end{document}

@@ -13,7 +13,7 @@ updateOldExpSet <- function(from, toClass, ...) {  # to deSet
   object
 }
 #' @rdname deSet
-setMethod("deSet", 
+setMethod("deSet",
           signature = signature(object = "ExpressionSet"),
           function(object,
                    full.model,
@@ -25,12 +25,12 @@ setMethod("deSet",
               if (length(individual) != ncol(exprs(object))) {
                 stop("ind must be the same length as the number of arrays")
               }
-            } 
+            }
             if (missing(full.model) || missing(null.model)) {
               stop("provide both full and null models")
-            } 
+            }
             createSet(deObj,
-                      nMod = null.model, 
-                      fMod= full.model, 
+                      nMod = null.model,
+                      fMod= full.model,
                       ind = individual)
           })

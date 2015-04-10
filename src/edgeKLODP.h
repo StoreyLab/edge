@@ -14,7 +14,7 @@ void odpScoreCluster(double *, double *, double *, int *, int *, int *, int *, i
 void kldistance(double *, double *, double *, double *, int *, int *, int *, double *);
 
 /***********************************************************************
-  utility functions 
+  utility functions
 ***********************************************************************/
 void sortQK(int, int, int, double *);
 void swapQK(int, int, double *);

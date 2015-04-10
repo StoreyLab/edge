@@ -1,42 +1,42 @@
 #' Formulates the experimental models
 #'
-#' \code{build_study} generates the full and null models for users unfamiliar 
-#' with their experimental design. There are two types of experimental designs: 
-#' static and time-course. For more details, refer to the user manual.  
-#' 
+#' \code{build_study} generates the full and null models for users unfamiliar
+#' with their experimental design. There are two types of experimental designs:
+#' static and time-course. For more details, refer to the user manual.
+#'
 #' @param data \code{matrix}: gene expression data.
-#' @param sampling \code{string}: type of experiment. Either "static" or 
+#' @param sampling \code{string}: type of experiment. Either "static" or
 #' "timecourse". Default is "static".
 #' @param grp \code{vector}: groups or biological variable in experiment. Optional.
-#' @param tme \code{vector}: covariate of interest in time course study. Optional. 
-#' @param ind \code{factor}: individual factor for repeated observations of 
-#' the same individuals. Optional. 
+#' @param tme \code{vector}: covariate of interest in time course study. Optional.
+#' @param ind \code{factor}: individual factor for repeated observations of
+#' the same individuals. Optional.
 #' @param bio.var \code{matrix}: biological variables. Optional.
-#' @param basis.df \code{numeric}: degree of freedom of the spline fit for time 
+#' @param basis.df \code{numeric}: degree of freedom of the spline fit for time
 #' course study. Default is 2.
 #' @param basis.type \code{string}: either "ncs" or "ps" basis for time course
 #'  study. Default is "ncs".
 #' @param adj.var \code{matrix}: adjustment variables. Optional.
-#'  
-#' @return \code{\linkS4class{deSet}} object 
-#'  
-#' @examples 
-#' # create ExpressionSet object from kidney dataset 
-#' library(splines) 
+#'
+#' @return \code{\linkS4class{deSet}} object
+#'
+#' @examples
+#' # create ExpressionSet object from kidney dataset
+#' library(splines)
 #' data(kidney)
 #' age <- kidney$age
 #' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
-#' 
+#'
 #' # create deSet object from data
-#' de_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, 
+#' de_obj <- build_study(data = kidexpr, adj.var = sex, tme = age,
 #' sampling = "timecourse", basis.df = 4)
 #' @seealso \code{\linkS4class{deSet}}, \code{\link{build_models}}
-#' @author John Storey, Andy Bass 
+#' @author John Storey, Andy Bass
 #' @export
-build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL, 
-                     tme = NULL, ind = NULL, 
-                     sampling = c("static", "timecourse"), basis.df = 2, 
+build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
+                     tme = NULL, ind = NULL,
+                     sampling = c("static", "timecourse"), basis.df = 2,
                      basis.type = c("ncs", "poly")) {
   n <- ncol(data)
   m <- nrow(data)
@@ -78,10 +78,10 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
     } else {
       pdat <- data.frame(adj.var, bio.var)
       fmod <- paste("~", paste(names(pdat), collapse=" + "))
-      nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
+      nmod <- paste("~", paste(names(adj.var), collapse=" + "))
     }
   } else {
-    sampling <- match.arg(sampling, choices=c("static", "timecourse")) 
+    sampling <- match.arg(sampling, choices=c("static", "timecourse"))
     if (!is.null(grp)) {
       if (is.factor(grp)) {
         grp <- data.frame(grp = as.factor(grp))
@@ -103,15 +103,15 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
       }
       if (is.null(adj.var)) {
         pdat <- data.frame(grp)
-        nmod <- "~1" 
+        nmod <- "~1"
         fmod <- paste("~", paste(names(pdat), collapse=" + "))
-      } else {  
+      } else {
         pdat <- data.frame(adj.var, grp)
         fmod <- paste("~", paste(names(pdat), collapse=" + "))
-        nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
+        nmod <- paste("~", paste(names(adj.var), collapse=" + "))
       }
     }
-  
+
     if (sampling == "timecourse") {
       basis.type <- match.arg(basis.type)
       varName <- colnames(data.frame(tme))
@@ -124,19 +124,19 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
       if (g == 1) {
         # time course with no groups
         if (is.null(adj.var)) {
-          pdat <- data.frame(tme) 
-          nmod <- "~1" 
-          fmod <- paste("~", time.basis) 
+          pdat <- data.frame(tme)
+          nmod <- "~1"
+          fmod <- paste("~", time.basis)
         } else {
-          pdat <- data.frame(adj.var, tme) 
-          fmod <- paste("~", paste(names(adj.var), collapse=" + "), "+", time.basis) 
-          nmod <- paste("~", paste(names(adj.var), collapse=" + ")) 
-        }  
+          pdat <- data.frame(adj.var, tme)
+          fmod <- paste("~", paste(names(adj.var), collapse=" + "), "+", time.basis)
+          nmod <- paste("~", paste(names(adj.var), collapse=" + "))
+        }
       } else {
         if (is.null(adj.var)) {
           pdat <- data.frame(tme, grp)
         } else {
-          pdat <- data.frame(tme, adj.var, grp) 
+          pdat <- data.frame(tme, adj.var, grp)
         }
         # time course with groups
         nmod <- paste(paste("~", paste(names(pdat)[-1], collapse=" + ")), "+", time.basis)
@@ -146,46 +146,46 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
   exp_set <- new("ExpressionSet")
   pData(exp_set) <- data.frame(pdat)
   exprs(exp_set) <- as.matrix(data)
-  edgeObj <- deSet(exp_set, full.model=as.formula(fmod), 
+  edgeObj <- deSet(exp_set, full.model=as.formula(fmod),
                      null.model=as.formula(nmod), individual=ind)
-  return(edgeObj)  
+  return(edgeObj)
 }
 
 #' Generate a deSet object with full and null models
 #'
-#' \code{build_models} creates a \code{\link{deSet}} object. The user inputs 
-#' the full and null models. 
-#' 
+#' \code{build_models} creates a \code{\link{deSet}} object. The user inputs
+#' the full and null models.
+#'
 #' @param data \code{matrix}: gene expression data.
 #' @param cov \code{data.frame}: the covariates in the study.
-#' @param full.model \code{formula}: the adjustment and the biological 
+#' @param full.model \code{formula}: the adjustment and the biological
 #' variables of interest.
-#' @param null.model \code{formula}: the adjustment variables. 
-#' @param ind \code{factor}: individuals sampled in the study. Default is 
+#' @param null.model \code{formula}: the adjustment variables.
+#' @param ind \code{factor}: individuals sampled in the study. Default is
 #' NULL. Optional.
-#' 
-#' @return \code{\linkS4class{deSet}} object 
-#'  
-#' @examples 
+#'
+#' @return \code{\linkS4class{deSet}} object
+#'
+#' @examples
 #' # create ExpressionSet object from kidney dataset
 #' library(splines)
 #' data(kidney)
 #' age <- kidney$age
 #' sex <- kidney$sex
 #' kidexpr <- kidney$kidexpr
-#' cov <- data.frame(sex = sex, age = age) 
-#' 
+#' cov <- data.frame(sex = sex, age = age)
+#'
 #' # create models
-#' null.model <- ~sex 
+#' null.model <- ~sex
 #' full.model <- ~sex + ns(age, df=4)
-#' 
+#'
 #' # create deSet object from data
-#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null.model, 
+#' de_obj <- build_models(data = kidexpr, cov = cov, null.model = null.model,
 #' full.model = full.model)
 #' @seealso \code{\linkS4class{deSet}}, \code{\link{build_study}}
-#' @author John Storey, Andy Bass 
+#' @author John Storey, Andy Bass
 #' @export
-build_models <- function(data, cov, full.model = NULL, null.model = NULL, 
+build_models <- function(data, cov, full.model = NULL, null.model = NULL,
                       ind = NULL) {
   n <- ncol(data)
   m <- nrow(data)
@@ -207,7 +207,7 @@ build_models <- function(data, cov, full.model = NULL, null.model = NULL,
   exprs(exp_set) <- data
   pData(exp_set) <- cov
 
-  edgeObj <- deSet(exp_set, full.model = full.model, null.model = null.model, 
+  edgeObj <- deSet(exp_set, full.model = full.model, null.model = null.model,
                    individual = ind)
-  return(edgeObj)  
+  return(edgeObj)
 }

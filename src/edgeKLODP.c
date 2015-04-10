@@ -1,7 +1,7 @@
 #include "edgeKLODP.h"
 
 /********************************************************************************************
-functions for KLODP:  
+functions for KLODP:
   odpScoreCluster: compute sum of normal densities to be used as numerator or denominator in score
   with c.member.
 ********************************************************************************************/
@@ -13,7 +13,7 @@ void odpScoreCluster(double *sumDat, double *mu, double *sigma, int *m, int *n, 
   /* if alternative component, set up a couple of vectors */
   /* allocate memory */
    first = vector(0, *m - 1);
-        
+
   /* initialize to zero */
 	for(i = 0; i < *m; i++)
       first[i] = 0.0;
@@ -21,7 +21,7 @@ void odpScoreCluster(double *sumDat, double *mu, double *sigma, int *m, int *n, 
   if(*null == 0) {
     /* allocate memory */
     middle = vector(0, *p - 1);
-  
+
     /* initialize to zero */
 	for(i = 0; i < *p; i++) {
       middle[i] = 0.0;
@@ -29,22 +29,22 @@ void odpScoreCluster(double *sumDat, double *mu, double *sigma, int *m, int *n, 
   }
 
   for(i = 0; i < *m; i++) {
-	for(j=0; j< *n ; j++){ 
+	for(j=0; j< *n ; j++){
 		  first[i] += sumDat[j + i * *n]*sumDat[j + i * *n];
 	}
   }
 
   for(i = 0; i < *m; i++) {
     scr[i] = 0.0;
-    
+
     for(g = 0; g < *p; g++) {			/* g scans genes */
       /* alternative component */
       if(*null == 0) {
          /* middle[j] += 2 * sumDat[i + (l + 1) * *m] * mu[g + l * *m];*/
-		    for(j=0; j< *n ; j++){ 
+		    for(j=0; j< *n ; j++){
 			    middle[g] += 2 * sumDat[j + i * *n]*sumDat[j + g * *n + *n * *m];
 		    }
-  		  /*last[g] += nGrp[l] * mu[g + l * *m] * mu[g + l * *m];*/ 
+  		  /*last[g] += nGrp[l] * mu[g + l * *m] * mu[g + l * *m];*/
 		    scr[i] += pow(1 / sigma[g], *n) * exp(-0.5 / sigma[g] / sigma[g] * (first[i] - middle[g] + mu[g])) * cluster[g];
       } else /* null component */
         scr[i] += pow(1 / sigma[g], *n) * exp(-0.5 / sigma[g] / sigma[g] * first[i]) * cluster[g];
@@ -70,11 +70,11 @@ void kldistance(double *centerFit, double *centerVar, double *fit, double *var, 
   int i, j, l;
   double sum;
 
-  for(i = 0; i < *m; i++) {    
+  for(i = 0; i < *m; i++) {
     for(j = 0; j < *nc; j++) {			/* l scans clusters */
 	kldd[j + i* *nc] = 0.0;
 	sum = 0.0;
-	for(l=0; l< *n ; l++){ 
+	for(l=0; l< *n ; l++){
 		sum += pow((centerFit[l + j* *n]-fit[l + i* *n]),2);
 	}
 		kldd[j + i* *nc] =  (sum * (1 / centerVar[j] + 1 / var[i]))/2 + *n * (centerVar[j] / var[i] + var[i] / centerVar[j])/2 - *n;
@@ -105,7 +105,7 @@ void sortQK(int low, int high, int n, double *w) {
 /* swap function for use with sortQK() */
 void swapQK(int i, int j, double *w) {
   double tmp = w[i];
-  
+
   w[i] = w[j];
   w[j] = tmp;
 }

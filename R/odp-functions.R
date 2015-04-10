@@ -15,9 +15,9 @@ odp.score <- function(s.dat.cl, mu, sigma, null, m, n, cluster) {
   #   scr: Vector of ODP score of each gene
   # Initilizations
   p <- length(sigma)
-  
+
   # Call to C file to compute ODP score
-  scr <- .C("odpScoreCluster", 
+  scr <- .C("odpScoreCluster",
             sumDat = as.double(s.dat.cl),
             mu = as.double(mu),
             sigma = as.double(sigma),
@@ -27,7 +27,7 @@ odp.score <- function(s.dat.cl, mu, sigma, null, m, n, cluster) {
             null = as.integer(null),
             cluster = as.integer(cluster),
             scr = double(m))$scr
-  
+
   return(scr)
 }
 
@@ -43,22 +43,22 @@ odpStat <- function(n.res, clustParms) {
   # Probabilities of alt and null distributions
   s.dat1 = c(t(n.res), t(clustParms$mu.full))
   s.dat0 = c(t(n.res), t(clustParms$mu.null))
-  cl.den <- odp.score(s.dat0, 
-                      mu = rep(0, length(clustParms$sig.null)), 
-                      sigma = clustParms$sig.null, 
-                      null = TRUE, 
-                      m = nrow(n.res), 
-                      n = ncol(n.res), 
+  cl.den <- odp.score(s.dat0,
+                      mu = rep(0, length(clustParms$sig.null)),
+                      sigma = clustParms$sig.null,
+                      null = TRUE,
+                      m = nrow(n.res),
+                      n = ncol(n.res),
                       cluster = clustParms$n.per.mod)
-  cl.num <- odp.score(s.dat1, 
-                      mu = rowSums(clustParms$mu.full ^ 2), 
-                      sigma = clustParms$sig.full, 
-                      null = FALSE, 
-                      m = nrow(n.res), 
-                      n = ncol(n.res), 
+  cl.num <- odp.score(s.dat1,
+                      mu = rowSums(clustParms$mu.full ^ 2),
+                      sigma = clustParms$sig.full,
+                      null = FALSE,
+                      m = nrow(n.res),
+                      n = ncol(n.res),
                       cluster = clustParms$n.per.mod)
-  
+
   # ODP statistic
   odp.stat <-  2 * cl.num / (cl.den + cl.num)
   return(odp.stat)
-}           
+}

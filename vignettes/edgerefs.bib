@@ -1,15 +1,15 @@
 @article{woo:leek:storey:2011,
-author = {Woo, Sangsoon and Leek, Jeffrey T. and Storey, John D.}, 
+author = {Woo, Sangsoon and Leek, Jeffrey T. and Storey, John D.},
 title = {A computationally efficient modular optimal discovery procedure},
-volume = {27}, 
-number = {4}, 
-pages = {509-515}, 
-year = {2011}, 
-doi = {10.1093/bioinformatics/btq701}, 
-abstract ={Motivation: It is well known that patterns of differential gene expression across biological conditions are often shared by many genes, particularly those within functional groups. Taking advantage of these patterns can lead to increased statistical power and biological clarity when testing for differential expression in a microarray experiment. The optimal discovery procedure (ODP), which maximizes the expected number of true positives for each fixed number of expected false positives, is a framework aimed at this goal. Storey et al. introduced an estimator of the ODP for identifying differentially expressed genes. However, their ODP estimator grows quadratically in computational time with respect to the number of genes. Reducing this computational burden is a key step in making the ODP practical for usage in a variety of high-throughput problems.Results: Here, we propose a new estimate of the ODP called the modular ODP (mODP). The existing ‘full ODP’ requires that the likelihood function for each gene be evaluated according to the parameter estimates for all genes. The mODP assigns genes to modules according to a Kullback–Leibler distance, and then evaluates the statistic only at the module-averaged parameter estimates. We show that the mODP is relatively insensitive to the choice of the number of modules, but dramatically reduces the computational complexity from quadratic to linear in the number of genes. We compare the full ODP algorithm and mODP on simulated data and gene expression data from a recent study of Morrocan Amazighs. The mODP and full ODP algorithm perform very similarly across a range of comparisons.Availability: The mODP methodology has been implemented into EDGE, a comprehensive gene expression analysis software package in R, available at http://genomine.org/edge/.Contact: jstorey@princeton.eduSupplementary information: Supplementary data are available at Bioinformatics online.}, 
-URL = {http://bioinformatics.oxfordjournals.org/content/27/4/509.abstract}, 
-eprint = {http://bioinformatics.oxfordjournals.org/content/27/4/509.full.pdf+html}, 
-journal = {Bioinformatics} 
+volume = {27},
+number = {4},
+pages = {509-515},
+year = {2011},
+doi = {10.1093/bioinformatics/btq701},
+abstract ={Motivation: It is well known that patterns of differential gene expression across biological conditions are often shared by many genes, particularly those within functional groups. Taking advantage of these patterns can lead to increased statistical power and biological clarity when testing for differential expression in a microarray experiment. The optimal discovery procedure (ODP), which maximizes the expected number of true positives for each fixed number of expected false positives, is a framework aimed at this goal. Storey et al. introduced an estimator of the ODP for identifying differentially expressed genes. However, their ODP estimator grows quadratically in computational time with respect to the number of genes. Reducing this computational burden is a key step in making the ODP practical for usage in a variety of high-throughput problems.Results: Here, we propose a new estimate of the ODP called the modular ODP (mODP). The existing ‘full ODP’ requires that the likelihood function for each gene be evaluated according to the parameter estimates for all genes. The mODP assigns genes to modules according to a Kullback–Leibler distance, and then evaluates the statistic only at the module-averaged parameter estimates. We show that the mODP is relatively insensitive to the choice of the number of modules, but dramatically reduces the computational complexity from quadratic to linear in the number of genes. We compare the full ODP algorithm and mODP on simulated data and gene expression data from a recent study of Morrocan Amazighs. The mODP and full ODP algorithm perform very similarly across a range of comparisons.Availability: The mODP methodology has been implemented into EDGE, a comprehensive gene expression analysis software package in R, available at http://genomine.org/edge/.Contact: jstorey@princeton.eduSupplementary information: Supplementary data are available at Bioinformatics online.},
+URL = {http://bioinformatics.oxfordjournals.org/content/27/4/509.abstract},
+eprint = {http://bioinformatics.oxfordjournals.org/content/27/4/509.full.pdf+html},
+journal = {Bioinformatics}
 }
 
 @article {storey:2007,
@@ -36,48 +36,48 @@ doi = {10.1371/journal.pgen.1000052}
 }
 
 @article{storey:etal:2007,
-author = {Storey, John D. and Dai, James Y. and Leek, Jeffrey T.}, 
+author = {Storey, John D. and Dai, James Y. and Leek, Jeffrey T.},
 title = {The optimal discovery procedure for large-scale significance testing, with applications to comparative microarray experiments},
-volume = {8}, 
-number = {2}, 
-pages = {414-432}, 
-year = {2007}, 
-doi = {10.1093/biostatistics/kxl019}, 
-abstract ={As much of the focus of genetics and molecular biology has shifted toward the systems level, it has become increasingly important to accurately extract biologically relevant signal from thousands of related measurements. The common property among these high-dimensional biological studies is that the measured features have a rich and largely unknown underlying structure. One example of much recent interest is identifying differentially expressed genes in comparative microarray experiments. We propose a new approach aimed at optimally performing many hypothesis tests in a high-dimensional study. This approach estimates the optimal discovery procedure (ODP), which has recently been introduced and theoretically shown to optimally perform multiple significance tests. Whereas existing procedures essentially use data from only one feature at a time, the ODP approach uses the relevant information from the entire data set when testing each feature. In particular, we propose a generally applicable estimate of the ODP for identifying differentially expressed genes in microarray experiments. This microarray method consistently shows favorable performance over five highly used existing methods. For example, in testing for differential expression between two breast cancer tumor types, the ODP provides increases from 72% to 185% in the number of genes called significant at a false discovery rate of 3%. Our proposed microarray method is freely available to academic users in the open-source, point-and-click EDGE software package.}, 
-URL = {http://biostatistics.oxfordjournals.org/content/8/2/414.abstract}, 
-eprint = {http://biostatistics.oxfordjournals.org/content/8/2/414.full.pdf+html}, 
-journal = {Biostatistics} 
+volume = {8},
+number = {2},
+pages = {414-432},
+year = {2007},
+doi = {10.1093/biostatistics/kxl019},
+abstract ={As much of the focus of genetics and molecular biology has shifted toward the systems level, it has become increasingly important to accurately extract biologically relevant signal from thousands of related measurements. The common property among these high-dimensional biological studies is that the measured features have a rich and largely unknown underlying structure. One example of much recent interest is identifying differentially expressed genes in comparative microarray experiments. We propose a new approach aimed at optimally performing many hypothesis tests in a high-dimensional study. This approach estimates the optimal discovery procedure (ODP), which has recently been introduced and theoretically shown to optimally perform multiple significance tests. Whereas existing procedures essentially use data from only one feature at a time, the ODP approach uses the relevant information from the entire data set when testing each feature. In particular, we propose a generally applicable estimate of the ODP for identifying differentially expressed genes in microarray experiments. This microarray method consistently shows favorable performance over five highly used existing methods. For example, in testing for differential expression between two breast cancer tumor types, the ODP provides increases from 72% to 185% in the number of genes called significant at a false discovery rate of 3%. Our proposed microarray method is freely available to academic users in the open-source, point-and-click EDGE software package.},
+URL = {http://biostatistics.oxfordjournals.org/content/8/2/414.abstract},
+eprint = {http://biostatistics.oxfordjournals.org/content/8/2/414.full.pdf+html},
+journal = {Biostatistics}
 }
 
 
 
 @Article{storey:2005,
-author = "Storey, John D. and Xiao, Wenzhong and Leek, Jeffrey T. and Tompkins, Ronald G. and Davis, Ronald W.", 
+author = "Storey, John D. and Xiao, Wenzhong and Leek, Jeffrey T. and Tompkins, Ronald G. and Davis, Ronald W.",
 title = "Significance analysis of time course microarray experiments",
-volume = "102", 
-number = "36", 
-pages = "12837-12842", 
-year = "2005", 
-doi = "10.1073/pnas.0504609102", 
-abstract ="Characterizing the genome-wide dynamic regulation of gene expression is important and will be of much interest in the future. However, there is currently no established method for identifying differentially expressed genes in a time course study. Here we propose a significance method for analyzing time course microarray studies that can be applied to the typical types of comparisons and sampling schemes. This method is applied to two studies on humans. In one study, genes are identified that show differential expression over time in response to in vivo endotoxin administration. By using our method, 7,409 genes are called significant at a 1% false-discovery rate level, whereas several existing approaches fail to identify any genes. In another study, 417 genes are identified at a 10% false-discovery rate level that show expression changing with age in the kidney cortex. Here it is also shown that as many as 47% of the genes change with age in a manner more complex than simple exponential growth or decay. The methodology proposed here has been implemented in the freely distributed and open-source edge software package.", 
-URL = "http://www.pnas.org/content/102/36/12837.abstract", 
-eprint = "http://www.pnas.org/content/102/36/12837.full.pdf+html", 
-journal = "Proceedings of the National Academy of Sciences of the United States of America" 
+volume = "102",
+number = "36",
+pages = "12837-12842",
+year = "2005",
+doi = "10.1073/pnas.0504609102",
+abstract ="Characterizing the genome-wide dynamic regulation of gene expression is important and will be of much interest in the future. However, there is currently no established method for identifying differentially expressed genes in a time course study. Here we propose a significance method for analyzing time course microarray studies that can be applied to the typical types of comparisons and sampling schemes. This method is applied to two studies on humans. In one study, genes are identified that show differential expression over time in response to in vivo endotoxin administration. By using our method, 7,409 genes are called significant at a 1% false-discovery rate level, whereas several existing approaches fail to identify any genes. In another study, 417 genes are identified at a 10% false-discovery rate level that show expression changing with age in the kidney cortex. Here it is also shown that as many as 47% of the genes change with age in a manner more complex than simple exponential growth or decay. The methodology proposed here has been implemented in the freely distributed and open-source edge software package.",
+URL = "http://www.pnas.org/content/102/36/12837.abstract",
+eprint = "http://www.pnas.org/content/102/36/12837.full.pdf+html",
+journal = "Proceedings of the National Academy of Sciences of the United States of America"
 }
 
 
 @article{leek2005,
-author = {Leek, Jeffrey T. and Monsen, Eva and Dabney, Alan R. and Storey, John D.}, 
+author = {Leek, Jeffrey T. and Monsen, Eva and Dabney, Alan R. and Storey, John D.},
 title = {EDGE: extraction and analysis of differential gene expression},
-volume = {22}, 
-number = {4}, 
-pages = {507-508}, 
-year = {2006}, 
-doi = {10.1093/bioinformatics/btk005}, 
-abstract ={Summary: EDGE (Extraction of Differential Gene Expression) is an open source, point-and-click software program for the significance analysis of DNA microarray experiments. EDGE can perform both standard and time course differential expression analysis. The functions are based on newly developed statistical theory and methods. This document introduces the EDGE software package.Availability: EDGE is freely available for non-commercial users. EDGE can be downloaded for Windows, Macintosh and Linux/UNIX from http://faculty.washington.edu/jstorey/edgeContact: jtleek@u.washington.edu}, 
-URL = {http://bioinformatics.oxfordjournals.org/content/22/4/507.abstract}, 
-eprint = {http://bioinformatics.oxfordjournals.org/content/22/4/507.full.pdf+html}, 
-journal = {Bioinformatics} 
+volume = {22},
+number = {4},
+pages = {507-508},
+year = {2006},
+doi = {10.1093/bioinformatics/btk005},
+abstract ={Summary: EDGE (Extraction of Differential Gene Expression) is an open source, point-and-click software program for the significance analysis of DNA microarray experiments. EDGE can perform both standard and time course differential expression analysis. The functions are based on newly developed statistical theory and methods. This document introduces the EDGE software package.Availability: EDGE is freely available for non-commercial users. EDGE can be downloaded for Windows, Macintosh and Linux/UNIX from http://faculty.washington.edu/jstorey/edgeContact: jtleek@u.washington.edu},
+URL = {http://bioinformatics.oxfordjournals.org/content/22/4/507.abstract},
+eprint = {http://bioinformatics.oxfordjournals.org/content/22/4/507.full.pdf+html},
+journal = {Bioinformatics}
 }
 
 
@@ -92,13 +92,13 @@ year = {2001},
 doi = {10.1056/NEJM200102223440801},
     note ={PMID: 11207349},
 
-URL = { 
+URL = {
         http://dx.doi.org/10.1056/NEJM200102223440801
-    
+
 },
-eprint = { 
+eprint = {
         http://dx.doi.org/10.1056/NEJM200102223440801
-    
+
 }
 
 }
@@ -115,7 +115,7 @@ eprint = {
     pages = {e427},
     number = {12},
     doi = {10.1371/journal.pbio.0020427}
-}    
+}
 
 @Article{storey:2003,
   Author = "Storey, J. D.",
@@ -138,30 +138,30 @@ eprint = {
     abstract = {<title>Author Summary</title><sec id="st1"><title/><p>In scientific and medical studies, great care must be taken when collecting data to understand the relationship between two variables, such as a drug and its effect on a disease. In any given study there will be many other variables at play, such as the effects of age and sex on the disease. We show that in studies where the expression levels of thousands of genes are measured at once, these issues become surprisingly critical. Due to the complexity of our genomes, environment, and demographic features, there are many sources of variation when analyzing gene expression levels. In any given study, it is impossible to measure every single variable that may be influencing how our genes are expressed. Despite this, we show that by considering all expression levels simultaneously, one can actually recover the effects of these important missed variables and essentially produce an analysis as if all relevant variables were included. As opposed to traditional studies, the massive amount of data available in this setting is what makes the method, called surrogate variable analysis, possible. We hypothesize that surrogate variable analysis will be useful in many large-scale gene expression studies.</p></sec>},
     number = {9},
     doi = {10.1371/journal.pgen.0030161}
-}        
+}
 
 
 @article{mecham:2010,
-author = {Mecham, Brigham H. and Nelson, Peter S. and Storey, John D.}, 
+author = {Mecham, Brigham H. and Nelson, Peter S. and Storey, John D.},
 title = {Supervised normalization of microarrays},
-volume = {26}, 
-number = {10}, 
-pages = {1308-1315}, 
-year = {2010}, 
-doi = {10.1093/bioinformatics/btq118}, 
-abstract ={Motivation: A major challenge in utilizing microarray technologies to measure nucleic acid abundances is ‘normalization’, the goal of which is to separate biologically meaningful signal from other confounding sources of signal, often due to unavoidable technical factors. It is intuitively clear that true biological signal and confounding factors need to be simultaneously considered when performing normalization. However, the most popular normalization approaches do not utilize what is known about the study, both in terms of the biological variables of interest and the known technical factors in the study, such as batch or array processing date.Results: We show here that failing to include all study-specific biological and technical variables when performing normalization leads to biased downstream analyses. We propose a general normalization framework that fits a study-specific model employing every known variable that is relevant to the expression study. The proposed method is generally applicable to the full range of existing probe designs, as well as to both single-channel and dual-channel arrays. We show through real and simulated examples that the method has favorable operating characteristics in comparison to some of the most highly used normalization methods.Availability: An R package called snm implementing the methodology will be made available from Bioconductor (http://bioconductor.org).Contact: jstorey@princeton.eduSupplementary information: Supplementary data are available at Bioinformatics online.}, 
-URL = {http://bioinformatics.oxfordjournals.org/content/26/10/1308.abstract}, 
-eprint = {http://bioinformatics.oxfordjournals.org/content/26/10/1308.full.pdf+html}, 
-journal = {Bioinformatics} 
+volume = {26},
+number = {10},
+pages = {1308-1315},
+year = {2010},
+doi = {10.1093/bioinformatics/btq118},
+abstract ={Motivation: A major challenge in utilizing microarray technologies to measure nucleic acid abundances is ‘normalization’, the goal of which is to separate biologically meaningful signal from other confounding sources of signal, often due to unavoidable technical factors. It is intuitively clear that true biological signal and confounding factors need to be simultaneously considered when performing normalization. However, the most popular normalization approaches do not utilize what is known about the study, both in terms of the biological variables of interest and the known technical factors in the study, such as batch or array processing date.Results: We show here that failing to include all study-specific biological and technical variables when performing normalization leads to biased downstream analyses. We propose a general normalization framework that fits a study-specific model employing every known variable that is relevant to the expression study. The proposed method is generally applicable to the full range of existing probe designs, as well as to both single-channel and dual-channel arrays. We show through real and simulated examples that the method has favorable operating characteristics in comparison to some of the most highly used normalization methods.Availability: An R package called snm implementing the methodology will be made available from Bioconductor (http://bioconductor.org).Contact: jstorey@princeton.eduSupplementary information: Supplementary data are available at Bioinformatics online.},
+URL = {http://bioinformatics.oxfordjournals.org/content/26/10/1308.abstract},
+eprint = {http://bioinformatics.oxfordjournals.org/content/26/10/1308.full.pdf+html},
+journal = {Bioinformatics}
 }
 
 @article{calvano:2005,
-author = {Calvano, SE and Xiao, W and Richards, DR and Felciano, RM and Baker, HV and Cho, RJ and Chen, RO and Brownstein, BH and Cobb, JP and Tschoeke, SK and Miller-Graziano, C and Moldawer, LL and Mindrinos, MN and Davis, RW and Tompkins, RG and Lowry, SF}, 
+author = {Calvano, SE and Xiao, W and Richards, DR and Felciano, RM and Baker, HV and Cho, RJ and Chen, RO and Brownstein, BH and Cobb, JP and Tschoeke, SK and Miller-Graziano, C and Moldawer, LL and Mindrinos, MN and Davis, RW and Tompkins, RG and Lowry, SF},
 title = {A network-based analysis of systemic inflammation in humans},
-volume = {437}, 
-pages = {1032-1037}, 
-year = {2005}, 
-doi = {10.1038/nature03985}, 
-URL = {http://www.nature.com/nature/journal/v437/n7061/full/nature03985.html}, 
-journal = {Nature} 
+volume = {437},
+pages = {1032-1037},
+year = {2005},
+doi = {10.1038/nature03985},
+URL = {http://www.nature.com/nature/journal/v437/n7061/full/nature03985.html},
+journal = {Nature}
 }
