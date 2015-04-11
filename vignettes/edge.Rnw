@@ -196,7 +196,7 @@ either the optimal discovery procedure or the likelihood ratio test,
 respectively:
 <<qs_eSet, dependson="qs_build_models", cache=TRUE>>=
 # optimal discovery procedure
-de_odp <- odp(de_obj, bs.its = 100, verbose=FALSE)
+de_odp <- odp(de_obj, bs.its = 50, verbose=FALSE)
 # likelihood ratio test
 de_lrt <- lrt(de_obj)
 @
@@ -1276,7 +1276,7 @@ surrogate.vars <- cov[, 3:ncol(cov)]
 
 Now {\tt odp} or {\tt lrt} can be used as in previous examples:
 <<sva_odp, dependson="sva">>=
-de_odp <- odp(de_sva, bs.its = 100, verbose = FALSE)
+de_odp <- odp(de_sva, bs.its = 50, verbose = FALSE)
 de_lrt <- lrt(de_sva, verbose = FALSE)
 summary(de_odp)
 @
@@ -1329,7 +1329,7 @@ norm.matrix <- exprs(de_obj)
 
 To run the significance analysis, {\tt odp} or {\tt lrt} can be used:
 <<snm_odp2>>=
-de_odp <- odp(de_snm, bs.its = 100, verbose=FALSE)
+de_odp <- odp(de_snm, bs.its = 50, verbose=FALSE)
 summary(de_odp)
 @
 
@@ -1361,7 +1361,7 @@ null_model <- ~sex
 full_model <- ~sex + ns(age, df=4)
 de_obj <- build_models(data = kidexpr, cov = cov, full.model = full_model, null.model = null_model)
 # run significance analysis 
-de_obj <- odp(de_obj, bs.its = 100, verbose = FALSE)
+de_obj <- odp(de_obj, bs.its = 50, verbose = FALSE)
 @
 
 Suppose we wanted to estimate $\pi_{0}$ using the ``bootstrap'' method in
@@ -1421,7 +1421,7 @@ significance analysis. See section~\ref{subsec:deSet} for more details on the
 {\tt deSet} slots. We can now simply run {\tt odp} or {\tt lrt} for
 significance results:
 <<aODP>>=
-de_odp <- odp(de_obj, bs.its = 100, verbose=FALSE)
+de_odp <- odp(de_obj, bs.its = 50, verbose=FALSE)
 de_lrt <- lrt(de_obj)
 summary(de_odp)
 @
