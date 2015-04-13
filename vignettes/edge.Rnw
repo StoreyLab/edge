@@ -73,8 +73,8 @@ is now available through Bioconductor as a standard R package.
 % INTRODUCTION ----------------------------------------------------------------
 \section{Introduction}
 The \edge package implements methods for carrying out differential
-expression analyses of genome-wide gene expression studies. Significance 
-testing using the optimal discovery procedure and generalized likelihood 
+expression analyses of genome-wide gene expression studies. Significance
+testing using the optimal discovery procedure and generalized likelihood
 ratio test (equivalent to F-tests and t-tests) are implemented for general study
 designs. Special functions are available to facilitate the analysis of
 common study designs, including time course experiments. Other packages
@@ -108,7 +108,7 @@ time course experiments and other complex study designs. Specifically,
 for time course experiments. In addition to identifying differentially
 expressed genes in multi-class, time course, and general study designs, \edge
 includes implementations of popular packages such as {\tt snm}, {\tt sva} and
-{\tt qvalue} to help simplify the analysis process for researchers. 
+{\tt qvalue} to help simplify the analysis process for researchers.
 
 The rest of the document details how to use \edge in three different case
 studies: static sampling among $K$ groups, independent time course, and
@@ -188,7 +188,7 @@ de_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, full.
 @
 
 {\tt cov} is a data frame of covariates, {\tt null.model} is the null model and
-{\tt full.model} is the full model. The input {\tt cov} is a data frame with the 
+{\tt full.model} is the full model. The input {\tt cov} is a data frame with the
 column names the same as the variables in the full and null models.
 
 The {\tt odp} or {\tt lrt} function can be used on {\tt de\_obj} to implement
@@ -421,7 +421,7 @@ null_fitted <- fitNull(ef_obj)
 @
 
 See {\tt ?deFit} for more details on accessing the slots in an {\tt deFit}
-object. The fitted values of the first gene are shown in 
+object. The fitted values of the first gene are shown in
 Figure~\ref{fig:gplotFit}. The null model fit is the average expression value
 across the interaction of {\tt batch} and {\tt sex}. The full model fit seems
 to pick up some differences relative to the null model. Next, we have to test
@@ -453,7 +453,7 @@ tests in a high-dimensional study. When testing a feature, information from all
 the features is utilized when testing for significance of a feature. It
 guarantees to maximize the number of expected true positive results for each
 fixed number of expected false positive results which is related to the false
-discovery rate. 
+discovery rate.
 
 The optimal discovery procedure can be implemented on {\tt de\_obj} by the
 {\tt odp} function:
@@ -634,7 +634,7 @@ null_model <- ~sex + ns(age, df=4)
 de_obj <- build_models(data = kidexpr, cov = cov, full.model = null_model, null.model = null_model)
 @
 
-The {\tt cov} argument is a data frame of all the relevant covariates, 
+The {\tt cov} argument is a data frame of all the relevant covariates,
 {\tt full.model} and {\tt null.model} are the full and null models of the
 experiment, respectively. Notice that the models must be formatted as a formula
 and contain the same variable names as in the {\tt cov} data frame. The null
@@ -797,7 +797,7 @@ in a high-dimensional study. When testing a feature, information from all the
 features is utilized when testing for significance of a feature. It guarantees
 to maximize the number of expected true positive results for each fixed number
 of expected false positive results which is related to the false discovery
-rate. 
+rate.
 
 The optimal discovery procedure can be implemented on {\tt de\_obj} by the
 {\tt odp} function:
@@ -809,7 +809,7 @@ de_odp <- odp(de_obj, bs.its=30, verbose=FALSE, n.mods=50)
 @
 The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose}
 prints each bootstrap iteration number and {\tt n.mods} is the number of
-clusters in the k-means algorithm. 
+clusters in the k-means algorithm.
 
 A k-means algorithm is used to assign genes to groups in order to speed up
 the computational time of the algorithm. If {\tt n.mods} is equal to the number
@@ -961,7 +961,7 @@ de_obj <- build_study(data = endoexpr, grp = class, tme = time, ind = ind, sampl
 is the time variable, {\tt ind} is used when individuals are sampling multiple
 times and {\tt sampling} describes the type of experiment. Since {\tt endotoxin}
 is a time course study, the {\tt sampling} argument will be ``timecourse''. The
-{\tt tme} variable will be the {\tt time} variable, {\tt ind} is the 
+{\tt tme} variable will be the {\tt time} variable, {\tt ind} is the
 {\tt individuals} variable and the {\tt grp} variable is {\tt class}. To view
 the models created by {\tt build\_study}:
 <<endotoxin_emodels>>=
@@ -1136,7 +1136,7 @@ in a high-dimensional study. When testing a feature, information from all the
 features is utilized when testing for significance of a feature. It guarantees
 to maximize the number of expected true positive results for each fixed number
 of expected false positive results which is related to the false discovery
-rate. 
+rate.
 
 The optimal discovery procedure can be implemented on {\tt de\_obj} by
 the {\tt odp} function:
@@ -1348,7 +1348,7 @@ pi0 <- qval_obj$pi0
 \label{sec:qvalue}
 After {\tt odp} or {\tt lrt} is used, the user may wish to change some
 parameters used when calculating the q-values. This can be done by using the
-{\tt apply\_qvalue} function. Lets review the analysis process for the 
+{\tt apply\_qvalue} function. Lets review the analysis process for the
 {\tt kidney} dataset in~\ref{sec:kidney}: create the full and null models and
 then run {\tt odp} or {\tt lrt} to get significance results. Applying these
 steps in the {\tt kidney} dataset:
@@ -1360,7 +1360,7 @@ cov <- data.frame(sex = sex, age = age)
 null_model <- ~sex
 full_model <- ~sex + ns(age, df=4)
 de_obj <- build_models(data = kidexpr, cov = cov, full.model = full_model, null.model = null_model)
-# run significance analysis 
+# run significance analysis
 de_obj <- odp(de_obj, bs.its = 50, verbose = FALSE)
 @
 
