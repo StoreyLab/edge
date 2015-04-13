@@ -458,7 +458,7 @@ discovery rate.
 The optimal discovery procedure can be implemented on {\tt de\_obj} by the
 {\tt odp} function:
 <<gibson_odp, eval=TRUE, cache=TRUE>>=
-de_odp <- odp(de_obj, bs.its=30, verbose=FALSE, n.mods=50)
+de_odp <- odp(de_obj, bs.its = 50, verbose = FALSE, n.mods = 50)
 @
 
 The number of bootstrap iterations is controlled by {\tt bs.its},
@@ -805,7 +805,7 @@ The optimal discovery procedure can be implemented on {\tt de\_obj} by the
 library(splines)
 @
 <<kidney_odp, eval=TRUE, cache=TRUE, dependson="kidney_build_models">>=
-de_odp <- odp(de_obj, bs.its=30, verbose=FALSE, n.mods=50)
+de_odp <- odp(de_obj, bs.its = 50, verbose = FALSE, n.mods = 50)
 @
 The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose}
 prints each bootstrap iteration number and {\tt n.mods} is the number of
@@ -1141,7 +1141,7 @@ rate.
 The optimal discovery procedure can be implemented on {\tt de\_obj} by
 the {\tt odp} function:
 <<endotoxin_odp, eval=TRUE, cache=TRUE, dependson="endotoxin_build_models">>=
-de_odp <- odp(de_obj, bs.its=30, verbose=FALSE, n.mods=50)
+de_odp <- odp(de_obj, bs.its = 50, verbose = FALSE, n.mods = 50)
 @
 The number of bootstrap iterations is controlled by {\tt bs.its}, {\tt verbose}
 prints each bootstrap iteration number and {\tt n.mods} is the number of
