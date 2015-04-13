@@ -2,7 +2,7 @@ Package: edge
 Type: Package
 Title: Extraction of Differential Gene Expression
 Date: 2015-03-26
-Version: 0.99.3
+Version: 0.99.4
 Authors@R: c(
     person("John D.", "Storey", email = "jstorey@princeton.edu", role = c("aut", "cre", "cph")),
     person("Jeffrey T.", "Leek", email = "jleek@jhsph.edu ", role = c("aut")),

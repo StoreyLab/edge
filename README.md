@@ -16,16 +16,18 @@ of tools for gene expression analysis.
 ### Installation and Documentation
 
 To install, open R and type:
-
-    install.packages("devtools")
-    library("devtools")
-    install_github("jdstorey/qvalue", build_vignettes = TRUE)
-    install_github("jdstorey/edge", build_vignettes = TRUE)
+```R
+install.packages("devtools")
+library("devtools")
+install_github("jdstorey/qvalue", build_vignettes = TRUE)
+install_github("jdstorey/edge", build_vignettes = TRUE)
+```
 
 Instructions on using edge can be viewed by typing:
-
-    library("edge")
-    browseVignettes("edge")
+```R
+library("edge")
+browseVignettes("edge")
+```
 
 ### Main functions
 * `build_models`
@@ -41,20 +43,20 @@ Instructions on using edge can be viewed by typing:
 ### Quick start guide
 
 To get started, first load the kidney dataset included in the package:
-```
+```R
 library(edge)
 data(kidney)
 names(kidney)
 ```
 The kidney study is interested in determining differentially expressed genes with respect to age in kidney tissue. The `age` variable is the age of the subjects and the `sex` variable is whether the subjects were male or female. The expression values for the genes are contained in the `kidexpr` variable.
-```
+```R
 kidexpr <- kidney$kidexpr
 age <- kidney$age
 sex <- kidney$sex
 ```
 
 Once the data has been loaded, the user has two options to create the experimental models: `build_models` or `build_study`. If the experiment models are unknown to the user, `build_study` can be used to create the models:
-```
+```R
 edge_obj <- build_study(data = kidexpr, adj.var = sex, tme = age, sampling = "timecourse")
 full_model <- fullModel(edge_obj)
 null_model <- nullModel(edge_obj)
@@ -63,7 +65,7 @@ null_model <- nullModel(edge_obj)
 The variable `sampling` describes the type of experiment performed, `adj.var` is the adjustment variable and `tme` is the time variable in the study. If the experiment is more complex then type `?build_study` for additional arguments.
 
 If the alternative and null models are known to the user then `build_models` can be used to make a deSet object:
-```
+```R
 library(splines)
 cov <- data.frame(sex = sex, age = age)
 null_model <- ~sex
@@ -79,7 +81,7 @@ edge_sva <- apply_sva(edge_norm)
 ```
 
 The `odp` or `lrt` function can be used on `edge_sva` to implement either the optimal discovery procedure or the likelihood ratio test, respectively:
-```
+```R
 # optimal discovery procedure
 edge_odp <- odp(edge_sva, bs.its = 30, verbose=FALSE)
 # likelihood ratio test
@@ -87,7 +89,7 @@ edge_lrt <- lrt(edge_sva)
 ```
 
 To access the proportional of null p-values estimate, p-values, q-values and local false discovery rates for each gene, use the function `qvalueObj`:
-```
+```R
 qval_obj <- qvalueObj(edge_odp)
 qvals <- qval_obj$qvalues
 pvals <- qval_obj$pvalues
@@ -95,5 +97,5 @@ lfdr <- qval_obj$lfdr
 pi0 <- qval_obj$pi0
 ```
 
-See the vignette for more detailed explainations of the edge package.
+See the vignette for more detailed explanations of the edge package.
 
