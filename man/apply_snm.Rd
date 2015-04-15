@@ -6,9 +6,9 @@
 \alias{apply_snm,deSet-method}
 \title{Supervised normalization of data in edge}
 \usage{
-apply_snm(object, int.var, ...)
+apply_snm(object, int.var = NULL, ...)
 
-\S4method{apply_snm}{deSet}(object, int.var, ...)
+\S4method{apply_snm}{deSet}(object, int.var = NULL, ...)
 }
 \arguments{
 \item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}

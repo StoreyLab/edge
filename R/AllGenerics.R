@@ -499,7 +499,7 @@ setGeneric("apply_sva", function(object, ...)
 #'
 #' @author John Storey, Andrew Bass
 #' @export
-setGeneric("apply_snm", function(object, int.var, ...)
+setGeneric("apply_snm", function(object, int.var=NULL, ...)
   standardGeneric("apply_snm"))
 
 #' Full model equation

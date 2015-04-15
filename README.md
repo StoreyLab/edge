@@ -1,4 +1,4 @@
-edge: Extraction of Differential Expression Analysis
+edge: Extraction of Differential Gene Expression
 ====
 
 Introduction
@@ -15,12 +15,17 @@ of tools for gene expression analysis.
 
 ### Installation and Documentation
 
-To install, open R and type:
+To install the Bioconductor release version, open R and type:
+```R
+source("http://bioconductor.org/biocLite.R")
+biocLite("edge")
+```
+
+To install the development version, open R and type:
 ```R
 install.packages("devtools")
 library("devtools")
-install_github("jdstorey/qvalue", build_vignettes = TRUE)
-install_github("jdstorey/edge", build_vignettes = TRUE)
+install_github(c("jdstorey/qvalue","jdstorey/edge"), build_vignettes = TRUE)
 ```
 
 Instructions on using edge can be viewed by typing:
@@ -75,7 +80,7 @@ edge_obj <- build_models(data = kidexpr, cov = cov, null.model = null_model, ful
 
 The `cov` is a data frame of covariates, the `null.model` is the null model and the `full.model` is the alternative model. The input `cov` is a data frame with the column names the same as the variables in the alternative and null models. Once the models have been generated, it is often useful to normalize the gene expression matrix using `apply_snm` and/or adjust for unmodelled variables using `apply_sva`.
 ```R
-edge_norm <- apply_snm(edge_obj)
+edge_norm <- apply_snm(edge_obj, int.var=1:ncol(exprs(edge_obj)), diagnose=FALSE)
 edge_sva <- apply_sva(edge_norm)
 
 ```
