@@ -118,35 +118,59 @@ experiments, see section~\ref{sec:citepackage}.
 
 \section{Citing this package}
 \label{sec:citepackage}
-\textbf{\bibentry{storey:2007}} \\
-Theory paper that introduces the optimal discovery procedure and shows that it
-maximizes the expected true positive results for each number of fixed false
-positive results. The optimality is closely related to the false discovery rate.
 
-\textbf{\bibentry{storey:etal:2007}} \\
-Discusses various ways of estimating the ODP statistic with applications to
-microarray experiments.
+{\bf When reporting results involving the estimation of false discovery rate or q-value quantities, please cite:}
 
-\textbf{\bibentry{woo:leek:storey:2011}} \\
-Previous implementations of the ODP are computationally infeasible for a large
-number of hypothesis tests. This paper introduces a computationally efficient
-implementation of ODP that this package is based on.
+\bibentry{Storey:2002fc}
 
-\textbf{\bibentry{storey:2005}} \\
-A methodology for analyzing time course microarray data is introduced and
-applied to two time course studies on humans.
+\bibentry{Storey:2003il}
+
+{\bf When reporting results involving the analysis of time course studies, please cite:}
+
+\bibentry{storey:2005}
+% A methodology for analyzing time course microarray data is introduced and
+% applied to two time course studies on humans.
+
+{\bf When reporting results involving use of the optimal discovery procedure ({\tt odp}), please cite:}
+
+\bibentry{storey:2007}
+% Theory paper that introduces the optimal discovery procedure and shows that it
+% maximizes the expected true positive results for each number of fixed false
+% positive results. The optimality is closely related to the false discovery rate.
+
+\bibentry{storey:etal:2007}
+% Discusses various ways of estimating the ODP statistic with applications to
+% microarray experiments.
+
+\bibentry{woo:leek:storey:2011}
+% Previous implementations of the ODP are computationally infeasible for a large
+% number of hypothesis tests. This paper introduces a computationally efficient
+% implementation of ODP that this package is based on.
+
+{\bf When reporting results involving surrogate variable analysis ({\tt apply\_sva}), please cite:}
+
+\bibentry{leek:2007}
+
+\bibentry{Leek:2008qf}
+
+{\bf When reporting results involving supervised normalization of microarrays ({\tt apply\_snm}), please cite:}
+
+\bibentry{mecham:2010}
+
+{\bf To cite the {\tt edge} R package itself, please type the following to retrieve the citation:}
+
+<<citepackage,cache=FALSE>>=
+citation("edge")
+@
+
 
 \section{Getting help}
-Hopefully, most questions relating to the package will be answered in this
-vignette but to get a more detailed account of how to use the functions simply
-type within R:
-<<help_qvalue>>=
+Many questions about {\tt qvalue} will hopefully be answered by this documentation and references therein.  As with any R package, detailed information on functions, their arguments and values, can be obtained in the help files. To view the
+help for {\tt qvalue} within R, type
+<<help_edge>>=
 help(package="edge")
 @
-\noindent If you identify bugs related to basic usage please contact the
-authors directly.  Otherwise, any questions or problems regarding \edge will
-most efficiently be addressed on the Bioconductor support site,
-\url{https://support.bioconductor.org/}.
+\noindent If you identify bugs related to basic usage please contact the authors directly, preferably via GitHub at \url{https://github.com/jdstorey/edge/issues}.  Otherwise, any questions or problems regarding {\tt edge} will most efficiently be addressed on the Bioconductor support site, \url{https://support.bioconductor.org/}.
 
 \section{Quick start guide}
 To get started, first load the {\tt kidney} dataset included in the package:
