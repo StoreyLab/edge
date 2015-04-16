@@ -4,7 +4,7 @@
 \name{sType}
 \alias{sType}
 \alias{sType,deFit-method}
-\title{Statistical method used in analysis}
+\title{Statistic type used in analysis}
 \usage{
 sType(object)
 

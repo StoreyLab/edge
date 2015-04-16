@@ -5,11 +5,11 @@
 \alias{deSet-class}
 \title{The differential expression class (deSet)}
 \description{
-The \code{deSet} class is designed in order to complement the
-\code{\link{ExpressionSet}} class. While the \code{ExpressionSet} class
-contains information about the experiment, the \code{deSet} class
-contains both experimental information and additional information relevant
-for differential expression analysis.
+The \code{deSet} class extends the \code{\link{ExpressionSet}} class.
+While the \code{ExpressionSet} class contains information about the
+experiment, the \code{deSet} class contains both experimental information and
+additional information relevant for differential expression analysis,
+explained below in Slots.
 }
 \section{Slots}{
 

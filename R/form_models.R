@@ -1,21 +1,23 @@
 #' Formulates the experimental models
 #'
 #' \code{build_study} generates the full and null models for users unfamiliar
-#' with their experimental design. There are two types of experimental designs:
-#' static and time-course. For more details, refer to the user manual.
+#' with building models in R. There are two types of experimental designs:
+#' static and time-course. For more details, refer to the vignette.
 #'
-#' @param data \code{matrix}: gene expression data.
-#' @param sampling \code{string}: type of experiment. Either "static" or
-#' "timecourse". Default is "static".
-#' @param grp \code{vector}: groups or biological variable in experiment. Optional.
-#' @param tme \code{vector}: covariate of interest in time course study. Optional.
-#' @param ind \code{factor}: individual factor for repeated observations of
-#' the same individuals. Optional.
+#' @param data \code{matrix}: gene expression data (rows are genes, columns are
+#'   samples).
+#' @param sampling \code{string}: type of study. Either "static" or 
+#'   "timecourse". Default is "static".
+#' @param grp \code{vector}: group assignement in the study (for K-class 
+#'   studies). Optional.
+#' @param tme \code{vector}: time variable in a time course study. Optional.
+#' @param ind \code{factor}: individual factor for repeated observations of the
+#'   same individuals. Optional.
 #' @param bio.var \code{matrix}: biological variables. Optional.
-#' @param basis.df \code{numeric}: degree of freedom of the spline fit for time
-#' course study. Default is 2.
-#' @param basis.type \code{string}: either "ncs" or "ps" basis for time course
-#'  study. Default is "ncs".
+#' @param basis.df \code{numeric}: degrees of freedom of the basis for time 
+#'   course study. Default is 2.
+#' @param basis.type \code{string}: either "ncs" (natural cubic spline) or "ps"
+#'   (polynomial spline) basis for time course study. Default is "ncs".
 #' @param adj.var \code{matrix}: adjustment variables. Optional.
 #'
 #' @return \code{\linkS4class{deSet}} object

@@ -36,7 +36,7 @@ NULL
 #'   \item endoexpr: A 500 rows by 46 columns data frame containing expression
 #'   values.
 #'   \item class: A vector of length 46 containing information about which
-#'   individuals were given endotoxin
+#'   individuals were given endotoxin.
 #'   \item ind: A vector of length 46 providing indexing measurements for each
 #'   individual in the experiment.
 #'   \item time: A vector of length 46 indicating time measurements.
@@ -47,11 +47,6 @@ NULL
 #' download the full data set, go to \url{http://genomine.org/edge/}.
 #'
 #' @references
-#' Calvano, S. E., Xiao, W., Richards, D. R., Felciano, R. M., Baker, H.
-#' V., Cho, R.J., Chen, R. O., Brownstein, B. H., Cobb, J. P., Tschoeke,
-#' S. K., et al. "A network-based analysis of systemic inflammation in humans."
-#'  Nature. 2005 Oct 13; 437(7061):1032-7. Epub 2005 Aug 31.
-#'
 #' Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance
 #' analysis of time course microarray experiments. PNAS, 102: 12837-12842. \cr
 #' \url{http://www.pnas.org/content/100/16/9440.full}
@@ -68,13 +63,13 @@ NULL
 #'
 #' # formulate null and full models in experiement
 #' # note: interaction term is a way of taking into account group effects
-#' mNull <- ~ns(time, df=4, intercept = FALSE)
+#' mNull <- ~ns(time, df=4, intercept = FALSE) + class
 #' mFull <- ~ns(time, df=4, intercept = FALSE) +
-#' ns(time, df=4, intercept = FALSE):class + class
+#'           ns(time, df=4, intercept = FALSE):class + class
 #'
 #' # create deSet object
 #' de_obj <- build_models(endoexpr, cov = cov, full.model = mFull,
-#' null.model = mNull, ind = ind)
+#'                        null.model = mNull, ind = ind)
 #'
 #' # Perform ODP/lrt statistic to determine significant genes in study
 #' de_odp <- odp(de_obj, bs.its = 10)
@@ -96,7 +91,7 @@ NULL
 #' @description
 #' Gene expression measurements from kidney samples were obtained from 72
 #' human subjects ranging in age from 27 to 92 years. Only one array was
-#' obtained per sample, and the age and tissue type of each subject was
+#' obtained per individual, and the age and sex of each individual were
 #' recorded.
 #'
 #' @format
@@ -108,14 +103,12 @@ NULL
 #'   different tissue sample.
 #'   \item age: A vector of length 133 giving the age of each sample.
 #'   \item sex: A vector of length 133 giving the sex of each sample.
-#'   \item tissue: A vector of length 133 giving the tissue type of each
-#'   sample.
 #' }
 #' @note
-#' These data are a random subset of 500 probe-sets from the total number of
-#' probe-sets in the original data set. To download the full data set, go to
-#' \url{http://genomine.org/edge/}. The \code{age}, \code{sex}, and
-#' \code{tissue} data are contained in \code{kidcov} data frame.
+#' These data are a random subset of 500 probe-sets from the total number of 
+#' probe-sets in the original data set. To download the full data set, go to 
+#' \url{http://genomine.org/edge/}. The \code{age} and \code{sex} are contained
+#' in \code{kidcov} data frame.
 #'
 #' @references
 #' Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance
@@ -152,15 +145,15 @@ NULL
 #'
 #' @description
 #' The data provide gene expression measurements in peripheral blood leukocyte
-#' samples from three Moroccan Amazigh groups leading distinct ways of life:
+#' samples from three Moroccan groups leading distinct ways of life:
 #' desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban
 #' (AGADIR).
 #'
 #' @format
 #' \itemize{
 #'   \item batch: Batches in experiment.
-#'   \item location: Location of Moroccan Amazigh groups.
-#'   \item gender: Gender of individuals.
+#'   \item location: Environment/lifestyle of Moroccan Amazigh groups.
+#'   \item gender: Sex of individuals.
 #'   \item gibexpr: A 500 rows by 46 columns matrix of gene expression values.
 #' }
 #'

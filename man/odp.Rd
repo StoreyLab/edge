@@ -42,23 +42,22 @@ Default is TRUE.}
 \code{\linkS4class{deSet}} object
 }
 \description{
-\code{odp} performs the optimal discovery procedure, which is a new
-approach for optimally performing many hypothesis tests in a
-high-dimensional study. When testing whether a feature is significant, the
-optimal discovery procedure uses information across all features when
-testing for significance.
+\code{odp} performs the optimal discovery procedure, which is a framework for
+optimally performing many hypothesis tests in a high-dimensional study. When
+testing whether a feature is significant, the optimal discovery procedure
+uses information across all features when testing for significance.
 }
 \details{
-The full ODP estimator computationally grows quadratically with
-respect to the number of genes. This becomes computationally infeasible at
-a certain point. Therefore, an alternative method called mODP is used which
-has been shown to provide results that are very similar. mODP utilizes a
-k-means clustering algorithm where genes are assigned to a cluster based on
-the Kullback-Leiber distance. Each gene is assigned an module-average
-parameter to calculate the ODP score and it reduces the computations time
-to linear (See Woo, Leek and Storey 2010). If the number of clusters is equal
-to the number of genes then the original ODP is implemented. Depending on
-the number of hypothesis tests, this can take some time.
+The full ODP estimator computationally grows quadratically with respect to
+the number of genes. This becomes computationally taxing at a certain point.
+Therefore, an alternative method called mODP is used which has been shown to
+provide results that are very similar. mODP utilizes a clustering algorithm
+where genes are assigned to a cluster based on the Kullback-Leiber distance.
+Each gene is assigned an module-average parameter to calculate the ODP score
+and it reduces the computations time to approximately linear (see Woo, Leek
+and Storey 2010). If the number of clusters is equal to the number of genes
+then the original ODP is implemented. Depending on the number of hypothesis
+tests, this can take some time.
 }
 \examples{
 # import data

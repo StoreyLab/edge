@@ -47,12 +47,12 @@ Default is TRUE.}
 null models.
 }
 \details{
-\code{lrt} fits the full and null models to each gene using the function
-\code{\link{fit_models}} and then performs a likelihood ratio test. The
-user has the option to calculate p-values from either the F distribution or
-through a bootstrap algorithm. If \code{nullDistn} is "bootstrap"
-then empirical p-values will be determined from the \code{\link{qvalue}}
-package (see \code{\link{empPvals}}).
+\code{lrt} fits the full and null models to each gene using the
+function \code{\link{fit_models}} and then performs a likelihood ratio test.
+The user has the option to calculate p-values a Normal distribution
+assumption or through a bootstrap algorithm. If \code{nullDistn} is
+"bootstrap" then empirical p-values will be determined from the
+\code{\link{qvalue}} package (see \code{\link{empPvals}}).
 }
 \examples{
 # import data
@@ -91,6 +91,8 @@ John Storey, Andrew Bass
 Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance
 analysis of time course microarray experiments. Proceedings of the National
 Academy of Sciences, 102: 12837-12842.
+
+\url{http://en.wikipedia.org/wiki/Likelihood-ratio_test}
 }
 \seealso{
 \code{\linkS4class{deSet}}, \code{\link{build_models}},

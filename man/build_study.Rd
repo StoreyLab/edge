@@ -9,35 +9,37 @@ build_study(data, grp = NULL, adj.var = NULL, bio.var = NULL,
   basis.df = 2, basis.type = c("ncs", "poly"))
 }
 \arguments{
-\item{data}{\code{matrix}: gene expression data.}
+\item{data}{\code{matrix}: gene expression data (rows are genes, columns are
+samples).}
 
-\item{grp}{\code{vector}: groups or biological variable in experiment. Optional.}
+\item{grp}{\code{vector}: group assignement in the study (for K-class
+studies). Optional.}
 
 \item{adj.var}{\code{matrix}: adjustment variables. Optional.}
 
 \item{bio.var}{\code{matrix}: biological variables. Optional.}
 
-\item{tme}{\code{vector}: covariate of interest in time course study. Optional.}
+\item{tme}{\code{vector}: time variable in a time course study. Optional.}
 
-\item{ind}{\code{factor}: individual factor for repeated observations of
-the same individuals. Optional.}
+\item{ind}{\code{factor}: individual factor for repeated observations of the
+same individuals. Optional.}
 
-\item{sampling}{\code{string}: type of experiment. Either "static" or
+\item{sampling}{\code{string}: type of study. Either "static" or
 "timecourse". Default is "static".}
 
-\item{basis.df}{\code{numeric}: degree of freedom of the spline fit for time
+\item{basis.df}{\code{numeric}: degrees of freedom of the basis for time
 course study. Default is 2.}
 
-\item{basis.type}{\code{string}: either "ncs" or "ps" basis for time course
-study. Default is "ncs".}
+\item{basis.type}{\code{string}: either "ncs" (natural cubic spline) or "ps"
+(polynomial spline) basis for time course study. Default is "ncs".}
 }
 \value{
 \code{\linkS4class{deSet}} object
 }
 \description{
 \code{build_study} generates the full and null models for users unfamiliar
-with their experimental design. There are two types of experimental designs:
-static and time-course. For more details, refer to the user manual.
+with building models in R. There are two types of experimental designs:
+static and time-course. For more details, refer to the vignette.
 }
 \examples{
 # create ExpressionSet object from kidney dataset

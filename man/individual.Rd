@@ -19,12 +19,13 @@ individual(object) <- value
 \arguments{
 \item{object}{\code{\linkS4class{deSet}}}
 
-\item{value}{\code{factor}: identifier for each observation. Important
-if the same individuals are sampled multiple times.}
+\item{value}{\code{factor}: Identifies which samples correspond to which
+  individuals. Important if the same individuals are sampled multiple times
+  in a longitudinal fashion.}
 }
 \value{
-\code{individual} returns information regarding individuals
-in the experiment.
+\code{individual} returns information regarding dinstinct individuals
+  sampled in the experiment.
 }
 \description{
 These generic functions access and set the individual slot in
@@ -35,7 +36,7 @@ library(splines)
 # import data
 data(endotoxin)
 ind <- endotoxin$ind
-time <- endotoxin$t
+time <- endotoxin$time
 class <- endotoxin$class
 endoexpr <- endotoxin$endoexpr
 cov <- data.frame(individual = ind, time = time, class = class)

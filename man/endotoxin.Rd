@@ -8,7 +8,7 @@
   \item endoexpr: A 500 rows by 46 columns data frame containing expression
   values.
   \item class: A vector of length 46 containing information about which
-  individuals were given endotoxin
+  individuals were given endotoxin.
   \item ind: A vector of length 46 providing indexing measurements for each
   individual in the experiment.
   \item time: A vector of length 46 indicating time measurements.
@@ -41,13 +41,13 @@ cov <- data.frame(individual = ind, time = time, class = class)
 
 # formulate null and full models in experiement
 # note: interaction term is a way of taking into account group effects
-mNull <- ~ns(time, df=4, intercept = FALSE)
+mNull <- ~ns(time, df=4, intercept = FALSE) + class
 mFull <- ~ns(time, df=4, intercept = FALSE) +
-ns(time, df=4, intercept = FALSE):class + class
+          ns(time, df=4, intercept = FALSE):class + class
 
 # create deSet object
 de_obj <- build_models(endoexpr, cov = cov, full.model = mFull,
-null.model = mNull, ind = ind)
+                       null.model = mNull, ind = ind)
 
 # Perform ODP/lrt statistic to determine significant genes in study
 de_odp <- odp(de_obj, bs.its = 10)
@@ -57,11 +57,6 @@ de_lrt <- lrt(de_obj, nullDistn = "bootstrap", bs.its = 10)
 summary(de_odp)
 }
 \references{
-Calvano, S. E., Xiao, W., Richards, D. R., Felciano, R. M., Baker, H.
-V., Cho, R.J., Chen, R. O., Brownstein, B. H., Cobb, J. P., Tschoeke,
-S. K., et al. "A network-based analysis of systemic inflammation in humans."
- Nature. 2005 Oct 13; 437(7061):1032-7. Epub 2005 Aug 31.
-
 Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance
 analysis of time course microarray experiments. PNAS, 102: 12837-12842. \cr
 \url{http://www.pnas.org/content/100/16/9440.full}

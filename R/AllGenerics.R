@@ -19,13 +19,12 @@
 #' @param ... Additional arguments for \code{\link{apply_qvalue}} and
 #' \code{\link{empPvals}} function.
 #'
-#' @details
-#' \code{lrt} fits the full and null models to each gene using the function
-#' \code{\link{fit_models}} and then performs a likelihood ratio test. The
-#' user has the option to calculate p-values from either the F distribution or
-#' through a bootstrap algorithm. If \code{nullDistn} is "bootstrap"
-#' then empirical p-values will be determined from the \code{\link{qvalue}}
-#' package (see \code{\link{empPvals}}).
+#' @details \code{lrt} fits the full and null models to each gene using the
+#' function \code{\link{fit_models}} and then performs a likelihood ratio test.
+#' The user has the option to calculate p-values a Normal distribution
+#' assumption or through a bootstrap algorithm. If \code{nullDistn} is
+#' "bootstrap" then empirical p-values will be determined from the
+#' \code{\link{qvalue}} package (see \code{\link{empPvals}}).
 #'
 #' @author John Storey, Andrew Bass
 #'
@@ -65,6 +64,8 @@
 #' Storey JD, Xiao W, Leek JT, Tompkins RG, and Davis RW. (2005) Significance
 #' analysis of time course microarray experiments. Proceedings of the National
 #' Academy of Sciences, 102: 12837-12842.
+#' 
+#' \url{http://en.wikipedia.org/wiki/Likelihood-ratio_test}
 #'
 #' @seealso \code{\linkS4class{deSet}}, \code{\link{build_models}},
 #' \code{\link{odp}}
@@ -78,11 +79,10 @@ setGeneric("lrt", function(object, de.fit,
 
 #' The optimal discovery procedure
 #'
-#' \code{odp} performs the optimal discovery procedure, which is a new
-#' approach for optimally performing many hypothesis tests in a
-#' high-dimensional study. When testing whether a feature is significant, the
-#' optimal discovery procedure uses information across all features when
-#' testing for significance.
+#' \code{odp} performs the optimal discovery procedure, which is a framework for
+#' optimally performing many hypothesis tests in a high-dimensional study. When
+#' testing whether a feature is significant, the optimal discovery procedure
+#' uses information across all features when testing for significance.
 #'
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}. Optional.
@@ -100,16 +100,16 @@ setGeneric("lrt", function(object, de.fit,
 #'
 #'
 #' @details
-#' The full ODP estimator computationally grows quadratically with
-#' respect to the number of genes. This becomes computationally infeasible at
-#' a certain point. Therefore, an alternative method called mODP is used which
-#' has been shown to provide results that are very similar. mODP utilizes a
-#' k-means clustering algorithm where genes are assigned to a cluster based on
-#' the Kullback-Leiber distance. Each gene is assigned an module-average
-#' parameter to calculate the ODP score and it reduces the computations time
-#' to linear (See Woo, Leek and Storey 2010). If the number of clusters is equal
-#' to the number of genes then the original ODP is implemented. Depending on
-#' the number of hypothesis tests, this can take some time.
+#' The full ODP estimator computationally grows quadratically with respect to
+#' the number of genes. This becomes computationally taxing at a certain point.
+#' Therefore, an alternative method called mODP is used which has been shown to
+#' provide results that are very similar. mODP utilizes a clustering algorithm
+#' where genes are assigned to a cluster based on the Kullback-Leiber distance.
+#' Each gene is assigned an module-average parameter to calculate the ODP score
+#' and it reduces the computations time to approximately linear (see Woo, Leek
+#' and Storey 2010). If the number of clusters is equal to the number of genes
+#' then the original ODP is implemented. Depending on the number of hypothesis
+#' tests, this can take some time.
 #'
 #' @return \code{\linkS4class{deSet}} object
 #'
@@ -168,30 +168,29 @@ setGeneric("odp", function(object, de.fit, odp.parms = NULL, bs.its = 100,
 #' Modular optimal discovery procedure (mODP)
 #'
 #' \code{kl_clust} is an implementation of mODP that assigns genes to modules
-#' based off of the Kullback-Leibler distance.
+#' based on of the Kullback-Leibler distance.
 #'
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}.
 #' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}.
-#' @param n.mods \code{integer}: number of clusters.
+#' @param n.mods \code{integer}: number of modules (i.e., clusters).
 #'
 #' @details mODP utilizes a k-means clustering algorithm where genes are
 #' assigned to a cluster based on the Kullback-Leiber distance. Each gene is
 #' assigned an module-average parameter to calculate the ODP score (See Woo,
-#' Leek and Storey 2010 for more details). The mODP and full ODP produce near
+#' Leek and Storey 2010 for more details). The mODP and full ODP produce nearly
 #' exact results but mODP has the advantage of being computationally
-#' feasible.
+#' faster.
 #'
-#' @note The results are generally insensitive to the number of modules after a
-#' certain threshold of about n.mods>=50. It is recommended that users
-#' experiment with the number of clusters. If the number of clusters is equal
-#' to the number of genes then the original ODP is implemented. Depending on
-#' the number of hypothesis tests, this can take some time.
+#' @note The results are generally insensitive to the number of modules after a 
+#'   certain threshold of about n.mods>=50 in our experience. It is recommended
+#'   that users experiment with the number of modules. If the number of modules
+#'   is equal to the number of genes then the original ODP is implemented.
 #'
 #' @return
 #' A list with the following slots:
 #' \itemize{
-#'   \item {mu.full: cluster means from full model.}
-#'   \item {mu.null: cluster means from null model.}
+#'   \item {mu.full: cluster averaged fitted values from full model.}
+#'   \item {mu.null: cluster averaged fitted values from null model.}
 #'   \item {sig.full: cluster standard deviations from full model.}
 #'   \item {sig.null: cluster standard deviations from null model.}
 #'   \item {n.per.mod: total members in each cluster.}
@@ -239,8 +238,7 @@ setGeneric("odp", function(object, de.fit, odp.parms = NULL, bs.its = 100,
 #'
 #' @author John Storey, Jeffrey Leek
 #'
-#' @seealso \code{\link{odp}}, \code{\link{lrt}} and
-#' \code{\link{fit_models}}
+#' @seealso \code{\link{odp}}, \code{\link{fit_models}}
 #'
 #' @exportMethod kl_clust
 setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
@@ -248,7 +246,7 @@ setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
 
 #' Linear regression of the null and full models
 #'
-#' \code{fit_models} fits a linear model to each gene by using the least
+#' \code{fit_models} fits a model matrix to each gene by using the least
 #' squares method. Model fits can be either statistic type "odp" (optimal
 #' discovery procedure) or "lrt" (likelihood ratio test).
 #'
@@ -257,8 +255,9 @@ setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
 #' "lrt" or "odp". Default is "lrt".
 #'
 #' @details
-#' If "odp" method is implemented then the null model is removed from the full
-#' model (see Storey 2007).
+#' If "odp" method is implemented then the null model is removed from the full 
+#' model (see Storey 2007).  Otherwise, the statistic type has no affect on the
+#' model fit.
 #'
 #' @note \code{fit_models} does not have to be called by the user to use
 #' \code{\link{odp}}, \code{\link{lrt}} or \code{\link{kl_clust}} as it is an
@@ -374,7 +373,8 @@ setGeneric("deSet", function(object, full.model, null.model,
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param ... Additional arguments for \code{\link{qvalue}}
 #'
-#' @return \code{\linkS4class{deSet}} object
+#' @return \code{\linkS4class{deSet}} object with slots updated by \code{\link{qvalue}}
+#'  calculations.
 #'
 #' @examples
 #' # import data
@@ -421,7 +421,9 @@ setGeneric("apply_qvalue", function(object, ...)
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
 #' @param ... Additional arguments for \code{\link{sva}}
 #'
-#' @return \code{\linkS4class{deSet}} object
+#' @return \code{\linkS4class{deSet}} object where the surrogate variables 
+#' estimated by \code{\link{sva}} are added to the full model and null model
+#' matrices.
 #'
 #' @examples
 #' # import data
@@ -453,6 +455,10 @@ setGeneric("apply_qvalue", function(object, ...)
 #' Leek JT, Storey JD (2007) Capturing Heterogeneity in Gene Expression
 #' Studies by Surrogate Variable Analysis. PLoS Genet 3(9): e161.
 #' doi:10.1371/journal.pgen.0030161
+#' 
+#' Leek JT and Storey JD. (2008) A general framework for multiple testing
+#' dependence. Proceedings of the National Academy of Sciences, 105: 18718-
+#' 18723.
 #'
 #' @author John Storey, Jeffrey Leek, Andrew Bass
 #' @export
@@ -466,14 +472,19 @@ setGeneric("apply_sva", function(object, ...)
 #' on the algorithm.
 #'
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}
-#' @param int.var \code{data frame}: intensity-dependent effects.
+#' @param int.var \code{data frame}: intensity-dependent effects (see 
+#'   \code{\link{snm}} for details)
 #' @param ... Additional arguments for \code{\link{snm}}
 #'
-#' @return \code{apply_snm} returns an \code{\linkS4class{deSet}} object.
+#' @return \code{apply_snm} returns a \code{\linkS4class{deSet}} object where 
+#' assayData (the expression data) that has been passed to apply_snm is replaced
+#' with the normalized data that \code{\link{snm}} returns.  Specifically, 
+#' \code{exprs(object)} is replaced by \code{$norm.dat} from \code{\link{snm}},
+#' where \code{object} is the \code{\link{deSet}} object.
 #'
 #' @references
 #' Mechan BH, Nelson PS, Storey JD. Supervised normalization of microarrays.
-#' Bioinformatics 2010;26:1308-15
+#' Bioinformatics 2010;26:1308-1315.
 #'
 #' @examples
 #' # simulate data
@@ -745,18 +756,19 @@ setGeneric("qvalueObj<-", function(object, value) {
 #' \code{\linkS4class{deSet}}.
 #'
 #' @param object \code{\linkS4class{deSet}}
-#' @param value \code{factor}: identifier for each observation. Important
-#' if the same individuals are sampled multiple times.
+#' @param value \code{factor}: Identifies which samples correspond to which
+#'   individuals. Important if the same individuals are sampled multiple times
+#'   in a longitudinal fashion.
 #'
-#' @return \code{individual} returns information regarding individuals
-#' in the experiment.
+#' @return \code{individual} returns information regarding dinstinct individuals
+#'   sampled in the experiment.
 #'
 #' @examples
 #' library(splines)
 #' # import data
 #' data(endotoxin)
 #' ind <- endotoxin$ind
-#' time <- endotoxin$t
+#' time <- endotoxin$time
 #' class <- endotoxin$class
 #' endoexpr <- endotoxin$endoexpr
 #' cov <- data.frame(individual = ind, time = time, class = class)
@@ -798,7 +810,8 @@ setGeneric("individual<-", function(object, value) {
 #'
 #' @param object \code{S4 object}: \code{\linkS4class{deFit}}
 #'
-#' @return \code{betaCoef} returns the regression coefficients.
+#' @return \code{betaCoef} returns the regression coefficients for the full
+#'  model fit.
 #'
 #' @author John Storey, Andrew Bass
 #'
@@ -830,7 +843,7 @@ setGeneric("individual<-", function(object, value) {
 #' @export
 setGeneric("betaCoef", function(object) standardGeneric("betaCoef"))
 
-#' Statistical method used in analysis
+#' Statistic type used in analysis
 #'
 #' Access the statistic type in a \code{\linkS4class{deFit}} object. Can
 #' either be the optimal discovery procedure (odp) or the likelihood ratio

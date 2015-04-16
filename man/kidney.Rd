@@ -12,8 +12,6 @@
   different tissue sample.
   \item age: A vector of length 133 giving the age of each sample.
   \item sex: A vector of length 133 giving the sex of each sample.
-  \item tissue: A vector of length 133 giving the tissue type of each
-  sample.
 }}
 \usage{
 data(kidney)
@@ -24,14 +22,14 @@ kidney dataset
 \description{
 Gene expression measurements from kidney samples were obtained from 72
 human subjects ranging in age from 27 to 92 years. Only one array was
-obtained per sample, and the age and tissue type of each subject was
+obtained per individual, and the age and sex of each individual were
 recorded.
 }
 \note{
 These data are a random subset of 500 probe-sets from the total number of
 probe-sets in the original data set. To download the full data set, go to
-\url{http://genomine.org/edge/}. The \code{age}, \code{sex}, and
-\code{tissue} data are contained in \code{kidcov} data frame.
+\url{http://genomine.org/edge/}. The \code{age} and \code{sex} are contained
+in \code{kidcov} data frame.
 }
 \examples{
 # import data

@@ -16,7 +16,9 @@ apply_sva(object, ...)
 \item{...}{Additional arguments for \code{\link{sva}}}
 }
 \value{
-\code{\linkS4class{deSet}} object
+\code{\linkS4class{deSet}} object where the surrogate variables
+estimated by \code{\link{sva}} are added to the full model and null model
+matrices.
 }
 \description{
 Runs \code{\link{sva}} on the null and full models in
@@ -53,6 +55,10 @@ John Storey, Jeffrey Leek, Andrew Bass
 Leek JT, Storey JD (2007) Capturing Heterogeneity in Gene Expression
 Studies by Surrogate Variable Analysis. PLoS Genet 3(9): e161.
 doi:10.1371/journal.pgen.0030161
+
+Leek JT and Storey JD. (2008) A general framework for multiple testing
+dependence. Proceedings of the National Academy of Sciences, 105: 18718-
+18723.
 }
 \seealso{
 \code{\linkS4class{deSet}}, \code{\link{odp}} and

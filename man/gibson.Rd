@@ -6,8 +6,8 @@
 \title{Gene expression dataset from Idaghdour et al. (2008)}
 \format{\itemize{
   \item batch: Batches in experiment.
-  \item location: Location of Moroccan Amazigh groups.
-  \item gender: Gender of individuals.
+  \item location: Environment/lifestyle of Moroccan Amazigh groups.
+  \item gender: Sex of individuals.
   \item gibexpr: A 500 rows by 46 columns matrix of gene expression values.
 }}
 \usage{
@@ -18,7 +18,7 @@ gibson dataset
 }
 \description{
 The data provide gene expression measurements in peripheral blood leukocyte
-samples from three Moroccan Amazigh groups leading distinct ways of life:
+samples from three Moroccan groups leading distinct ways of life:
 desert nomadic (DESERT), mountain agrarian (VILLAGE), and coastal urban
 (AGADIR).
 }

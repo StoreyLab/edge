@@ -18,13 +18,13 @@ kl_clust(object, de.fit = NULL, n.mods = 50)
 
 \item{de.fit}{\code{S4 object}: \code{\linkS4class{deFit}}.}
 
-\item{n.mods}{\code{integer}: number of clusters.}
+\item{n.mods}{\code{integer}: number of modules (i.e., clusters).}
 }
 \value{
 A list with the following slots:
 \itemize{
-  \item {mu.full: cluster means from full model.}
-  \item {mu.null: cluster means from null model.}
+  \item {mu.full: cluster averaged fitted values from full model.}
+  \item {mu.null: cluster averaged fitted values from null model.}
   \item {sig.full: cluster standard deviations from full model.}
   \item {sig.null: cluster standard deviations from null model.}
   \item {n.per.mod: total members in each cluster.}
@@ -33,22 +33,21 @@ A list with the following slots:
 }
 \description{
 \code{kl_clust} is an implementation of mODP that assigns genes to modules
-based off of the Kullback-Leibler distance.
+based on of the Kullback-Leibler distance.
 }
 \details{
 mODP utilizes a k-means clustering algorithm where genes are
 assigned to a cluster based on the Kullback-Leiber distance. Each gene is
 assigned an module-average parameter to calculate the ODP score (See Woo,
-Leek and Storey 2010 for more details). The mODP and full ODP produce near
+Leek and Storey 2010 for more details). The mODP and full ODP produce nearly
 exact results but mODP has the advantage of being computationally
-feasible.
+faster.
 }
 \note{
 The results are generally insensitive to the number of modules after a
-certain threshold of about n.mods>=50. It is recommended that users
-experiment with the number of clusters. If the number of clusters is equal
-to the number of genes then the original ODP is implemented. Depending on
-the number of hypothesis tests, this can take some time.
+  certain threshold of about n.mods>=50 in our experience. It is recommended
+  that users experiment with the number of modules. If the number of modules
+  is equal to the number of genes then the original ODP is implemented.
 }
 \examples{
 # import data
@@ -93,7 +92,6 @@ Woo S, Leek JT, Storey JD (2010) A computationally efficient modular optimal
  discovery procedure. Bioinformatics, 27(4): 509-515.
 }
 \seealso{
-\code{\link{odp}}, \code{\link{lrt}} and
-\code{\link{fit_models}}
+\code{\link{odp}}, \code{\link{fit_models}}
 }
 

@@ -1,4 +1,4 @@
-edge 0.99.z:
+edge 2.0.0:
 
 The edge package was first released in 2005 and described in the publication:
 
@@ -9,6 +9,5 @@ http://bioinformatics.oxfordjournals.org/content/22/4/507.abstract
 
 It was an independently released R package by the John Storey Lab, which
 included multi-threading and a graphical user interface.  However, edge has been
-updated and will now be made available through Bioconductor; edge 0.99.z is the
-development version of this Bioconductor package.
-
+updated and will now be made available through Bioconductor; edge >=2.0.0 is the 
+new version released through Bioconductor.

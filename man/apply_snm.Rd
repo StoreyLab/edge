@@ -13,12 +13,17 @@ apply_snm(object, int.var = NULL, ...)
 \arguments{
 \item{object}{\code{S4 object}: \code{\linkS4class{deSet}}}
 
-\item{int.var}{\code{data frame}: intensity-dependent effects.}
+\item{int.var}{\code{data frame}: intensity-dependent effects (see
+\code{\link{snm}} for details)}
 
 \item{...}{Additional arguments for \code{\link{snm}}}
 }
 \value{
-\code{apply_snm} returns an \code{\linkS4class{deSet}} object.
+\code{apply_snm} returns a \code{\linkS4class{deSet}} object where
+assayData (the expression data) that has been passed to apply_snm is replaced
+with the normalized data that \code{\link{snm}} returns.  Specifically,
+\code{exprs(object)} is replaced by \code{$norm.dat} from \code{\link{snm}},
+where \code{object} is the \code{\link{deSet}} object.
 }
 \description{
 Runs \code{snm} on a deSet object based on the null and full models in
@@ -49,7 +54,7 @@ John Storey, Andrew Bass
 }
 \references{
 Mechan BH, Nelson PS, Storey JD. Supervised normalization of microarrays.
-Bioinformatics 2010;26:1308-15
+Bioinformatics 2010;26:1308-1315.
 }
 \seealso{
 \code{\linkS4class{deSet}}, \code{\link{odp}} and

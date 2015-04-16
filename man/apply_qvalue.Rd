@@ -16,7 +16,8 @@ apply_qvalue(object, ...)
 \item{...}{Additional arguments for \code{\link{qvalue}}}
 }
 \value{
-\code{\linkS4class{deSet}} object
+\code{\linkS4class{deSet}} object with slots updated by \code{\link{qvalue}}
+ calculations.
 }
 \description{
 Runs \code{\link{qvalue}} on a \code{\linkS4class{deSet}} object.

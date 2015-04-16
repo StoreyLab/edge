@@ -91,11 +91,11 @@ deFitCheck <- function(object) {
 
 #' The differential expression class (deSet)
 #'
-#' The \code{deSet} class is designed in order to complement the
-#' \code{\link{ExpressionSet}} class. While the \code{ExpressionSet} class
-#' contains information about the experiment, the \code{deSet} class
-#' contains both experimental information and additional information relevant
-#' for differential expression analysis.
+#' The \code{deSet} class extends the \code{\link{ExpressionSet}} class.
+#' While the \code{ExpressionSet} class contains information about the
+#' experiment, the \code{deSet} class contains both experimental information and
+#' additional information relevant for differential expression analysis, 
+#' explained below in Slots.
 #'
 #' @slot null.model \code{formula}: contains the adjustment variables in the
 #' experiment. The null model is used for comparison when fitting the

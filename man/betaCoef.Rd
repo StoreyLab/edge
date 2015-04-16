@@ -14,7 +14,8 @@ betaCoef(object)
 \item{object}{\code{S4 object}: \code{\linkS4class{deFit}}}
 }
 \value{
-\code{betaCoef} returns the regression coefficients.
+\code{betaCoef} returns the regression coefficients for the full
+ model fit.
 }
 \description{
 Access the full model fitted coefficients of a
