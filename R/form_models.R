@@ -146,6 +146,7 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
     }
   }
   exp_set <- new("ExpressionSet")
+  rownames(pdat) <- colnames(data)
   pData(exp_set) <- data.frame(pdat)
   exprs(exp_set) <- as.matrix(data)
   edgeObj <- deSet(exp_set, full.model=as.formula(fmod),
