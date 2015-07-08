@@ -95,15 +95,16 @@ setMethod("odp",
 setMethod("lrt",
           signature = signature(object = "deSet", de.fit = "missing"),
           function(object, de.fit, nullDistn = c("normal", "bootstrap"),
-                   bs.its = 100, seed = NULL, ...) {
+                   bs.its = 100, seed = NULL, mod.F = FALSE, ...) {
             de.fit <- fit_models(object,
-                                  stat.type = "lrt")
+                                 stat.type = "lrt")
             results <- lrt(object,
                            de.fit = de.fit,
                            nullDistn = nullDistn,
                            bs.its = bs.its,
                            seed = seed,
-                           verbose = verbose, ...)
+                           verbose = verbose,
+                           mod.F = mod.F, ...)
             return(results)
           })
 
@@ -111,25 +112,39 @@ setMethod("lrt",
 setMethod("lrt",
           signature = signature(object = "deSet", de.fit = "deFit"),
           function(object, de.fit, nullDistn = c("normal", "bootstrap"),
-                   bs.its = 100, seed = NULL, verbose = TRUE, ...) {
+                   bs.its = 100, seed = NULL, verbose = TRUE, mod.F = FALSE, ...) {
             # Initilizations
             nFull <- ncol(object@full.matrix)
             nNull <- ncol(object@null.matrix)
             n <- ncol(object)
             m <- nrow(object)
+            post.var <- NULL
             if (!is.null(seed)) {
               set.seed(seed)
             }
             nullDistn <- match.arg(nullDistn, c("normal", "bootstrap"))
             # lrt observed stat
+            if (mod.F) {
+              df_full <- n - nFull
+              var_full <- rowSums(de.fit@res.full ^ 2) / df_full
+              out <- squeezeVar(var_full, df_full, covariate = rowMeans(exprs(object)))
+              post.var <- out$var.post
+              prior.df <- out$df.prior
+            }
             stat <- lrtStat(resNull = de.fit@res.null,
-                            resFull = de.fit@res.full)
+                            resFull = de.fit@res.full, 
+                            post.var = post.var)
             # If nullDistn is normal then return p-values from F-test else
             # return empirical p-values from qvalue package
             if (nullDistn == "normal") {
-              df1 <- nFull - nNull
-              df2 <- n - nFull
-              stat <- stat * df2 / df1
+              df1 = nFull - nNull
+              df2 = n - nFull
+              if (mod.F) {
+                stat = stat * 1 / df1
+                df2 = n - (nFull + prior.df)
+              } else {
+                stat = stat * df2 / df1
+              }
               pval <- 1 - pf(stat,
                              df1 = df1,
                              df2 = df2)

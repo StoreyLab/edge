@@ -73,7 +73,7 @@
 #' @export
 setGeneric("lrt", function(object, de.fit,
                            nullDistn = c("normal","bootstrap"), bs.its = 100,
-                           seed = NULL, verbose = TRUE, ...)
+                           seed = NULL, verbose = TRUE, mod.F = FALSE, ...)
   standardGeneric("lrt"))
 
 
