@@ -154,7 +154,8 @@ setMethod("lrt",
               null.stat <- bootstrap(object = object,
                                      obs.fit = de.fit,
                                      bs.its = bs.its,
-                                     verbose = verbose)
+                                     verbose = verbose,
+                                     mod.F = mod.F)
               pval <- empPvals(stat = stat,
                                stat0 = null.stat, ...)
               qvalueObj(object) <- qvalue(pval, ...)
