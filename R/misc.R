@@ -15,17 +15,16 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
     null.fit <- fit_models(object,
                            stat.type = sType)
     if (sType == "lrt") {
-      post.var = NULL
-      if (mod.F) {
-        df_full <- ncol(object) - nf
-        var_full <- rowSums(null.fit@res.full ^ 2) / df_full
-        out <- squeezeVar(var_full, df_full, covariate = rowMeans(exprs(object)))
-        post.var <- out$var.post
-        prior.df <- out$df.prior
-      }
+#      post.var = NULL
+#      if (mod.F) {
+#        df_full <- ncol(object) - nf
+#        var_full <- rowSums(null.fit@res.full ^ 2) / df_full
+#        out <- squeezeVar(var_full, df_full, covariate = rowMeans(exprs(object)))
+#        post.var <- out$var.post
+#        prior.df <- out$df.prior
+#      }
       null.stat[, i] <- lrtStat(resNull = null.fit@res.null,
-                                resFull = null.fit@res.full,
-                                post.var = post.var)
+                                resFull = null.fit@res.full)
 
     }
     else {

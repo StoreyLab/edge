@@ -141,7 +141,7 @@ setMethod("lrt",
               df2 = n - nFull
               if (mod.F) {
                 stat = stat * 1 / df1
-                df2 = n - (nFull + prior.df)
+                df2 = (n - nFull) + prior.df
               } else {
                 stat = stat * df2 / df1
               }
@@ -156,6 +156,7 @@ setMethod("lrt",
                                      bs.its = bs.its,
                                      verbose = verbose,
                                      mod.F = mod.F)
+              if (mod.F) null.stat = null.stat*df2
               pval <- empPvals(stat = stat,
                                stat0 = null.stat, ...)
               qvalueObj(object) <- qvalue(pval, ...)
