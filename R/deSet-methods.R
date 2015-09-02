@@ -156,7 +156,6 @@ setMethod("lrt",
                                      bs.its = bs.its,
                                      verbose = verbose,
                                      mod.F = mod.F)
-              if (mod.F) null.stat = null.stat*df2
               pval <- empPvals(stat = stat,
                                stat0 = null.stat, ...)
               qvalueObj(object) <- qvalue(pval, ...)
