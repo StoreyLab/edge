@@ -87,7 +87,10 @@ setMethod("odp",
                                    verbose = verbose)
             pval <- empPvals(stat = odp.stat,
                              stat0 = null.stat, ...)
-            qvalueObj(object) <- qvalue(p = pval, ...)
+            qval <- qvalue(p = pval, ...)
+            qval$stat0 <- null.stat
+            qval$stat <- odp.stat
+            qvalueObj(object) <- qval
             return(object)
           })
 
@@ -148,7 +151,9 @@ setMethod("lrt",
               pval <- 1 - pf(stat,
                              df1 = df1,
                              df2 = df2)
-              qvalueObj(object) <- qvalue(p = pval, ...)
+              qval <- qvalue(p = pval, ...)
+              qval$stat <- stat
+              qvalueObj(object) <- qval
               return(object)
             } else {
               null.stat <- bootstrap(object = object,
@@ -158,7 +163,10 @@ setMethod("lrt",
                                      mod.F = mod.F)
               pval <- empPvals(stat = stat,
                                stat0 = null.stat, ...)
-              qvalueObj(object) <- qvalue(pval, ...)
+              qval <- qvalue(pval, ...)
+              qval$stat0 <- null.stat
+              qval$stat <- stat
+              qvalueObj(object) <- qval
               return(object)
             }
           })
