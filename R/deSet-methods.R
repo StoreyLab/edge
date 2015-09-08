@@ -71,7 +71,7 @@ setMethod("odp",
             }
             if (is.null(odp.parms)) {
               odp.parms <- kl_clust(object,
-                                   n.mods = n.mods)
+                                    n.mods = n.mods)
             } else if (sum(!(names(odp.parms) %in% c("mu.full", "sig.full",
                                                      "mu.null", "sig.null",
                                                      "n.per.mod",
@@ -86,11 +86,8 @@ setMethod("odp",
                                    bs.its = bs.its,
                                    verbose = verbose)
             pval <- empPvals(stat = odp.stat,
-                             stat0 = null.stat, ...)
-            qval <- qvalue(p = pval, ...)
-            qval$stat0 <- null.stat
-            qval$stat <- odp.stat
-            qvalueObj(object) <- qval
+                             stat0 = null.stat)
+            qvalueObj(object) <- qvalue(p = pval, ...)
             return(object)
           })
 
@@ -151,22 +148,18 @@ setMethod("lrt",
               pval <- 1 - pf(stat,
                              df1 = df1,
                              df2 = df2)
-              qval <- qvalue(p = pval, ...)
-              qval$stat <- stat
-              qvalueObj(object) <- qval
+              qvalueObj(object) <- qvalue(p = pval, ...)
               return(object)
             } else {
               null.stat <- bootstrap(object = object,
                                      obs.fit = de.fit,
                                      bs.its = bs.its,
                                      verbose = verbose,
-                                     mod.F = mod.F)
+                                     mod.F = mod.F,
+                                     post.var = post.var)
               pval <- empPvals(stat = stat,
-                               stat0 = null.stat, ...)
-              qval <- qvalue(pval, ...)
-              qval$stat0 <- null.stat
-              qval$stat <- stat
-              qvalueObj(object) <- qval
+                               stat0 = null.stat)
+              qvalueObj(object) <- qvalue(pval, ...)
               return(object)
             }
           })
