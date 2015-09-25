@@ -11,11 +11,14 @@
 #' statistics from the null distribution. In the "bootstrap" case, empirical
 #' p-values are calculated using the observed and null statistics (see
 #' \code{\link{empPvals}}). Default is "normal".
+#' @param weights \code{matrix}: weights for each observation. Default is NULL.
 #' @param bs.its \code{integer}: number of null statistics generated (only
 #' applicable for "bootstrap" method). Default is 100.
 #' @param seed \code{integer}: set the seed value. Default is NULL.
 #' @param verbose \code{boolean}: print iterations for bootstrap method.
 #' Default is TRUE.
+#' @param mod.F \code{boolean}: Moderated F-test, recommended for experiments
+#' with a small sample size. Default is FALSE.
 #' @param ... Additional arguments for \code{\link{apply_qvalue}} and
 #' \code{\link{empPvals}} function.
 #'
@@ -72,8 +75,9 @@
 #'
 #' @export
 setGeneric("lrt", function(object, de.fit,
-                           nullDistn = c("normal","bootstrap"), bs.its = 100,
-                           seed = NULL, verbose = TRUE, mod.F = FALSE, ...)
+                           nullDistn = c("normal","bootstrap"), weights = NULL,
+                           bs.its = 100, seed = NULL, verbose = TRUE,
+                           mod.F = FALSE, ...)
   standardGeneric("lrt"))
 
 
@@ -88,6 +92,7 @@ setGeneric("lrt", function(object, de.fit,
 #' @param de.fit \code{S4 object}: \code{\linkS4class{deFit}}. Optional.
 #' @param odp.parms \code{list}: parameters for each cluster. See
 #' \code{\link{kl_clust}}.
+#' @param weights \code{matrix}: weights for each observation. Default is NULL.
 #' @param bs.its \code{numeric}: number of null bootstrap iterations. Default
 #' is 100.
 #' @param n.mods \code{integer}: number of clusters used in
@@ -160,7 +165,7 @@ setGeneric("lrt", function(object, de.fit,
 #' \code{\linkS4class{deSet}}
 #'
 #' @export
-setGeneric("odp", function(object, de.fit, odp.parms = NULL, bs.its = 100,
+setGeneric("odp", function(object, de.fit, odp.parms = NULL, weights = NULL, bs.its = 100,
                            n.mods = 50, seed = NULL, verbose = TRUE, ...)
   standardGeneric("odp"))
 
@@ -253,6 +258,7 @@ setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
 #' @param object \code{S4 object}: \code{\linkS4class{deSet}}.
 #' @param stat.type \code{character}: type of statistic to be used. Either
 #' "lrt" or "odp". Default is "lrt".
+#' @param weights \code{matrix}: weights for each observation. Default is NULL.
 #'
 #' @details
 #' If "odp" method is implemented then the null model is removed from the full 
@@ -310,7 +316,7 @@ setGeneric("kl_clust", function(object, de.fit = NULL, n.mods = 50)
 #' @author John Storey
 #' @exportMethod fit_models
 setGeneric("fit_models",
-           function(object, stat.type = c("lrt", "odp")) {
+           function(object, stat.type = c("lrt", "odp"), weights = NULL) {
              standardGeneric("fit_models")
            })
 

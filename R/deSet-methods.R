@@ -1,8 +1,9 @@
 #' @rdname fit_models
 setMethod("fit_models",
           "deSet",
-          function(object, stat.type = c("lrt", "odp")) {
+          function(object, stat.type = c("lrt", "odp"), weights = NULL) {
             # Initializations
+            if (!is.null(weights)) fit_wmodels(object, stat.type = stat.type, w = weights)
             stat.var <- match.arg(stat.type, c("lrt", "odp"))
             exprsData <- exprs(object)
             n <- ncol(exprsData)
@@ -48,10 +49,10 @@ setMethod("fit_models",
 #' @rdname odp
 setMethod("odp",
           signature = signature(object = "deSet", de.fit = "missing"),
-          function(object, de.fit, odp.parms = NULL, bs.its = 100,
+          function(object, de.fit, odp.parms = NULL, weights = NULL, bs.its = 100,
                    n.mods = 50, seed = NULL, verbose = TRUE, ...)  {
             de.fit <- fit_models(object,
-                                 stat.type = "odp", ...)
+                                 stat.type = "odp", weights = weights, ...)
             results <- odp(object, de.fit,
                            odp.parms = odp.parms,
                            n.mods = n.mods,
@@ -64,13 +65,13 @@ setMethod("odp",
 #' @rdname odp
 setMethod("odp",
           signature = signature(object = "deSet", de.fit = "deFit"),
-          function(object, de.fit, odp.parms = NULL, bs.its = 100,
+          function(object, de.fit, odp.parms = NULL, weights = NULL, bs.its = 100,
                    n.mods = 50, seed = NULL, verbose = TRUE, ...) {
             if (!is.null(seed)) {
               set.seed(seed)
             }
             if (is.null(odp.parms)) {
-              odp.parms <- kl_clust(object,
+              odp.parms <- kl_clust(object, de.fit = de.fit, 
                                     n.mods = n.mods)
             } else if (sum(!(names(odp.parms) %in% c("mu.full", "sig.full",
                                                      "mu.null", "sig.null",
@@ -94,10 +95,10 @@ setMethod("odp",
 #' @rdname lrt
 setMethod("lrt",
           signature = signature(object = "deSet", de.fit = "missing"),
-          function(object, de.fit, nullDistn = c("normal", "bootstrap"),
-                   bs.its = 100, seed = NULL, mod.F = FALSE, ...) {
+          function(object, de.fit, nullDistn = c("normal", "bootstrap"), weights = NULL,
+                   bs.its = 100, seed = NULL, verbose = TRUE, mod.F = FALSE, ...) {
             de.fit <- fit_models(object,
-                                 stat.type = "lrt")
+                                 stat.type = "lrt", weights = weights)
             results <- lrt(object,
                            de.fit = de.fit,
                            nullDistn = nullDistn,
@@ -111,7 +112,7 @@ setMethod("lrt",
 #' @rdname lrt
 setMethod("lrt",
           signature = signature(object = "deSet", de.fit = "deFit"),
-          function(object, de.fit, nullDistn = c("normal", "bootstrap"),
+          function(object, de.fit, nullDistn = c("normal", "bootstrap"), weights = NULL,
                    bs.its = 100, seed = NULL, verbose = TRUE, mod.F = FALSE, ...) {
             # Initilizations
             nFull <- ncol(object@full.matrix)
@@ -182,7 +183,7 @@ setMethod("kl_clust",
             nn <- mod.df(object@null.matrix)
             mod.member <- klmod(de.fit, nf = nf,
                                 n.mods = n.mods)
-            return(mod.parms(de.fit, nf = nf, nn=nn,
+            return(mod.parms(de.fit, nf = nf, nn = nn,
                              clMembers = mod.member))
           })
 

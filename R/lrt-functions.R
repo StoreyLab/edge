@@ -13,7 +13,7 @@ lrtStat <- function(resNull, resFull, post.var = NULL) {
 
 #	EMPIRICAL BAYES SQUEEZING OF VARIANCES
 
-squeezeVar <- function(var, df, covariate=NULL, robust=FALSE, winsor.tail.p=c(0.05,0.1))
+squeezeVar <- function(var, df, covariate=NULL, winsor.tail.p=c(0.05,0.1))
   #	Empirical Bayes posterior variances
   #	Gordon Smyth
   #	2 March 2004.  Last modified 2 Dec 2013.
@@ -28,10 +28,7 @@ squeezeVar <- function(var, df, covariate=NULL, robust=FALSE, winsor.tail.p=c(0.
   }
   
   #	Estimate prior var and df
-  if(robust)
-    fit <- fitFDistRobustly(var, df1=df, covariate=covariate, winsor.tail.p=winsor.tail.p)
-  else
-    fit <- fitFDist(var, df1=df, covariate=covariate)
+  fit <- fitFDist(var, df1=df, covariate=covariate)
   
   #	Prior var will be vector if robust=TRUE, otherwise scalar
   var.prior <- fit$scale
