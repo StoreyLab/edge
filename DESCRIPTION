@@ -25,6 +25,7 @@ Imports:
     splines,
     sva,
     snm,
+    jackstraw,
     qvalue(>= 1.99.0),
     MASS
 Suggests:
