@@ -1,3 +1,8 @@
+edge 2.0.1:
+- Moderated F-test has been added for likelihood ratio test
+- Weights can be inputted into odp/lrt which allows it to work for RNA-Seq experiments with low samples
+- added function apply_jackstraw
+
 edge 2.0.0:
 
 The edge package was first released in 2005 and described in the publication:

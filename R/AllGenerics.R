@@ -604,6 +604,7 @@ setGeneric("apply_snm", function(object, int.var=NULL, ...)
 #' @seealso \code{\link{permutationPA}}
 #'
 #' @author Neo Christopher Chung \email{nc@@princeton.edu}
+#' @import jackstraw
 #' @export
 setGeneric("apply_jackstraw", function(object, PC = NULL, r = NULL, s = NULL, B = NULL,
                                        covariate = NULL, verbose = TRUE, seed = NULL)
