@@ -3,7 +3,7 @@ setMethod("fit_models",
           "deSet",
           function(object, stat.type = c("lrt", "odp"), weights = NULL) {
             # Initializations
-            if (!is.null(weights)) fit_wmodels(object, stat.type = stat.type, w = weights)
+            if (!is.null(weights)) return(fit_wmodels(object, stat.type = stat.type, w = weights))
             stat.var <- match.arg(stat.type, c("lrt", "odp"))
             exprsData <- exprs(object)
             n <- ncol(exprsData)
@@ -88,7 +88,10 @@ setMethod("odp",
                                    verbose = verbose)
             pval <- empPvals(stat = odp.stat,
                              stat0 = null.stat)
-            qvalueObj(object) <- qvalue(p = pval, ...)
+            qval <- qvalue(pval, ...)
+            qval$stat0 <- null.stat
+            qval$stat <- stat
+            qvalueObj(object) <- qval
             return(object)
           })
 
@@ -149,7 +152,11 @@ setMethod("lrt",
               pval <- 1 - pf(stat,
                              df1 = df1,
                              df2 = df2)
-              qvalueObj(object) <- qvalue(p = pval, ...)
+              qval <- qvalue(pval, ...)
+              qval$stat <- stat
+              qval$df2 <- df2
+              qval$df1 <- df1
+              qvalueObj(object) <- qval
               return(object)
             } else {
               null.stat <- bootstrap(object = object,
@@ -160,7 +167,10 @@ setMethod("lrt",
                                      post.var = post.var)
               pval <- empPvals(stat = stat,
                                stat0 = null.stat)
-              qvalueObj(object) <- qvalue(pval, ...)
+              qval <- qvalue(pval, ...)
+              qval$stat0 <- null.stat
+              qval$stat <- stat
+              qvalueObj(object) <- qval
               return(object)
             }
           })
