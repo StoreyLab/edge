@@ -90,7 +90,7 @@ setMethod("odp",
                              stat0 = null.stat)
             qval <- qvalue(pval, ...)
             qval$stat0 <- null.stat
-            qval$stat <- stat
+            qval$stat <- odp.stat
             qvalueObj(object) <- qval
             return(object)
           })
