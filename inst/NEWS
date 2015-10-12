@@ -2,6 +2,7 @@ edge 2.1.1:
 - Moderated F-test has been added for likelihood ratio test
 - Weights can be inputted into odp/lrt which allows it to work for RNA-Seq experiments with low samples
 - added function apply_jackstraw
+- fixed bug in build_study
 
 edge 2.0.0:
 
