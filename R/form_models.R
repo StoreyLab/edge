@@ -145,10 +145,8 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
         fmod <- paste(paste("~", paste(names(pdat)[-1], collapse=" + ")),"+",time.basis,"+", paste( "(", paste(names(pdat)[ncol(pdat)], collapse=" + ", sep=""), ")", ":", time.basis))  }
     }
   }
-  exp_set <- new("ExpressionSet")
   rownames(pdat) <- colnames(data)
-  pData(exp_set) <- data.frame(pdat)
-  exprs(exp_set) <- as.matrix(data)
+  exp_set <- ExpressionSet(as.matrix(data), AnnotatedDataFrame(pdat))
   edgeObj <- deSet(exp_set, full.model=as.formula(fmod),
                      null.model=as.formula(nmod), individual=ind)
   return(edgeObj)
@@ -206,10 +204,7 @@ build_models <- function(data, cov, full.model = NULL, null.model = NULL,
     stop("alternative and null models must be formatted as a formula")
   }
 
-  exp_set <- new("ExpressionSet")
-  exprs(exp_set) <- data
-  pData(exp_set) <- cov
-
+  exp_set <- ExpressionSet(data, AnnotatedDataFrame(cov))
   edgeObj <- deSet(exp_set, full.model = full.model, null.model = null.model,
                    individual = ind)
   return(edgeObj)
