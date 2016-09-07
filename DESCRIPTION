@@ -2,7 +2,7 @@ Package: edge
 Type: Package
 Title: Extraction of Differential Gene Expression
 Date: 2015-04-15
-Version: 2.1.1
+Version: 2.5.3
 Author: John D. Storey, Jeffrey T. Leek and Andrew J. Bass
 Maintainer: John D. Storey <jstorey@princeton.edu>, Andrew J. Bass <ajbass@princeton.edu>
 biocViews: MultipleComparison, DifferentialExpression, TimeCourse,
