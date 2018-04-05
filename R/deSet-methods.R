@@ -52,7 +52,7 @@ setMethod("odp",
           function(object, de.fit, odp.parms = NULL, weights = NULL, bs.its = 100,
                    n.mods = 50, seed = NULL, verbose = TRUE, ...)  {
             de.fit <- fit_models(object,
-                                 stat.type = "odp", weights = weights, ...)
+                                 stat.type = "odp", weights = weights)
             results <- odp(object, de.fit,
                            odp.parms = odp.parms,
                            n.mods = n.mods,
