@@ -149,9 +149,7 @@ setMethod("lrt",
               } else {
                 stat = stat * df2 / df1
               }
-              pval <- 1 - pf(stat,
-                             df1 = df1,
-                             df2 = df2)
+              pval <- pf(q = stat, df1 = df1, df2 = df2, lower.tail = FALSE)
               qval <- qvalue(pval, ...)
               qval$stat <- stat
               qval$df2 <- df2
