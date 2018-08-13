@@ -4,7 +4,7 @@ lrtStat <- function(resNull, resFull, post.var = NULL) {
 
   # F-statistic
   if (is.null(post.var)) {
-    stat <- (rss.null - rss.full) / (rss.full)
+    stat <- (rss.null - rss.full) / rss.full
   } else {
     stat <- (rss.null - rss.full) / post.var
   }

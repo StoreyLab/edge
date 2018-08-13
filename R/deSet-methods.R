@@ -122,7 +122,7 @@ setMethod("lrt",
             nNull <- ncol(object@null.matrix)
             n <- ncol(object)
             m <- nrow(object)
-            post.var <- NULL
+            post.var <- out<- NULL
             if (!is.null(seed)) {
               set.seed(seed)
             }
@@ -134,6 +134,7 @@ setMethod("lrt",
               out <- squeezeVar(var_full, df_full, covariate = rowMeans(exprs(object)))
               post.var <- out$var.post
               prior.df <- out$df.prior
+              df2 = (n - nFull) + prior.df
             }
             stat <- lrtStat(resNull = de.fit@res.null,
                             resFull = de.fit@res.full, 
@@ -141,12 +142,12 @@ setMethod("lrt",
             # If nullDistn is normal then return p-values from F-test else
             # return empirical p-values from qvalue package
             if (nullDistn == "normal") {
-              df1 = nFull - nNull
-              df2 = n - nFull
               if (mod.F) {
-                stat = stat * 1 / df1
-                df2 = (n - nFull) + prior.df
+                df1 <- nFull - nNull  
+                stat = stat / df1
               } else {
+                df1 = nFull - nNull
+                df2 = n - nFull
                 stat = stat * df2 / df1
               }
               pval <- pf(q = stat, df1 = df1, df2 = df2, lower.tail = FALSE)
@@ -162,7 +163,7 @@ setMethod("lrt",
                                      bs.its = bs.its,
                                      verbose = verbose,
                                      mod.F = mod.F,
-                                     post.var = post.var)
+                                     post.var = out)
               pval <- empPvals(stat = stat,
                                stat0 = null.stat)
               qval <- qvalue(pval, ...)

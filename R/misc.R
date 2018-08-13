@@ -15,9 +15,18 @@ bootstrap <- function(object, obs.fit, clustParms = NULL, bs.its = 100,
     null.fit <- fit_models(object,
                            stat.type = sType)
     if (sType == "lrt") {
+      if (!is.null(post.var)) {
+        nFull <- ncol(object@full.matrix)
+        n <- ncol(object)
+        df_full <- n - nFull
+        var_full <- rowSums(null.fit@res.full ^ 2) / df_full
+        pv <- (df_full*var_full + post.var$df.prior*post.var$var.prior) / (df_full + post.var$df.prior)
+      } else {
+        pv <- NULL
+      }
       null.stat[, i] <- lrtStat(resNull = null.fit@res.null,
                                 resFull = null.fit@res.full,
-                                post.var = post.var)
+                                post.var = pv)
       
     }
     else {
