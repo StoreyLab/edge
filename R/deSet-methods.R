@@ -351,7 +351,7 @@ setMethod("apply_jackstraw",
           function(object, r1 = NULL, r = NULL, s = NULL, B = NULL,
                    covariate = NULL, verbose = TRUE, seed = NULL) {
             dat <- exprs(object)
-            js <- jackstraw::jackstraw.PCA(dat, r1 = r1, r = r, s = s, B = B,
+            js <- jackstraw::jackstraw_pca(dat, r1 = r1, r = r, s = s, B = B,
                       covariate = covariate, verbose = verbose, seed = seed)
             return(js)
           })
