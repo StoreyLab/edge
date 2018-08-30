@@ -52,7 +52,7 @@ setMethod("odp",
           function(object, de.fit, odp.parms = NULL, weights = NULL, bs.its = 100,
                    n.mods = 50, seed = NULL, verbose = TRUE, ...)  {
             de.fit <- fit_models(object,
-                                 stat.type = "odp", weights = weights, ...)
+                                 stat.type = "odp", weights = weights)
             results <- odp(object, de.fit,
                            odp.parms = odp.parms,
                            n.mods = n.mods,
@@ -350,7 +350,7 @@ setMethod("apply_jackstraw",
           function(object, r1 = NULL, r = NULL, s = NULL, B = NULL,
                    covariate = NULL, verbose = TRUE, seed = NULL) {
             dat <- exprs(object)
-            js <- jackstraw::jackstraw.PCA(dat, r1 = r1, r = r, s = s, B = B,
+            js <- jackstraw::jackstraw_pca(dat, r1 = r1, r = r, s = s, B = B,
                       covariate = covariate, verbose = verbose, seed = seed)
             return(js)
           })
