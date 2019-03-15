@@ -53,8 +53,8 @@ null <- function(obs.fit, nf, ind) {
     ind <- NULL
     wts <- rep(1, n)
   }
-  wts <- wts * sqrt(1 - obs.fit@dH.full)
-  res.full <- t(t(obs.fit@res.full) / wts)
+  wts <- t(t(sqrt(1 - obs.fit@dH.full)) * wts)
+  res.full <- obs.fit@res.full * wts ^ (-1)
   # Random mix columns of residuals from full model
   vv <- sample(1:n, replace = TRUE)
   bs.res <- res.full[, vv]

@@ -62,7 +62,7 @@ deFitCheck <- function(object) {
   # Dimensionality test
   if (!(    (ncol(object@fit.full)==ncol(object@fit.null)
              && (ncol(object@res.full) == ncol(object@res.null))
-             && (length(object@dH.full) == ncol(object@fit.full))
+             && (ncol(object@dH.full) == ncol(object@fit.full))
              && (ncol(object@fit.full) == ncol(object@res.null))))) {
     msg <- paste("column length of fitted matrices, dH.full and residuals",
                  "must be the same.")
@@ -70,8 +70,7 @@ deFitCheck <- function(object) {
   }
   if (!((nrow(object@fit.full) == nrow(object@fit.null))
         && (nrow(object@res.full) == nrow(object@res.null))
-        && (nrow(object@res.full) == nrow(object@fit.full))
-        && (nrow(object@beta.coef) == nrow(object@fit.null)))) {
+        && (nrow(object@res.full) == nrow(object@fit.full)))) {
     msg <- paste("row length of fitted matrices and residuals",
                  "must be the same.")
     errors <- c(errors, msg)
@@ -195,7 +194,7 @@ setClass("deFit", slots=c(fit.full = "matrix",
                           fit.null = "matrix",
                           res.full = "matrix",
                           res.null = "matrix",
-                          dH.full = "vector",
+                          dH.full = "matrix",
                           beta.coef = "matrix",
                           stat.type = "character"),
          validity = deFitCheck)

@@ -15,30 +15,32 @@ fit_wmodels <- function(object, w = NULL,  stat.type = c("lrt", "odp")) {
     full.matrix <- rm.zero.cols(full.matrix)
     null.matrix <- rm.zero.cols(null.matrix)
   }
-  fitFull <- fitNull <- resNull <- resFull <- matrix(nrow=nr, ncol=n)
+  fitFull <- fitNull <- resNull <- resFull <- dHFull <- matrix(nrow=nr, ncol=n)
   for (i in 1:nr) {
-    wlm_full <- lm.wfit(x = full.matrix, y = exprsData[i,], w = w[i,])
     wlm_null <- lm.wfit(x = null.matrix, y = exprsData[i,], w = w[i,])
-    
-    fitFull[i,] <- wlm_full$fitted.values
     fitNull[i,] <- wlm_null$fitted.values
-    
-    resFull[i,] <- wlm_full$residuals * sqrt(wlm_full$weights)
-    resNull[i,] <- wlm_null$residuals * sqrt(wlm_full$weights)
+    resNull[i,] <- wlm_null$residuals * sqrt(wlm_null$weights)
+    if (stat.var != "odp") {
+      wlm_full <- lm.wfit(x = full.matrix, y = exprsData[i,], w = w[i,])
+      dHFull[i,] <- diag(projMatrix(sqrt(w[i,]) * full.matrix))# double check
+      fitFull[i,] <- wlm_full$fitted.values
+      B.coef <- matrix(NA, ncol = length(w[i,]))#wlm_full$coefficients
+      resFull[i,] <- wlm_full$residuals * sqrt(wlm_full$weights)
+    } else {
+      # W <- diag(sqrt(w[i,]))
+      w_sqrt <- sqrt(w[i,])
+      f.matrix.scaled <- full.matrix * w_sqrt
+      H.null <- projMatrix(null.matrix * w_sqrt)
+      f.matrix.scaled <- f.matrix.scaled - H.null %*% f.matrix.scaled
+      f.matrix.scaled <- rm.zero.cols(f.matrix.scaled)
+      H.full <- projMatrix(f.matrix.scaled)
+      res.n <- wlm_null$residuals * w_sqrt
+      B.coef <- matrix(NA, ncol = length(w_sqrt))#res.n %*% full.matrix.scaled %*% ginv(t(full.matrix.scaled) %*% full.matrix.scaled)
+      dHFull[i,] <- diag(H.full)
+      fitFull[i,] <- H.full %*% res.n
+      resFull[i,] <- res.n - fitFull[i,]
+    }
   }
-  dHFull <- diag(projMatrix(null.matrix))
-  B.coef <- exprsData %*% full.matrix %*% ginv(t(full.matrix) %*% full.matrix)
-  if (stat.var == "odp") {
-    H.null <- projMatrix(null.matrix)
-    full.matrix <- full.matrix - H.null %*% full.matrix
-    full.matrix <- rm.zero.cols(full.matrix)
-    H.full <- projMatrix(full.matrix)
-    B.coef <- resNull %*% full.matrix %*% ginv(t(full.matrix) %*% full.matrix)
-    dHFull <- diag(H.full)
-    fitFull <- t(H.full %*% t(resNull))
-    resFull <- resNull - fitFull
-  }
-  
   efObj <- new("deFit", fit.full = fitFull, fit.null = fitNull,
                dH.full = dHFull, res.full = resFull,
                res.null = resNull, beta.coef = B.coef,

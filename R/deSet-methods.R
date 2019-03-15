@@ -40,7 +40,7 @@ setMethod("fit_models",
               resFull <- exprsData - fitFull
             }
             efObj <- new("deFit", fit.full = fitFull, fit.null = fitNull,
-                         dH.full = dHFull, res.full = resFull,
+                         dH.full =  matrix(dHFull, nrow = nrow(resFull), ncol = length(dHFull), byrow = T), res.full = resFull,
                          res.null = resNull, beta.coef = B.coef,
                          stat.type = stat.var)
             return(efObj)
