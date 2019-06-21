@@ -49,7 +49,7 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
     if (is.matrix(tme) | is.vector(tme)) {
       tme <- data.frame(tme)
     } else {
-      stop("tme must be a matrix")
+      stop("tme must be a vector or a matrix")
     }
    # intercept <- !apply(tme, 2, var)
    # tme <- subset(tme, select=!intercept)
@@ -58,7 +58,7 @@ build_study = function(data, grp = NULL, adj.var = NULL, bio.var = NULL,
     if (is.matrix(adj.var) | is.vector(adj.var) | is.factor(adj.var)) {
       adj.var <- data.frame(adj.var)
     } else {
-      stop("adj.var must be a matrix")
+      stop("adj.var must be a vector or a matrix")
     }
     #intercept <- !apply(adj.var, 2, var)
    # adj.var <- subset(adj.var, select=!intercept)
